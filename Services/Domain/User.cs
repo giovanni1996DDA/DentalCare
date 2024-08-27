@@ -9,18 +9,14 @@ namespace Services.Domain
     public class User
     {
 
-        public Guid IdUsuario { get; set; }
+        public Guid IdUser { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
 
         public List<Acceso> Accesos = new List<Acceso>();
-        public User()
+        public User(Guid idUser)
         {
-            IdUsuario = Guid.NewGuid();
-        }
-        public User(Guid idUsuario)
-        {
-            this.IdUsuario = idUsuario;
+            this.IdUser = idUser;
         }
 
     }

@@ -9,7 +9,7 @@ namespace Services.Domain
     /// <summary>
     /// Representa una familia de permisos
     /// </summary>
-    public class Familia : Acceso
+    public class Rol : Acceso
     {
         private List<Acceso> accesos = new List<Acceso>();
 
@@ -30,7 +30,7 @@ namespace Services.Domain
             }
         }
 
-        public Familia(Acceso acceso = null)
+        public Rol(Acceso acceso = null)
         {
             if (acceso != null)
                 //acceso no debe ser null

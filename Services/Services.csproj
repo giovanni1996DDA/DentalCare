@@ -31,9 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,23 +47,39 @@
     <Compile Include="Dao\Factory\FactoryDao.cs" />
     <Compile Include="Dao\Helpers\SqlTransactRepository.cs" />
     <Compile Include="Dao\Implementations\SQLServer\LoggerDao.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\PermisoDao.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\QueryBuilder.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\RolDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UnitOfWork\UnitOfWorkSQLServer.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UnitOfWork\UnitOfWorkSQLServerAdapter.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UnitOfWork\UnitOfWorkSQLServerRepository.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\UserPermisoDao.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\UserRolDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UserDao.cs" />
     <Compile Include="Dao\Interfaces\IGenericDao.cs" />
+    <Compile Include="Dao\Interfaces\IUserPermisoDao.cs" />
+    <Compile Include="Dao\Interfaces\IPermisoDao.cs" />
+    <Compile Include="Dao\Interfaces\IRolDao.cs" />
     <Compile Include="Dao\Interfaces\IUserDao.cs" />
+    <Compile Include="Dao\Interfaces\IUserRolDao.cs" />
     <Compile Include="Dao\Interfaces\UnitOfWork\IUnitOfWork.cs" />
     <Compile Include="Dao\Interfaces\UnitOfWork\IUnitOfWorkAdapter .cs" />
     <Compile Include="Dao\Interfaces\UnitOfWork\IUnitOfWorkRepository.cs" />
     <Compile Include="Domain\Acceso.cs" />
-    <Compile Include="Domain\Familia.cs" />
+    <Compile Include="Domain\Rol.cs" />
     <Compile Include="Domain\Log.cs" />
-    <Compile Include="Domain\Patente.cs" />
+    <Compile Include="Domain\Permiso.cs" />
     <Compile Include="Domain\User.cs" />
+    <Compile Include="Domain\UserPermisoRelation.cs" />
+    <Compile Include="Domain\UserRolRelation.cs" />
     <Compile Include="Facade\LoggerFacade.cs" />
+    <Compile Include="Facade\SecurityManagerFacade.cs" />
     <Compile Include="Facade\UserFacade.cs" />
+    <Compile Include="Logic\Exceptions\UserAlreadyRegisteredException.cs" />
     <Compile Include="Logic\LoggerService.cs" />
+    <Compile Include="Logic\PermisoService.cs" />
+    <Compile Include="Logic\RolService.cs" />
+    <Compile Include="Logic\SecurityManagerService.cs" />
     <Compile Include="Logic\UserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

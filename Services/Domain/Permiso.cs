@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace Services.Domain
 {
-    public class Patente : Acceso
+    public class Permiso : Acceso
     {
         /// <summary>
         /// Leaf de composite de permisos
         /// </summary>
-        public TipoAcceso TipoAcceso { get; set; }
+        /// 
+        public string nombre { get; set; }
+        public Modulo modulo { get; set; }
 
-        public string DataKey { get; set; }
         /// <summary>
         /// Nunca tiene hijos, es un Leaf.
         /// </summary>
@@ -23,10 +24,9 @@ namespace Services.Domain
                 return false;
             }
         }
-
-        public Patente(TipoAcceso tipoAcceso = TipoAcceso.UI)
+        public Permiso(Modulo modulo)
         {
-            this.TipoAcceso = tipoAcceso;
+            this.modulo = modulo;
         }
 
         /// 
@@ -48,7 +48,7 @@ namespace Services.Domain
         }
     }
 
-    public enum TipoAcceso
+    public enum Modulo
     {
         UI,
         Control,

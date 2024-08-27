@@ -1,7 +1,11 @@
-﻿using Services.Domain;
+﻿using Services.Dao.Factory;
+using Services.Dao.Interfaces;
+using Services.Domain;
+using Services.Logic.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +15,7 @@ namespace Services.Logic
     {
         #region Singleton
         private static readonly UserService instance = new UserService();
-        public UserService Instance { 
+        public static UserService Instance { 
             get
             {
                 return instance;
@@ -20,15 +24,59 @@ namespace Services.Logic
         private UserService() { }
         #endregion
         /// <summary>
+        /// Registra un usuario en la base de datos
+        /// </summary>
+        /// <param name="user"></param>
+        public void RegisterUser(User user)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserDao userRepo = context.Repositories.UserRepository;
+                userRepo.Create(user);
+
+                foreach (Rol accs in GetRoles(user.Accesos))
+                {
+                    RolService.Instance.CreateRelation(context, user, accs);
+                }
+                foreach (Permiso accs in GetPermisos(user.Accesos))
+                {
+                    PermisoService.Instance.CreateRelation(context, user, accs);
+                }
+                context.SaveChanges();
+            }
+        }
+        /// <summary>
+        /// Valida si un usuario se encuentra registrado en el sistema
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public bool IsRegistered(User user) 
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserDao userRepo = context.Repositories.UserRepository;
+                return userRepo.Exists(user);
+            }
+        }
+        public void UpdateUser(User user) 
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserDao userRepo = context.Repositories.UserRepository;
+                userRepo.Update(user);
+                context.SaveChanges();
+            }
+        }
+        /// <summary>
         /// Obtengo todas las patentes de los accesos
         /// </summary>
         /// <param name="accesos"></param>
         /// <returns></returns>
-        public List<Patente> getPatentes(List<Acceso> accesos)
+        public List<Permiso> GetPermisos(List<Acceso> accesos)
         {
-            List<Patente> patentes = new List<Patente>();
+            List<Permiso> patentes = new List<Permiso>();
 
-            GetAllPatentes(accesos, patentes);
+            GetAllPermisos(accesos, patentes);
 
             return patentes;
         }
@@ -36,23 +84,23 @@ namespace Services.Logic
         /// Bucea entre todos los accesos que tiene, validando si es una familia de pantentes o una patente en si
         /// </summary>
         /// <param name="accesos"></param>
-        /// <param name="patentesReturn"></param>
-        private void GetAllPatentes(List<Acceso> accesos, List<Patente> patentesReturn)
+        /// <param name="permisosReturn"></param>
+        private void GetAllPermisos(List<Acceso> accesos, List<Permiso> permisosReturn)
         {
             foreach (var acceso in accesos)
             {
                 //Si tiene hijos es una familia
                 if (acceso.HasChildren)
                 {
-                    GetAllPatentes((acceso as Familia).Accesos, patentesReturn);
+                    GetAllPermisos((acceso as Rol).Accesos, permisosReturn);
                     continue;
                 }
 
                 //Si no es una familia, valido si la patente ya fue agregada entonces continuo con el siguiente registro
-                if (patentesReturn.Any(o => o.Id == acceso.Id))
+                if (permisosReturn.Any(o => o.Id == acceso.Id))
                     continue;
 
-                patentesReturn.Add(acceso as Patente);
+                permisosReturn.Add(acceso as Permiso);
             }
         }
         /// <summary>
@@ -60,12 +108,12 @@ namespace Services.Logic
         /// </summary>
         /// <param name="accesos"></param>
         /// <returns></returns>
-        public List<Familia> GetFamilias(List<Acceso> accesos)
+        public List<Rol> GetRoles(List<Acceso> accesos)
         {
 
-            List<Familia> familias = new List<Familia>();
+            List<Rol> familias = new List<Rol>();
 
-            GetAllFamilias(accesos, familias);
+            GetAllRoles(accesos, familias);
 
             return familias;
 
@@ -75,7 +123,7 @@ namespace Services.Logic
         /// </summary>
         /// <param name="accesos"></param>
         /// <param name="famililaReturn"></param>
-        private void GetAllFamilias(List<Acceso> accesos, List<Familia> famililaReturn)
+        private void GetAllRoles(List<Acceso> accesos, List<Rol> famililaReturn)
         {
             foreach (var acceso in accesos)
             {
@@ -84,9 +132,9 @@ namespace Services.Logic
                     continue;
 
                 if (!famililaReturn.Any(o => o.Id == acceso.Id))
-                    famililaReturn.Add(acceso as Familia);
+                    famililaReturn.Add(acceso as Rol);
 
-                GetAllFamilias((acceso as Familia).Accesos, famililaReturn);
+                GetAllRoles((acceso as Rol).Accesos, famililaReturn);
             }
         }
     }
