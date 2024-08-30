@@ -28,6 +28,10 @@ namespace Services.Facade
             }
             UserService.Instance.RegisterUser(user);
         }
+        public static void Get(User user)
+        {
+            UserService.Instance.Get(user);
+        }
         public static void Update(User user) 
         {
             if (!UserService.Instance.IsRegistered(user))

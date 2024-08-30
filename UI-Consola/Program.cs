@@ -1,5 +1,6 @@
 ﻿using Services.Dao.Factory;
 using Services.Domain;
+using Services.Facade;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,12 +14,30 @@ namespace UI_Consola
     {
         static void Main(string[] args)
         {
-            var context = FactoryDao.UnitOfWork.Create();
+            List<Acceso> accesos = new List<Acceso>() { 
+                                                            new Permiso()
+                                                            {
+                                                                Id = Guid.NewGuid(),
+                                                                Nombre = "Test",
+                                                                Modulo = Modulo.UI
+                                                            },
+                                                            new Permiso()
+                                                            {
+                                                                Id = Guid.NewGuid(),
+                                                                Nombre = "Test 2",
+                                                                Modulo = Modulo.UseCases
+                                                            },
 
-            context.Repositories.LoggerRepository.WriteLog(new Log() { 
-                                                                        Date = DateTime.Now,
-                                                                        Message = "Test",
-                                                                        TraceLevel = TraceLevel.Info });
+                                                        };
+
+            User usr = new User(){
+                                   IdUser = Guid.NewGuid(),
+                                   Password = "pito",
+                                   UserName = "Test",
+                                   Accesos = accesos
+            };
+
+            UserFacade.Get(usr);
         }
     }
 }

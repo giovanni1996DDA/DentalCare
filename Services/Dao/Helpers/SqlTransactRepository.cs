@@ -1,6 +1,13 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Data;
+using System.Collections.Specialized;
+using System.Configuration;
+using Services.Domain;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
+using Services.Dao.Implementations.SQLServer;
 
 
 namespace Services.Dao.Helpers
@@ -9,16 +16,81 @@ namespace Services.Dao.Helpers
     {
         protected SqlConnection _context;
         protected SqlTransaction _transaction;
+        protected string _TableName;
+
+        protected List<PropertyInfo> Props = new List<PropertyInfo>();
+
+        protected List<string> PropNames;
+
+        protected List<string> ParamNames;
+
+        protected List<string> SetsNames;
+
+        protected string BuildedPropNames;
+
+        protected string BuildedParamNames;
+
+        protected string BuildedSetsNames;
+
+        #region Statements
+        protected string InsertStatement
+        {
+            get => $"INSERT INTO {_TableName} ({BuildedPropNames} ) VALUES ( {BuildedParamNames});";
+        }
+
+        protected string UpdateStatement
+        {
+            get => $"UPDATE {_TableName} SET ({BuildedSetsNames})";
+        }
+
+        protected string DeleteStatement
+        {
+            get => $"DELETE FROM {_TableName}";
+        }
+        protected string SelectAllStatement
+        {
+            get
+            {
+                return $"SELECT {BuildedPropNames} FROM {_TableName}";
+            }
+        }
+        protected string ExistsStatement
+        {
+            get
+            {
+                return $"SELECT {BuildedPropNames} FROM {_TableName}";
+            }
+        }
+        #endregion
 
         private SqlCommand CreateCommand(string query)
         {
             return new SqlCommand(query, _context, _transaction);
         }
 
-        public SqlTransactRepository(SqlConnection context, SqlTransaction _transaction)
+        public SqlTransactRepository(Type daoObjectType, SqlConnection context, SqlTransaction _transaction)
         {
             this._context = context;
             this._transaction = _transaction;
+
+            this._TableName = $"[Dbo].[{((NameValueCollection)ConfigurationManager.GetSection("DbNames"))[this.GetType().Name]}]";
+
+            Props = daoObjectType.GetProperties().ToList();
+
+            PropNames = Props.Select(prop => prop.Name).ToList();
+
+            ParamNames = Props.Select(prop => $"@{prop.Name}").ToList();
+
+            SetsNames = Props
+                            .Where(prop => prop.Name != "IdUser")
+                            .Select(prop => $"{prop.Name} = @{prop.Name}")
+                            .ToList();
+
+            BuildedPropNames = String.Join(", ", PropNames);
+
+            BuildedParamNames = String.Join(", ", ParamNames);
+
+            BuildedSetsNames = String.Join(", ", SetsNames);
         }
 
         protected Int32 ExecuteNonQuery(String commandText,
@@ -56,6 +128,7 @@ namespace Services.Dao.Helpers
                 cmd.CommandType = commandType;
 
                 cmd.Parameters.AddRange(parameters);
+
                 return cmd.ExecuteScalar();
             }
         }

@@ -46,10 +46,13 @@
   <ItemGroup>
     <Compile Include="Dao\Factory\FactoryDao.cs" />
     <Compile Include="Dao\Helpers\SqlTransactRepository.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\Mappers\UserMapper.cs" />
     <Compile Include="Dao\Implementations\SQLServer\LoggerDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\PermisoDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\QueryBuilder.cs" />
     <Compile Include="Dao\Implementations\SQLServer\RolDao.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\RolPermisoDao.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\RolRolDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UnitOfWork\UnitOfWorkSQLServer.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UnitOfWork\UnitOfWorkSQLServerAdapter.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UnitOfWork\UnitOfWorkSQLServerRepository.cs" />
@@ -57,6 +60,8 @@
     <Compile Include="Dao\Implementations\SQLServer\UserRolDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\UserDao.cs" />
     <Compile Include="Dao\Interfaces\IGenericDao.cs" />
+    <Compile Include="Dao\Interfaces\IRolPermiso.cs" />
+    <Compile Include="Dao\Interfaces\IRolRolDao.cs" />
     <Compile Include="Dao\Interfaces\IUserPermisoDao.cs" />
     <Compile Include="Dao\Interfaces\IPermisoDao.cs" />
     <Compile Include="Dao\Interfaces\IRolDao.cs" />
@@ -69,12 +74,16 @@
     <Compile Include="Domain\Rol.cs" />
     <Compile Include="Domain\Log.cs" />
     <Compile Include="Domain\Permiso.cs" />
+    <Compile Include="Domain\RolPermisoRelation.cs" />
+    <Compile Include="Domain\RolRolRelation.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserPermisoRelation.cs" />
     <Compile Include="Domain\UserRolRelation.cs" />
     <Compile Include="Facade\LoggerFacade.cs" />
     <Compile Include="Facade\SecurityManagerFacade.cs" />
     <Compile Include="Facade\UserFacade.cs" />
+    <Compile Include="Logic\AccesoService.cs" />
+    <Compile Include="Logic\Exceptions\NoRolesFoundForUserException.cs" />
     <Compile Include="Logic\Exceptions\UserAlreadyRegisteredException.cs" />
     <Compile Include="Logic\LoggerService.cs" />
     <Compile Include="Logic\PermisoService.cs" />

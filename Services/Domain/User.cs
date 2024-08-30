@@ -14,9 +14,9 @@ namespace Services.Domain
         public string Password { get; set; }
 
         public List<Acceso> Accesos = new List<Acceso>();
-        public User(Guid idUser)
+        public User()
         {
-            this.IdUser = idUser;
+
         }
 
     }

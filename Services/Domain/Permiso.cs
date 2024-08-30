@@ -12,8 +12,7 @@ namespace Services.Domain
         /// Leaf de composite de permisos
         /// </summary>
         /// 
-        public string nombre { get; set; }
-        public Modulo modulo { get; set; }
+        public Modulo Modulo { get; set; }
 
         /// <summary>
         /// Nunca tiene hijos, es un Leaf.
@@ -24,11 +23,10 @@ namespace Services.Domain
                 return false;
             }
         }
-        public Permiso(Modulo modulo)
+        public Permiso()
         {
-            this.modulo = modulo;
-        }
 
+        }
         /// 
         /// <param name="component"></param>
         public override void Add(Acceso component)

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,10 +13,9 @@ namespace Services.Dao.Implementations.SQLServer
 {
     internal class PermisoDao : SqlTransactRepository, IPermisoDao
     {
-        public PermisoDao(SqlConnection context, SqlTransaction _transaction) : base(context, _transaction)
+        public PermisoDao(SqlConnection context, SqlTransaction _transaction) : base(typeof(Permiso), context, _transaction)
         {
         }
-
         public void Create(Permiso entity)
         {
             throw new NotImplementedException();
@@ -26,7 +26,7 @@ namespace Services.Dao.Implementations.SQLServer
             throw new NotImplementedException();
         }
 
-        public List<Permiso> GetAll()
+        public List<Permiso> Get(Permiso entity, Func<PropertyInfo, bool> where = null)
         {
             throw new NotImplementedException();
         }

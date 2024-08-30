@@ -15,10 +15,9 @@ namespace Services.Dao.Implementations.SQLServer
 {
     public class LoggerDao : SqlTransactRepository
     {
-        public LoggerDao(SqlConnection context, SqlTransaction _transaction) : base(context, _transaction)
+        public LoggerDao(SqlConnection context, SqlTransaction _transaction) : base(typeof(Log), context, _transaction)
         {
         }
-
         private static string PathLogError { get; set; } = ConfigurationManager.AppSettings["PathLogError"];
         private static string PathLogInfo { get; set; } = ConfigurationManager.AppSettings["PathLogInfo"];
 

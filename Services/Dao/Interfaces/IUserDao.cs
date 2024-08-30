@@ -8,7 +8,6 @@ namespace Services.Dao.Interfaces
 {
     public interface IUserDao : IGenericDao<User>
     {
-        List<User> Get(User user);
         bool Exists(User user);
     }
 }

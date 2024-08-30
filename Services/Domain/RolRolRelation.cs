@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Services.Domain
 {
-    public class UserPermisoRelation
+    internal class RolRolRelation
     {
-        public User user { get; set; }
-        public Permiso permiso { get; set; }
+        public Rol FatherRole { get; set; }
+        public Rol ChildRole { get; set; }
     }
 }

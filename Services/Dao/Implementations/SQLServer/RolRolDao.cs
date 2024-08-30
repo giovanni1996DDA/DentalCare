@@ -1,37 +1,37 @@
-﻿using Services.Dao.Helpers;
-using Services.Dao.Interfaces;
-using Services.Domain;
+﻿using Services.Domain;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Services.Dao.Helpers;
+using Services.Dao.Interfaces;
+using System.Reflection;
 
 namespace Services.Dao.Implementations.SQLServer
 {
-    internal class UserPermisoDao : SqlTransactRepository, IUserPermisoDao
+    internal class RolRolDao : SqlTransactRepository, IRolRolDao
     {
-        public UserPermisoDao(SqlConnection context, SqlTransaction _transaction) : base(typeof(UserPermisoRelation), context, _transaction)
+        public RolRolDao(SqlConnection context, SqlTransaction _transaction) : base(typeof(RolRolRelation), context, _transaction)
         {
         }
-        public void Create(UserPermisoRelation rel)
+        public void Create(RolRolRelation rel)
         {
             SqlParameter[] parameters = QueryBuilder.BuildParams(Props, rel);
             ExecuteNonQuery(InsertStatement, CommandType.Text, parameters);
         }
 
-        public void Delete(UserPermisoRelation entity)
+        public void Delete(RolRolRelation entity)
         {
             throw new NotImplementedException();
         }
-        public void Update(UserPermisoRelation entity)
+        public void Update(RolRolRelation entity)
         {
             throw new NotImplementedException();
         }
-        public bool Exists(UserPermisoRelation rel)
+        public bool Exists(RolRolRelation rel)
         {
             SqlParameter[] parameters = QueryBuilder.BuildParams(Props, rel);
 
@@ -41,7 +41,8 @@ namespace Services.Dao.Implementations.SQLServer
 
             return ExecuteScalar(ExistsQuery, CommandType.Text, parameters) != null;
         }
-        public List<UserPermisoRelation> Get(UserPermisoRelation entity, Func<PropertyInfo, bool> where = null)
+
+        public List<RolRolRelation> Get(RolRolRelation entity, Func<PropertyInfo, bool> where = null)
         {
             throw new NotImplementedException();
         }

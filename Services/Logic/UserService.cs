@@ -45,6 +45,15 @@ namespace Services.Logic
                 context.SaveChanges();
             }
         }
+        public void Get(User user)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserDao userRepo = context.Repositories.UserRepository;
+                userRepo.Get(user, prop => prop.Name == "UserName");
+                context.SaveChanges();
+            }
+        }
         /// <summary>
         /// Valida si un usuario se encuentra registrado en el sistema
         /// </summary>

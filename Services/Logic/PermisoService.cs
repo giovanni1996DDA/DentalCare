@@ -16,17 +16,17 @@ namespace Services.Logic
         private PermisoService()
         {
         }
-        public void CreateRelation(IUnitOfWorkAdapter context, User user, Permiso role)
+        public void CreateRelation(IUnitOfWorkAdapter context, User user, Permiso permiso)
         {
-            UserRolRelation relation = new UserRolRelation()
+            UserPermisoRelation relation = new UserPermisoRelation()
             {
-                IdUser = user.IdUser,
-                IdRol = role.Id
+                user = user,
+                permiso = permiso
             };
 
-            IUserRolDao repo = context.Repositories.UserRolRepository;
+            IUserPermisoDao repo = context.Repositories.UserPermisoRepository;
 
-            if (repo.Exists(relation)) return;
+            //if (repo.Exists(relation)) return;
 
             repo.Create(relation);
 

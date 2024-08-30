@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace Services.Dao.Implementations.SQLServer
 {
     internal class RolDao : SqlTransactRepository, IRolDao
     {
-        public RolDao(SqlConnection context, SqlTransaction _transaction) : base(context, _transaction)
+        public RolDao(SqlConnection context, SqlTransaction _transaction) : base(typeof(Rol), context, _transaction)
         {
         }
 
@@ -26,7 +27,7 @@ namespace Services.Dao.Implementations.SQLServer
             throw new NotImplementedException();
         }
 
-        public List<Rol> GetAll()
+        public List<Rol> Get(Rol entity, Func<PropertyInfo, bool> where = null)
         {
             throw new NotImplementedException();
         }

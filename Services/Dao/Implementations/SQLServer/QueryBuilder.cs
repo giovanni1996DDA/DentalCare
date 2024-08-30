@@ -11,12 +11,9 @@ namespace Services.Dao.Implementations.SQLServer
 {
     public static class QueryBuilder
     {
-        public static SqlParameter[] BuildParams(Object obj)
+        public static SqlParameter[] BuildParams(List<PropertyInfo> Props, Object obj)
         {
-            List<PropertyInfo> Props = obj.GetType().GetProperties().ToList();
-
             return Props
-                   .Where(prop => prop.GetValue(obj) != null)
                    .Select(prop =>
                    {
                        return new SqlParameter($"@{prop.Name}", $"{prop.GetValue(obj)}");
@@ -24,12 +21,9 @@ namespace Services.Dao.Implementations.SQLServer
                    .ToArray();
         }
 
-        public static string BuildWhere(Object obj)
+        public static string BuildWhere(List<PropertyInfo> Props)
         {
-            List<PropertyInfo> Props = obj.GetType().GetProperties().ToList();
-
             return "WHERE " + String.Join(", ", Props
-                                                .Where(prop => prop.GetValue(obj) != null)
                                                 .Select(prop => $"{prop.Name} = @{prop.Name}")
                                                 .ToList()
                                                 );
