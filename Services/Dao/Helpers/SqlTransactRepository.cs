@@ -40,7 +40,7 @@ namespace Services.Dao.Helpers
 
         protected string UpdateStatement
         {
-            get => $"UPDATE {_TableName} SET ({BuildedSetsNames})";
+            get => $"UPDATE {_TableName} SET {BuildedSetsNames}";
         }
 
         protected string DeleteStatement

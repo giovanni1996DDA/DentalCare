@@ -90,7 +90,7 @@
     <Compile Include="Facade\UserFacade.cs" />
     <Compile Include="Logic\AccesoService.cs" />
     <Compile Include="Logic\Exceptions\DatabaseInconsistencyException.cs" />
-    <Compile Include="Logic\Exceptions\NoPermisosFoundException.cs" />
+    <Compile Include="Logic\Exceptions\NoPermissionFoundException.cs" />
     <Compile Include="Logic\Exceptions\NoRolesFoundForUserException.cs" />
     <Compile Include="Logic\Exceptions\NoUsersFoundException.cs" />
     <Compile Include="Logic\Exceptions\UserAlreadyRegisteredException.cs" />

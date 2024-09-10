@@ -27,11 +27,11 @@ namespace Services.Dao.Implementations.SQLServer
             ExecuteNonQuery(InsertStatement, CommandType.Text, parameters);
         }
 
-        public void Delete(UserRolRelation entity)
+        public void Delete(UserRolRelation entity, Func<PropertyInfo, bool> whereCallback = null)
         {
             throw new NotImplementedException();
         }
-        public void Update(UserRolRelation entity)
+        public void Update(UserRolRelation entity, Func<PropertyInfo, bool> whereCallback = null)
         {
             throw new NotImplementedException();
         }
@@ -58,7 +58,7 @@ namespace Services.Dao.Implementations.SQLServer
 
             SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity).ToArray();
 
-            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
 
             string finalQuery = $"{ExistsStatement} {whereClause}";
 
@@ -87,7 +87,7 @@ namespace Services.Dao.Implementations.SQLServer
                 return true; // Incluir todas las demás propiedades
             }).ToList();
 
-            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
 
             SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
 

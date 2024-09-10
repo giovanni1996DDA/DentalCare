@@ -40,7 +40,7 @@ namespace Services.Domain
         /// <param name="component"></param>
         public override void Add(Acceso component)
         {
-            if (!_Accesos.Any())
+            //if (!_Accesos.Any())
                 _Accesos.Add(component);
         }
 

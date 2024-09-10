@@ -30,16 +30,18 @@ namespace Services.Dao.Implementations.SQLServer
         public static SqlParameter[] BuildParams(List<PropertyInfo> Props, object obj)
         {
             return Props
-                   .Select(prop =>
-                   {
-                       return new SqlParameter($"@{prop.Name}", $"{prop.GetValue(obj)}");
-                   })
-                   .ToArray();
+                    .Where(prop => prop.GetValue(obj) != null)
+                    .Select(prop =>
+                       {
+                           return new SqlParameter($"@{prop.Name}", $"{prop.GetValue(obj)}");
+                       })
+                    .ToArray();
         }
 
-        public static string BuildWhere(List<PropertyInfo> Props)
+        public static string BuildWhere(List<PropertyInfo> Props, object obj)
         {
             return "WHERE " + String.Join(" AND ", Props
+                                                .Where(prop => prop.GetValue(obj) != null)
                                                 .Select(prop => $"{prop.Name} = @{prop.Name}")
                                                 .ToList()
                                                 );

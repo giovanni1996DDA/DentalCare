@@ -19,7 +19,7 @@ namespace Services.Dao.Interfaces
         /// <returns></returns>
         List<T> Get(T entity, Func<PropertyInfo, bool> whereCallback = null);
         bool Exists(T entity, Func<PropertyInfo, bool> whereCallback = null);
-        void Update(T entity);
-        void Delete(T entity);
+        void Update(T entity, Func<PropertyInfo, bool> whereCallback = null);
+        void Delete(T entity, Func<PropertyInfo, bool> whereCallback = null);
     }
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Services.Logic.Exceptions
 {
-    internal class NoPermisosFoundException : Exception
+    internal class NoPermissionFoundException : Exception
     {
-        public NoPermisosFoundException() : base("No se encontraron permisos con los criterios de búsqueda seleccionados.") 
+        public NoPermissionFoundException() : base("No se encontraron permisos con el criterio especificado")
         { 
         }
     }

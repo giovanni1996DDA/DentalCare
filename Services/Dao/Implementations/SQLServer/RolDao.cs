@@ -31,36 +31,29 @@ namespace Services.Dao.Implementations.SQLServer
 
             ExecuteNonQuery(InsertStatement, CommandType.Text, parameters);
         }
-        public void Delete(Rol entity)
+        public void Delete(Rol entity, Func<PropertyInfo, bool> whereCallback = null)
         {
             throw new NotImplementedException();
         }
 
         public bool Exists(Rol entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-
             List<PropertyInfo> filteredProps = Props.Where(prop =>
             {
                 var value = prop.GetValue(entity);
 
                 // Si whereCallback está definido, se debe cumplir
-                if (whereCallback != null && !whereCallback(prop))
-                {
-                    return false;
-                }
-
+                if (whereCallback != null && !whereCallback(prop)) return false;
+                
                 // Verificar si la propiedad es Guid y si es Guid.Empty
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                {
-                    return false; // Excluir las propiedades que son Guid.Empty
-                }
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty) return false; // Excluyo las propiedades que son Guid.Empty
 
                 return true; // Incluir todas las demás propiedades
             }).ToList();
 
             SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity).ToArray();
 
-            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
 
             return ExecuteScalar($"{ExistsStatement} {whereClause}", CommandType.Text, parameters) != null;
         }
@@ -88,7 +81,7 @@ namespace Services.Dao.Implementations.SQLServer
                 return true; // Incluir todas las demás propiedades
             }).ToList();
 
-            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
 
             SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
 
@@ -108,9 +101,11 @@ namespace Services.Dao.Implementations.SQLServer
 
             return ret;
         }
-        public void Update(Rol entity)
+        public void Update(Rol entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            throw new NotImplementedException();
+            SqlParameter[] parameters = QueryBuilder.BuildParams(Props, entity);
+
+            ExecuteNonQuery(UpdateStatement, CommandType.Text, parameters);
         }
     }
 }

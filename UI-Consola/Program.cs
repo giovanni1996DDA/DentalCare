@@ -16,7 +16,17 @@ namespace UI_Consola
         static void Main(string[] args)
         {
 
+            Guid id = Guid.NewGuid();
+
             List<Acceso> accesos = new List<Acceso>();
+
+
+            Rol rol = new Rol
+            {
+                Id = id,
+                Nombre = "Test rol",
+                Descripcion = "Test rol"
+            };
 
             Permiso permiso = new Permiso{
                                             Id = Guid.NewGuid(),
@@ -25,59 +35,44 @@ namespace UI_Consola
                                         };
 
             AccesoService.Instance.CreateOrUpdate(permiso);
+            rol.Add(permiso);
 
-            accesos.Add(permiso);
-
-            permiso = new Permiso{
+            Permiso permiso2 = new Permiso{
                                     Id = Guid.NewGuid(),
                                     Nombre = "Test permiso 2",
                                     Modulo = 3
                                 };
 
-            AccesoService.Instance.CreateOrUpdate(permiso);
+            AccesoService.Instance.CreateOrUpdate(permiso2);
+            rol.Add(permiso2);
 
-            accesos.Add(permiso);
-
-
-            permiso = new Permiso
+            Permiso permiso3 = new Permiso
             {
                 Id = Guid.NewGuid(),
-                Nombre = "Test permiso 2",
+                Nombre = "Test permiso 3",
                 Modulo = 2
             };
 
-            AccesoService.Instance.CreateOrUpdate(permiso);
-
-            Rol rol = new Rol
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Test rol",
-                Descripcion = "Test rol"
-            };
-
-            rol.Add(permiso);
+            AccesoService.Instance.CreateOrUpdate(permiso3);
+            rol.Add(permiso3);
 
             AccesoService.Instance.CreateOrUpdate(rol);
 
-            accesos.Add(rol);
+            Rol rolNew = AccesoService.Instance.Get( new Rol { Id = id }).Select(p => (Rol)p ).ToList().FirstOrDefault();
 
-            User usr = new User(){
-                                   Password = "pito",
-                                   UserName = "Test",
-                                   Accesos = accesos
-            };
+            Permiso permisoDel = (Permiso) rol.Accesos[1];
 
-            UserFacade.Register(usr);
+            rolNew.Remove(permisoDel);
 
-            usr = new User()
-            {
-                Password = "pito",
-                UserName = "Test",
-            };
+            rolNew.Nombre = "Lo cambie y funciona gucci";
 
-            List<User> user = UserFacade.Get(usr);
+            AccesoService.Instance.CreateOrUpdate(rolNew);
 
-            Console.WriteLine(user.Count);
+            rolNew = null;
+
+            rolNew = AccesoService.Instance.Get(new Rol { Id = id }).Select(p => (Rol)p).ToList().FirstOrDefault();
+
+
         }
     }
 }

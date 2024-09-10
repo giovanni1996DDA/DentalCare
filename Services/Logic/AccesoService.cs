@@ -20,6 +20,59 @@ namespace Services.Logic
         private AccesoService()
         {
         }
+        public List<Acceso> Get(Acceso acceso)
+        {
+            List<Acceso> returning = new List<Acceso>();
+            switch (acceso)
+            {
+                case Rol rol:
+                    returning = Get(rol).Select(r => (Acceso)r).ToList();
+                    break;
+
+                case Permiso permiso:
+                    returning = Get(permiso).Select(r => (Acceso)r).ToList();
+                    break;
+
+                default:
+                    throw new ArgumentException("Tipo de acceso no soportado");
+            }
+            return returning;
+        }
+        private List<Rol> Get(Rol rol)
+        {
+            List<Rol> returning = new List<Rol>();
+
+            using(var context = FactoryDao.UnitOfWork.Create())
+            {
+                IRolDao rolRepo = context.Repositories.RolRepository;
+
+                returning = rolRepo.Get(rol);
+            }
+
+            if (returning.Count == 0) throw new NoRolesFoundForUserException();
+
+            foreach(Rol returningrole in returning)
+            {
+                FillRol(returningrole);
+            }
+
+            return returning;
+        }
+        private List<Permiso> Get(Permiso permiso)
+        {
+            List<Permiso> returning = new List<Permiso>();
+
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IPermisoDao rolRepo = context.Repositories.PermisoRepository;
+
+                returning = rolRepo.Get(permiso);
+            }
+
+            if (returning.Count == 0) throw new NoPermissionFoundException();
+
+            return returning;
+        }
         /// <summary>
         /// Crea o actualiza el acceso. El metodo se encarga de discernir si corresponde a un permiso o a un rol.
         /// </summary>
@@ -51,13 +104,24 @@ namespace Services.Logic
             {
                 IRolDao repo = context.Repositories.RolRepository;
 
-                if (repo.Exists(rol))
+                if (repo.Exists(rol, (prop => prop.Name == "Id") ))
                 {
-                    //Logica para update
-                    return;
+                    repo.Update(rol);
+
+                    IRolRolDao rrRepo = context.Repositories.RolRolRepository;
+                    rrRepo.Delete(new RolRolRelation { FatherId = rol.Id }, (prop => prop.Name == "FatherId"));
+
+                    IRolPermisoDao rpRepo = context.Repositories.RolPermisoRepository;
+                    rpRepo.Delete(new RolPermisoRelation { IdRol = rol.Id }, (prop => prop.Name == "IdRol"));
+
+                }
+                else
+                {
+                    //rol.Id = Guid.NewGuid();
+
+                    repo.Create(rol);
                 }
 
-                repo.Create(rol);
 
                 foreach (Acceso acceso in rol.Accesos)
                 {
@@ -82,6 +146,7 @@ namespace Services.Logic
                     //Logica para update
                     return;
                 }
+                permiso.Id = Guid.NewGuid();
 
                 repo.Create(permiso);
 
@@ -302,6 +367,7 @@ namespace Services.Logic
 
                 if(fetchedRol == null) throw new DatabaseInconsistencyException();
 
+                //Agregar nivel de hidratacion para que el programa no explote
                 FillRol(fetchedRol);
 
                 rol.Accesos.Add(fetchedRol);

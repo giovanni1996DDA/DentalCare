@@ -54,7 +54,7 @@ namespace Services.Dao.Implementations.SQLServer
                 return true; // Incluir todas las demás propiedades
             }).ToList();
 
-            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
 
             SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
 
@@ -77,7 +77,7 @@ namespace Services.Dao.Implementations.SQLServer
         /// Actualiza un registro en la tabla de usuarios de la BBDD
         /// </summary>
         /// <param name="entity">Usuario modificado</param>
-        public void Update(User user)
+        public void Update(User user, Func<PropertyInfo, bool> whereCallback = null)
         {
             SqlParameter[] parameters = QueryBuilder.BuildParams(Props, user);
 
@@ -113,7 +113,7 @@ namespace Services.Dao.Implementations.SQLServer
 
             SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity).ToArray();
 
-            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
 
             string finalQuery = $"{ExistsStatement} {whereClause}";
 
@@ -123,7 +123,7 @@ namespace Services.Dao.Implementations.SQLServer
         /// Elimina un registro en la tabla de usuarios de la BBDD
         /// </summary>
         /// <param name="entity">Usuario a eliminar</param>
-        public void Delete(User user)
+        public void Delete(User user, Func<PropertyInfo, bool> whereCallback = null)
         {
             throw new NotImplementedException();
         }

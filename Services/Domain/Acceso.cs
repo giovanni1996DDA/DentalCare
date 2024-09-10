@@ -17,7 +17,6 @@ namespace Services.Domain
 
         public Acceso()
         {
-            Id = Guid.NewGuid();
         }
 
 
