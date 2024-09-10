@@ -1,5 +1,6 @@
 ﻿using Services.Dao.Helpers;
 using Services.Dao.Implementations.Mappers;
+using Services.Dao.Implementations.SQLServer.Mappers;
 using Services.Dao.Interfaces;
 using Services.Domain;
 using System;
@@ -34,23 +35,57 @@ namespace Services.Dao.Implementations.SQLServer
         {
             throw new NotImplementedException();
         }
-        public bool Exists(UserRolRelation rel)
+        public bool Exists(UserRolRelation entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            SqlParameter[] parameters = QueryBuilder.BuildParams(Props, rel);
+            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            {
+                var value = prop.GetValue(entity);
 
-            string whereClause = QueryBuilder.BuildWhere(Props);
+                // Si whereCallback está definido, se debe cumplir
+                if (whereCallback != null && !whereCallback(prop))
+                {
+                    return false;
+                }
 
-            string ExistsQuery = $"{ExistsStatement} {whereClause}";
+                // Verificar si la propiedad es Guid y si es Guid.Empty
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                {
+                    return false; // Excluir las propiedades que son Guid.Empty
+                }
 
-            return ExecuteScalar(ExistsQuery, CommandType.Text, parameters) != null;
+                return true; // Incluir todas las demás propiedades
+            }).ToList();
+
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity).ToArray();
+
+            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+
+            string finalQuery = $"{ExistsStatement} {whereClause}";
+
+            return ExecuteScalar(finalQuery, CommandType.Text, parameters) != null;
         }
-        public List<UserRolRelation> Get(UserRolRelation entity = null, Func<PropertyInfo, bool> where = null)
+        public List<UserRolRelation> Get(UserRolRelation entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            entity = entity ?? new UserRolRelation();
+            List<UserRolRelation> ret = new List<UserRolRelation>();
 
-            List<UserRolRelation> ret = null;
+            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            {
+                var value = prop.GetValue(entity);
 
-            List<PropertyInfo> filteredProps = where == null ? Props : Props.Where(where).ToList();
+                // Si whereCallback está definido, se debe cumplir
+                if (whereCallback != null && !whereCallback(prop))
+                {
+                    return false;
+                }
+
+                // Verificar si la propiedad es Guid y si es Guid.Empty
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                {
+                    return false; // Excluir las propiedades que son Guid.Empty
+                }
+
+                return true; // Incluir todas las demás propiedades
+            }).ToList();
 
             string whereClause = QueryBuilder.BuildWhere(filteredProps);
 
@@ -61,12 +96,12 @@ namespace Services.Dao.Implementations.SQLServer
             using (var reader = ExecuteReader(buildedGetByStatement, CommandType.Text, parameters))
             {
                 //Mientras tenga algo en mi tabla de Customers
-                if (reader.Read())
+                while (reader.Read())
                 {
                     object[] data = new object[reader.FieldCount];
                     reader.GetValues(data);
 
-                    //ret.Add(RolMapper.Map(data));
+                    ret.Add(UserRolMapper.Map(data));
                 }
             }
 

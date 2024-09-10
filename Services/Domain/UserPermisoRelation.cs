@@ -8,7 +8,7 @@ namespace Services.Domain
 {
     public class UserPermisoRelation
     {
-        public User user { get; set; }
-        public Permiso permiso { get; set; }
+        public Guid IdUser { get; set; }
+        public Guid IdPermiso { get; set; }
     }
 }

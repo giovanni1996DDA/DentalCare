@@ -29,30 +29,51 @@ namespace Services.Logic
         /// <param name="user"></param>
         public void RegisterUser(User user)
         {
+            user.Id = Guid.NewGuid();
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
+
+                //Verifico si existe un usuario con ese UserName
+                if (userRepo.Exists(user, (prop => prop.Name == "UserName"))) throw new UserAlreadyRegisteredException();
+
+            }
+
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserDao userRepo = context.Repositories.UserRepository;
+
+                //Verifico si existe un usuario con ese UserName
+                //if (userRepo.Get(user, prop => prop.Name == "UserName").Count > 0) throw new UserAlreadyRegisteredException();
+
                 userRepo.Create(user);
 
-                foreach (Rol accs in GetRoles(user.Accesos))
+                foreach (Acceso access in user.Accesos)
                 {
-                    RolService.Instance.CreateRelation(context, user, accs);
+                    AccesoService.Instance.CreateRelation(context, user, access);
                 }
-                foreach (Permiso accs in GetPermisos(user.Accesos))
-                {
-                    PermisoService.Instance.CreateRelation(context, user, accs);
-                }
+                
                 context.SaveChanges();
             }
         }
-        public void Get(User user)
+        public List<User> Get(User user)
         {
+            List<User> returning = new List<User>();
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
-                userRepo.Get(user, prop => prop.Name == "UserName");
-                context.SaveChanges();
+                returning = userRepo.Get(user);
             }
+
+            if (returning.Count == 0) throw new NoUsersFoundException();
+
+            foreach (User returningUser in returning)
+            {
+                AccesoService.Instance.GetAccesos(returningUser);
+            }
+
+            return returning;
         }
         /// <summary>
         /// Valida si un usuario se encuentra registrado en el sistema
@@ -72,6 +93,9 @@ namespace Services.Logic
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
+
+                if (!userRepo.Exists(user)) throw new UserDoesNotExistException();
+
                 userRepo.Update(user);
                 context.SaveChanges();
             }

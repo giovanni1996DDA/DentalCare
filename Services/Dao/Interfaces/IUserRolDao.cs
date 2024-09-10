@@ -9,6 +9,5 @@ namespace Services.Dao.Interfaces
 {
     public interface IUserRolDao : IGenericDao<UserRolRelation>
     {
-        bool Exists(UserRolRelation rel);
     }
 }

@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Interfaces
 {
-    internal interface IRolPermiso : IGenericDao<RolPermisoRelation>
+    public interface IRolPermisoDao : IGenericDao<RolPermisoRelation>
     {
+        bool HasPermisos(RolPermisoRelation rol);
     }
 }

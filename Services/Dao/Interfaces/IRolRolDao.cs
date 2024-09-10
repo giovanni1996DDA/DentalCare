@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Interfaces
 {
-    internal interface IRolRolDao : IGenericDao<RolRolRelation>
+    public interface IRolRolDao : IGenericDao<RolRolRelation>
     {
+        bool HasRoles(RolRolRelation relation);
     }
 }

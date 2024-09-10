@@ -11,14 +11,14 @@ namespace Services.Domain
     /// </summary>
     public class Rol : Acceso
     {
-        private List<Acceso> accesos = new List<Acceso>();
-
         public string Descripcion { get; set; }
+
+        private List<Acceso> _Accesos = new List<Acceso>();
 
         public override bool HasChildren { 
             get 
             { 
-                return accesos.Any();
+                return _Accesos.Any();
             } 
         }
 
@@ -26,22 +26,22 @@ namespace Services.Domain
         {
             get
             {
-                return accesos;
+                return _Accesos;
             }
         }
 
         public Rol(Acceso acceso = null)
         {
             if (acceso != null)
-                //acceso no debe ser null
-                accesos.Add(acceso);
+                Accesos.Add(acceso);
         }
 
         /// 
         /// <param name="component"></param>
         public override void Add(Acceso component)
         {
-            accesos.Add(component);
+            if (!_Accesos.Any())
+                _Accesos.Add(component);
         }
 
         /// 
@@ -51,7 +51,7 @@ namespace Services.Domain
             //Ver que no puedo quedarme sin hijos...
 
             //accesos.Remove(component);
-            accesos.RemoveAll(o => o.Id == component.Id);//Linq -> lambda exp. se ve más adelante
+            Accesos.RemoveAll(o => o.Id == component.Id);//Linq -> lambda exp. se ve más adelante
         }
     }
 }

@@ -68,14 +68,16 @@ namespace Services.Dao.Helpers
             return new SqlCommand(query, _context, _transaction);
         }
 
-        public SqlTransactRepository(Type daoObjectType, SqlConnection context, SqlTransaction _transaction)
+        public SqlTransactRepository(Type daoObjectType, SqlConnection context, SqlTransaction _transaction, List<string> ExcludedProps = null)
         {
             this._context = context;
             this._transaction = _transaction;
 
             this._TableName = $"[Dbo].[{((NameValueCollection)ConfigurationManager.GetSection("DbNames"))[this.GetType().Name]}]";
 
-            Props = daoObjectType.GetProperties().ToList();
+            ExcludedProps = ExcludedProps ?? new List<string>();
+
+            Props = daoObjectType.GetProperties().Where(prop => !ExcludedProps.Contains(prop.Name)).ToList();
 
             PropNames = Props.Select(prop => prop.Name).ToList();
 
@@ -100,6 +102,13 @@ namespace Services.Dao.Helpers
 
             using (var cmd = CreateCommand(commandText))
             {
+                //AGREGADO
+                if (cmd.Connection.State != ConnectionState.Open)
+                {
+                    cmd.Connection.Open();
+                }
+                //AGREGADO
+
                 cmd.CommandType = commandType;
                 cmd.Parameters.AddRange(parameters);
                 return cmd.ExecuteNonQuery();

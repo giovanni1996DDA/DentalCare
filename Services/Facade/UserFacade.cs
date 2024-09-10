@@ -17,20 +17,22 @@ namespace Services.Facade
         /// </summary>
         public static void Register(User user)
         {
-            if (UserService.Instance.IsRegistered(user)) 
+            try
             {
-                MessageBox.Show("El usuario ya se encuentra registrado en el sistema.",
-                                "El usuario ya existe.",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error
-                                );              
-                return;
+                UserService.Instance.RegisterUser(user);
             }
-            UserService.Instance.RegisterUser(user);
+            catch (UserAlreadyRegisteredException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
-        public static void Get(User user)
+        public static List<User> Get(User user)
         {
-            UserService.Instance.Get(user);
+            return UserService.Instance.Get(user);
         }
         public static void Update(User user) 
         {

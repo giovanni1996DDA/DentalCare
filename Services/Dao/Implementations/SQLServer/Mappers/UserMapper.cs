@@ -13,7 +13,7 @@ namespace Services.Dao.Implementations.Mappers
         {
             return new User()
             {
-                IdUser   = Guid.Parse($"{values[(int)UserColumns.UserId]}"),
+                Id   = Guid.Parse($"{values[(int)UserColumns.IdUser]}"),
                 UserName = (string)values[(int)UserColumns.UserName],
                 Password = (string)values[(int)UserColumns.Password],
             };
@@ -22,7 +22,7 @@ namespace Services.Dao.Implementations.Mappers
 
     internal enum UserColumns
     {
-        UserId = 0,
+        IdUser = 0,
         UserName = 1,
         Password = 2
     }

@@ -12,7 +12,7 @@ namespace Services.Domain
         /// Leaf de composite de permisos
         /// </summary>
         /// 
-        public Modulo Modulo { get; set; }
+        public int Modulo { get; set; }
 
         /// <summary>
         /// Nunca tiene hijos, es un Leaf.
@@ -25,7 +25,8 @@ namespace Services.Domain
         }
         public Permiso()
         {
-
+            /*IdPermiso = Guid.NewGuid();
+            this.Id = IdPermiso;*/
         }
         /// 
         /// <param name="component"></param>

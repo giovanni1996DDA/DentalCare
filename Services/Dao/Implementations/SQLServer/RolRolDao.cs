@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Services.Dao.Helpers;
 using Services.Dao.Interfaces;
 using System.Reflection;
+using Services.Dao.Implementations.Mappers;
+using Services.Dao.Implementations.SQLServer.Mappers;
 
 namespace Services.Dao.Implementations.SQLServer
 {
@@ -31,20 +33,94 @@ namespace Services.Dao.Implementations.SQLServer
         {
             throw new NotImplementedException();
         }
-        public bool Exists(RolRolRelation rel)
+
+
+        public List<RolRolRelation> Get(RolRolRelation entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            SqlParameter[] parameters = QueryBuilder.BuildParams(Props, rel);
+            List<RolRolRelation> ret = new List<RolRolRelation>();
 
-            string whereClause = QueryBuilder.BuildWhere(Props);
+            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            {
+                var value = prop.GetValue(entity);
 
-            string ExistsQuery = $"{ExistsStatement} {whereClause}";
+                // Si whereCallback está definido, se debe cumplir
+                if (whereCallback != null && !whereCallback(prop))
+                {
+                    return false;
+                }
 
-            return ExecuteScalar(ExistsQuery, CommandType.Text, parameters) != null;
+                // Verificar si la propiedad es Guid y si es Guid.Empty
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                {
+                    return false; // Excluir las propiedades que son Guid.Empty
+                }
+
+                return true; // Incluir todas las demás propiedades
+            }).ToList();
+
+            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
+
+            string buildedGetByStatement = $"{SelectAllStatement} {whereClause}";
+
+            using (var reader = ExecuteReader(buildedGetByStatement, CommandType.Text, parameters))
+            {
+                //Mientras tenga algo en mi tabla de Customers
+                while (reader.Read())
+                {
+                    object[] data = new object[reader.FieldCount];
+                    reader.GetValues(data);
+
+                    ret.Add(RolRolMapper.Map(data));
+                }
+            }
+            return ret;
         }
 
-        public List<RolRolRelation> Get(RolRolRelation entity, Func<PropertyInfo, bool> where = null)
+        public bool Exists(RolRolRelation entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            throw new NotImplementedException();
+            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            {
+                var value = prop.GetValue(entity);
+
+                // Si whereCallback está definido, se debe cumplir
+                if (whereCallback != null && !whereCallback(prop))
+                {
+                    return false;
+                }
+
+                // Verificar si la propiedad es Guid y si es Guid.Empty
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                {
+                    return false; // Excluir las propiedades que son Guid.Empty
+                }
+
+                return true; // Incluir todas las demás propiedades
+            }).ToList();
+
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity).ToArray();
+
+            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+
+            string finalQuery = $"{ExistsStatement} {whereClause}";
+
+            return ExecuteScalar(finalQuery, CommandType.Text, parameters) != null;
+        }
+
+        public bool HasRoles(RolRolRelation relation)
+        {
+            Func<PropertyInfo, bool> whereCallback = (prop => prop.Name == "FatherRole");
+
+            List<PropertyInfo> filteredProps = Props.Where(whereCallback).ToList();
+
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, relation).ToArray();
+
+            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+
+            string finalQuery = $"{ExistsStatement} {whereClause}";
+
+            return ExecuteScalar(finalQuery, CommandType.Text, parameters) != null;
         }
     }
 }

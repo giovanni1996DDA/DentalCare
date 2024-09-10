@@ -11,16 +11,13 @@ namespace Services.Domain
 /// </summary>
     public abstract class Acceso
     {
-
         public Guid Id { get; set; }
-
         public string Nombre { get; set; }
-
         public abstract bool HasChildren { get; }
 
         public Acceso()
         {
-
+            Id = Guid.NewGuid();
         }
 
 

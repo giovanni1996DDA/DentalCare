@@ -9,7 +9,7 @@ namespace Services.Logic.Exceptions
 {
     internal class NoRolesFoundForUserException : Exception
     {
-        public NoRolesFoundForUserException(string uname) : base($"El usuario {uname} no posee ningun rol asignado.") 
+        public NoRolesFoundForUserException() : base($"No se encontraron roles con el criterio de búsqueda seleccionado.") 
         { 
         }
     }

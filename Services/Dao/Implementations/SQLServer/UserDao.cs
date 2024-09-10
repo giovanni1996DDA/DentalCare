@@ -31,22 +31,39 @@ namespace Services.Dao.Implementations.SQLServer
 
             ExecuteNonQuery(InsertStatement, CommandType.Text, parameters);
         }
-        public List<User> Get(User usr, Func<PropertyInfo, bool> where = null )
+        public List<User> Get(User entity, Func<PropertyInfo, bool> whereCallback = null )
         {
-            List<User> ret = null;
+            List<User> ret = new List<User>();
 
-            List<PropertyInfo> filteredProps = where == null ? Props : Props.Where(where).ToList();
+            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            {
+                var value = prop.GetValue(entity);
+
+                // Si whereCallback está definido, se debe cumplir
+                if (whereCallback != null && !whereCallback(prop))
+                {
+                    return false;
+                }
+
+                // Verificar si la propiedad es Guid y si es Guid.Empty
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                {
+                    return false; // Excluir las propiedades que son Guid.Empty
+                }
+
+                return true; // Incluir todas las demás propiedades
+            }).ToList();
 
             string whereClause = QueryBuilder.BuildWhere(filteredProps);
 
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, usr);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
 
             string buildedGetByStatement = $"{SelectAllStatement} {whereClause}";
 
             using (var reader = ExecuteReader(buildedGetByStatement, CommandType.Text, parameters))
             {
                 //Mientras tenga algo en mi tabla de Customers
-                if (reader.Read())
+                while (reader.Read())
                 {
                     object[] data = new object[reader.FieldCount];
                     reader.GetValues(data);
@@ -54,7 +71,6 @@ namespace Services.Dao.Implementations.SQLServer
                     ret.Add(UserMapper.Map(data));
                 }
             }
-
             return ret;
         }
         /// <summary>
@@ -65,33 +81,44 @@ namespace Services.Dao.Implementations.SQLServer
         {
             SqlParameter[] parameters = QueryBuilder.BuildParams(Props, user);
 
-            object returnValue = ExecuteNonQuery(UpdateStatement, CommandType.Text, parameters);
+            ExecuteNonQuery(UpdateStatement, CommandType.Text, parameters);
         }
-        public bool Exists(User user)
+        /// <summary>
+        /// Chequea en la base de datos si existe la entidad filtrando por las propiedades definidas en el Callback. si no se define un where, sera un exact match por todos
+        /// los atributos de la clase.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="whereCallback"></param>
+        /// <returns></returns>
+        public bool Exists(User entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            SqlParameter[] parameters = QueryBuilder.BuildParams( Props.Where(prop => prop.Name == "IdUser").ToList() , user).ToArray();
-            
-            return ExecuteScalar(ExistsStatement, CommandType.Text, parameters) != null;
-        }
-        /*private string BuildWhere(User user)
-        {
-            return "WHERE " + String.Join(", ", userProps
-                                     .Where(prop => prop.GetValue(user) != null)
-                                     .Select(prop => $"{prop.Name} = @{prop.Name}")
-                                     .ToList()
-                                     );
-        }
+            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            {
+                var value = prop.GetValue(entity);
 
-        private SqlParameter[] BuildParams(User user)
-        {
-             return userProps
-                    .Where(prop => prop.GetValue(user) != null)
-                    .Select(prop =>
-                    {
-                        return new SqlParameter($"@{prop.Name}", $"{prop.GetValue(user)}");
-                    })
-                    .ToArray();
-        }*/
+                // Si whereCallback está definido, se debe cumplir
+                if (whereCallback != null && !whereCallback(prop))
+                {
+                    return false;
+                }
+
+                // Verificar si la propiedad es Guid y si es Guid.Empty
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                {
+                    return false; // Excluir las propiedades que son Guid.Empty
+                }
+
+                return true; // Incluir todas las demás propiedades
+            }).ToList();
+
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity).ToArray();
+
+            string whereClause = QueryBuilder.BuildWhere(filteredProps);
+
+            string finalQuery = $"{ExistsStatement} {whereClause}";
+
+            return ExecuteScalar(finalQuery, CommandType.Text, parameters) != null;
+        }
         /// <summary>
         /// Elimina un registro en la tabla de usuarios de la BBDD
         /// </summary>
