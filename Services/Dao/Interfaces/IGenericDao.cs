@@ -26,6 +26,15 @@ namespace Services.Dao.Interfaces
         List<T> Get(T entity, Func<PropertyInfo, bool> whereCallback = null);
 
         /// <summary>
+        /// Obtiene un solo registro de la base de datos en base a los filtros especificados.
+        /// Devuelve una lista de objetos de tipo <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="entity">La entidad prototipo por la cual se realizará la búsqueda.</param>
+        /// <param name="whereCallback">Función opcional para filtrar las propiedades de la entidad en la búsqueda. Si no se especifica, se consideran todas las propiedades.</param>
+        /// <returns>Una lista de objetos de tipo <typeparamref name="T"/>.</returns>
+        T GetOne(T entity, Func<PropertyInfo, bool> whereCallback = null);
+
+        /// <summary>
         /// Verifica si existe una entidad de tipo <typeparamref name="T"/> en la base de datos en base a los filtros especificados.
         /// </summary>
         /// <param name="entity">La entidad prototipo por la cual se realizará la verificación.</param>

@@ -5,6 +5,9 @@ using Services.Domain;
 using Services.Logic.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -42,7 +45,9 @@ namespace Services.Logic
         {
             List<Rol> returning = new List<Rol>();
 
-            using(var context = FactoryDao.UnitOfWork.Create())
+            int hidratationLevel = int.Parse(ConfigurationManager.AppSettings["AccessesHidrationLvl"]);
+
+            using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IRolDao rolRepo = context.Repositories.RolRepository;
 
@@ -53,7 +58,7 @@ namespace Services.Logic
 
             foreach(Rol returningrole in returning)
             {
-                FillRol(returningrole);
+                FillRol(returningrole, hidratationLevel);
             }
 
             return returning;
@@ -101,7 +106,12 @@ namespace Services.Logic
         private void CreateOrUpdate(Rol rol)
         {
             if (rol.Accesos.Count == 0) throw new EmptyRoleException();
-            
+
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            if (!isValid(rol, results))
+                throw new InvalidUserException(results.FirstOrDefault()?.ErrorMessage);
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IRolDao repo = context.Repositories.RolRepository;
@@ -137,6 +147,11 @@ namespace Services.Logic
         /// <param name="permiso"></param>
         private void CreateOrUpdate(Permiso permiso)
         {
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            if (!isValid(permiso, results))
+                throw new InvalidUserException(results.FirstOrDefault()?.ErrorMessage);
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IPermisoDao repo = context.Repositories.PermisoRepository;
@@ -289,11 +304,13 @@ namespace Services.Logic
         {
             List<UserRolRelation> urRelation = null;
 
+            int hidratationLevel = int.Parse(ConfigurationManager.AppSettings["AccessesHidrationLvl"]);
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserRolDao userRolRepo = context.Repositories.UserRolRepository;
 
-                urRelation = userRolRepo.Get(new UserRolRelation { IdUser = user.Id }, prop => prop.Name == "IdUser");
+                urRelation = userRolRepo.Get(new UserRolRelation { IdUser = user.Id });
             }
 
             foreach (UserRolRelation relation in urRelation)
@@ -301,26 +318,23 @@ namespace Services.Logic
                 //Busco la relacion user - rol
                 using (var context = FactoryDao.UnitOfWork.Create())
                 {
-
-                    Rol protoRol = new Rol { Id = relation.IdRol };
-
                     IRolDao rolRepo = context.Repositories.RolRepository;
                     //Agrego el rol de cada relación
-                    user.Accesos.Add(rolRepo.Get(protoRol, prop => prop.Name == "Id").FirstOrDefault());
+                    user.Accesos.Add(rolRepo.GetOne(new Rol { Id = relation.IdRol }));
                 }
             }
 
             //A esta altura, user solo tiene roles cargados, asi que los lleno
             foreach (Rol rol in user.Accesos)
             {
-                FillRol(rol);
+                FillRol(rol, --hidratationLevel);
             }
 
             List<UserPermisoRelation> upRelation = null;
 
             using (var context = FactoryDao.UnitOfWork.Create())
             {
-                upRelation = context.Repositories.UserPermisoRepository.Get(new UserPermisoRelation { IdUser = user.Id }, prop => prop.Name == "IdUser");
+                upRelation = context.Repositories.UserPermisoRepository.Get(new UserPermisoRelation { IdUser = user.Id });
             }
 
             //Si no tiene permisos asociados, no sigo operando
@@ -329,46 +343,47 @@ namespace Services.Logic
             //Busco la relacion user - permiso
             foreach (UserPermisoRelation relation in upRelation)
             {
-                Permiso protoPermiso = new Permiso { Id = relation.IdPermiso };
+                Permiso fetchedPermiso = null;
 
                 using (var context = FactoryDao.UnitOfWork.Create())
                 {
-                    protoPermiso = context.Repositories.PermisoRepository.Get(protoPermiso, prop => prop.Name == "Id").FirstOrDefault();
+                    fetchedPermiso = context.Repositories.PermisoRepository.GetOne(new Permiso { Id = relation.IdPermiso });
                 }
 
-                if (protoPermiso == null) throw new DatabaseInconsistencyException();
+                if (fetchedPermiso == null) throw new DatabaseInconsistencyException();
 
                 //Agrego el permiso de cada relacion
-                user.Accesos.Add(protoPermiso);
+                user.Accesos.Add(fetchedPermiso);
             }
-
-            //Si no hay roles creados, se informa.
-            if (user.Accesos.Count == 0) throw new NoRolesFoundForUserException();
         }
 
-        private void FillRol(Rol rol)
+        private void FillRol(Rol rol, int hidratationLevel)
         {
+            if (hidratationLevel == 0) return;
+
             List<RolRolRelation> rrRelation = null;
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
-                rrRelation = context.Repositories.RolRolRepository.Get(new RolRolRelation() { FatherId = rol.Id }, prop => prop.Name == "FatherId");
+                rrRelation = context.Repositories.RolRolRepository.Get(new RolRolRelation() { FatherId = rol.Id });
             }
 
             //Levanto todos los roles que tenga el rol
             foreach (RolRolRelation relation in rrRelation)
             {
                 Rol fetchedRol = null;
+
                 using (var context = FactoryDao.UnitOfWork.Create())
                 {
                     Rol protoRol = new Rol() { Id = relation.ChildId };
 
-                    fetchedRol = context.Repositories.RolRepository.Get(protoRol, prop => prop.Name == "Id").FirstOrDefault();
+                    fetchedRol = context.Repositories.RolRepository.GetOne(protoRol);
                 }
 
                 if(fetchedRol == null) throw new DatabaseInconsistencyException();
 
                 //Agregar nivel de hidratacion para que el programa no explote
-                FillRol(fetchedRol);
+                FillRol(fetchedRol, --hidratationLevel);
 
                 rol.Accesos.Add(fetchedRol);
             }
@@ -377,7 +392,7 @@ namespace Services.Logic
 
             using(var context = FactoryDao.UnitOfWork.Create())
             {
-                rpRelation = context.Repositories.RolPermisoRepository.Get(new RolPermisoRelation() { IdRol = rol.Id }, prop => prop.Name == "IdRol");
+                rpRelation = context.Repositories.RolPermisoRepository.Get(new RolPermisoRelation() { IdRol = rol.Id });
             }
 
             //Si no hay permisos asociados entonces no hago nada
@@ -389,13 +404,19 @@ namespace Services.Logic
                 {
                     Permiso protoPermiso = new Permiso { Id = relation.IdPermiso };
 
-                    protoPermiso = context.Repositories.PermisoRepository.Get(protoPermiso, prop => prop.Name == "Id").FirstOrDefault();
+                    protoPermiso = context.Repositories.PermisoRepository.GetOne(protoPermiso);
 
                     if (protoPermiso == null) throw new DatabaseInconsistencyException();
 
                     rol.Accesos.Add(protoPermiso);
                 }
             }
+        }
+        private bool isValid(Acceso acceso, List<ValidationResult> results)
+        {
+            var valContext = new ValidationContext(acceso, serviceProvider: null, items: null);
+
+            return Validator.TryValidateObject(acceso, valContext, results, true);
         }
     }
 }

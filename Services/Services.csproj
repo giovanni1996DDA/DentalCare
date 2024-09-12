@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -91,6 +92,7 @@
     <Compile Include="Logic\AccesoService.cs" />
     <Compile Include="Logic\Exceptions\DatabaseInconsistencyException.cs" />
     <Compile Include="Logic\Exceptions\EmptyRoleException.cs" />
+    <Compile Include="Logic\Exceptions\InvalidUserException.cs" />
     <Compile Include="Logic\Exceptions\NoPermissionFoundException.cs" />
     <Compile Include="Logic\Exceptions\NoRolesFoundForUserException.cs" />
     <Compile Include="Logic\Exceptions\NoUsersFoundException.cs" />

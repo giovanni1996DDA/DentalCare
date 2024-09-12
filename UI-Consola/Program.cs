@@ -46,7 +46,7 @@ namespace UI_Consola
             User user = new User()
             {
                 UserName = "pito",
-                Password = "password",
+                Password = "Password$1",
                 Accesos = new List<Acceso>()
                 {
                     rol

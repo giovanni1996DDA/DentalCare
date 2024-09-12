@@ -12,7 +12,7 @@ namespace Services.Domain
         /// Leaf de composite de permisos
         /// </summary>
         /// 
-        public int Modulo { get; set; }
+        public int? Modulo { get; set; } = null;
 
         /// <summary>
         /// Nunca tiene hijos, es un Leaf.

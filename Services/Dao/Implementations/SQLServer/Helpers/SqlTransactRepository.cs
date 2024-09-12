@@ -39,10 +39,12 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         }
         protected string SelectStatement
         {
-            get
-            {
-                return $"SELECT {QueryBuilder.BuildColumnNames(Props)} FROM {_TableName}";
-            }
+            get => $"SELECT {QueryBuilder.BuildColumnNames(Props)} FROM {_TableName}";
+        }
+
+        protected string SelectSingleStatement
+        {
+            get => $"SELECT TOP 1 {QueryBuilder.BuildColumnNames(Props)} FROM {_TableName}";
         }
         #endregion
 
@@ -189,6 +191,55 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
             }
             return ret;
         }
+
+        public virtual T GetOne(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        {
+            T returning = default;
+
+            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            {
+                var value = prop.GetValue(entity);
+
+                // Si whereCallback está definido, se debe cumplir
+                if (whereCallback != null && !whereCallback(prop))
+                {
+                    return false;
+                }
+
+                // Verificar si la propiedad es Guid y si es Guid.Empty
+                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                {
+                    return false; // Excluir las propiedades que son Guid.Empty
+                }
+
+                return true; // Incluir todas las demás propiedades
+            }).ToList();
+
+            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
+
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
+
+            string buildedGetByStatement = $"{SelectSingleStatement} {whereClause}";
+
+            using (var reader = ExecuteReader(buildedGetByStatement, CommandType.Text, parameters))
+            {
+                //Mientras tenga algo en mi tabla de Customers
+                while (reader.Read())
+                {
+                    object[] data = new object[reader.FieldCount];
+                    reader.GetValues(data);
+
+                    string test = $"{this.GetType().Namespace}.Mappers.{typeof(T).Name}Mapper";
+
+                    Type mapperType = Type.GetType($"{this.GetType().Namespace}.Mappers.{typeof(T).Name}Mapper");
+
+                    MethodInfo mapperMethod = mapperType.GetMethod("Map", BindingFlags.Static | BindingFlags.Public);
+
+                    returning = ((T)mapperMethod.Invoke(null, new object[] { data }));
+                }
+            }
+            return returning;
+        }
         public virtual bool Exists(T entity, Func<PropertyInfo, bool> whereCallback = null)
         {
             List<PropertyInfo> filteredProps = Props.Where(prop =>
@@ -214,7 +265,7 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
 
             string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
 
-            string finalQuery = $"{SelectStatement} {whereClause}";
+            string finalQuery = $"{SelectSingleStatement} {whereClause}";
 
             return ExecuteScalar(finalQuery, CommandType.Text, parameters) != null;
         }

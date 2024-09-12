@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +14,8 @@ namespace Services.Domain
     public abstract class Acceso
     {
         public Guid Id { get; set; }
+        [Required
+            (ErrorMessage ="Se debe especificar un nombre.")]
         public string Nombre { get; set; }
         public abstract bool HasChildren { get; }
 

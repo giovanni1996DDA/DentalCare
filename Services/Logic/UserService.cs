@@ -4,6 +4,7 @@ using Services.Domain;
 using Services.Logic.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
@@ -29,6 +30,11 @@ namespace Services.Logic
         /// <param name="user"></param>
         public void RegisterUser(User user)
         {
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            if (!isValid(user, results))
+                throw new InvalidUserException(results.FirstOrDefault()?.ErrorMessage);
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
@@ -58,6 +64,7 @@ namespace Services.Logic
         public List<User> Get(User user)
         {
             List<User> returning = new List<User>();
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
@@ -167,6 +174,12 @@ namespace Services.Logic
 
                 GetAllRoles((acceso as Rol).Accesos, famililaReturn);
             }
+        }
+        private bool isValid(User usr, List<ValidationResult> results)
+        {
+            var valContext = new ValidationContext(usr, serviceProvider: null, items: null);
+
+            return Validator.TryValidateObject(usr, valContext, results, true);
         }
     }
 }
