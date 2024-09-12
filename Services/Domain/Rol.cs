@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Services.Domain
     {
         public string Descripcion { get; set; }
 
+        
         private List<Acceso> _Accesos = new List<Acceso>();
 
         public override bool HasChildren { 
@@ -21,7 +23,7 @@ namespace Services.Domain
                 return _Accesos.Any();
             } 
         }
-
+        [NotMapped]
         public List<Acceso> Accesos
         {
             get

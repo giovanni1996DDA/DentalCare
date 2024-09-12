@@ -7,23 +7,45 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Implementations.SQLServer.Mappers
 {
+    /// <summary>
+    /// Clase estática encargada de mapear los resultados de consultas SQL a objetos del tipo User.
+    /// </summary>
     internal static class UserMapper
     {
+        /// <summary>
+        /// Mapea un arreglo de objetos (generalmente los valores obtenidos de una consulta SQL) a una instancia de la clase User.
+        /// </summary>
+        /// <param name="values">Arreglo de objetos que contiene los valores de las columnas obtenidos de la base de datos.</param>
+        /// <returns>Una instancia de User con los valores mapeados desde la base de datos.</returns>
         public static User Map(object[] values)
         {
             return new User()
             {
-                Id   = Guid.Parse($"{values[(int)UserColumns.IdUser]}"),
+                Id = Guid.Parse($"{values[(int)UserColumns.IdUser]}"),
                 UserName = (string)values[(int)UserColumns.UserName],
                 Password = (string)values[(int)UserColumns.Password],
             };
         }
     }
 
+    /// <summary>
+    /// Enum que define los índices de las columnas en la base de datos correspondientes a las propiedades del objeto User.
+    /// </summary>
     internal enum UserColumns
     {
+        /// <summary>
+        /// Índice de la columna que representa el Id del usuario.
+        /// </summary>
         IdUser = 0,
+
+        /// <summary>
+        /// Índice de la columna que representa el nombre de usuario.
+        /// </summary>
         UserName = 1,
+
+        /// <summary>
+        /// Índice de la columna que representa la contraseña del usuario.
+        /// </summary>
         Password = 2
     }
 }

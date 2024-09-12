@@ -11,48 +11,49 @@ using Services.Dao.Implementations.SQLServer;
 using Services.Dao.Interfaces;
 using Services.Dao.Implementations.SQLServer.Mappers;
 
-
 namespace Services.Dao.Implemenations.SQLServer.Helpers
 {
+    /// <summary>
+    /// Clase abstracta que proporciona una implementación base para la gestión de transacciones SQL para entidades genéricas.
+    /// Implementa las operaciones CRUD usando ADO.NET.
+    /// </summary>
+    /// <typeparam name="T">Tipo de entidad para la que se implementan las operaciones CRUD.</typeparam>
     public abstract class SqlTransactRepository<T> : IGenericDao<T>
     {
+        /// <summary>
+        /// Conexión de SQL utilizada para realizar operaciones de la base de datos.
+        /// </summary>
         protected SqlConnection _context;
+
+        /// <summary>
+        /// Transacción SQL activa.
+        /// </summary>
         protected SqlTransaction _transaction;
+
+        /// <summary>
+        /// Nombre de la tabla en la base de datos asociada a la entidad.
+        /// </summary>
         protected string _TableName;
 
+        /// <summary>
+        /// Lista de las propiedades de la entidad T que se utilizan para construir las consultas SQL.
+        /// </summary>
         protected List<PropertyInfo> Props = new List<PropertyInfo>();
 
         #region Statements
-        protected string InsertStatement
-        {
-            get => $"INSERT INTO {_TableName}";
-        }
-
-        protected string UpdateStatement
-        {
-            get => $"UPDATE {_TableName}";
-        }
-
-        protected string DeleteStatement
-        {
-            get => $"DELETE FROM {_TableName}";
-        }
-        protected string SelectStatement
-        {
-            get => $"SELECT {QueryBuilder.BuildColumnNames(Props)} FROM {_TableName}";
-        }
-
-        protected string SelectSingleStatement
-        {
-            get => $"SELECT TOP 1 {QueryBuilder.BuildColumnNames(Props)} FROM {_TableName}";
-        }
+        protected string InsertStatement => $"INSERT INTO {_TableName}";
+        protected string UpdateStatement => $"UPDATE {_TableName}";
+        protected string DeleteStatement => $"DELETE FROM {_TableName}";
+        protected string SelectStatement => $"SELECT {QueryBuilder.BuildColumnNames<T>()} FROM {_TableName}";
+        protected string SelectSingleStatement => $"SELECT TOP 1 {QueryBuilder.BuildColumnNames<T>()} FROM {_TableName}";
         #endregion
 
-        private SqlCommand CreateCommand(string query)
-        {
-            return new SqlCommand(query, _context, _transaction);
-        }
-
+        /// <summary>
+        /// Constructor que inicializa el repositorio con la conexión SQL y transacción activa.
+        /// </summary>
+        /// <param name="context">Conexión SQL.</param>
+        /// <param name="_transaction">Transacción SQL.</param>
+        /// <param name="ExcludedProps">Lista de propiedades excluidas para las consultas SQL.</param>
         public SqlTransactRepository(SqlConnection context, SqlTransaction _transaction, List<string> ExcludedProps = null)
         {
             this._context = context;
@@ -65,6 +66,13 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
             Props = typeof(T).GetProperties().Where(prop => !ExcludedProps.Contains(prop.Name)).ToList();
         }
 
+        /// <summary>
+        /// Ejecuta una consulta de no retorno (INSERT, UPDATE, DELETE) en la base de datos.
+        /// </summary>
+        /// <param name="commandText">Texto del comando SQL.</param>
+        /// <param name="commandType">Tipo de comando SQL (texto o procedimiento almacenado).</param>
+        /// <param name="parameters">Parámetros del comando SQL.</param>
+        /// <returns>Número de filas afectadas por la consulta.</returns>
         protected Int32 ExecuteNonQuery(String commandText,
             CommandType commandType, params SqlParameter[] parameters)
         {
@@ -85,6 +93,10 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
             }
         }
 
+        /// <summary>
+        /// Valida los parámetros y reemplaza valores nulos por DBNull.
+        /// </summary>
+        /// <param name="parameters">Arreglo de parámetros SQL.</param>
         private void CheckNullables(SqlParameter[] parameters)
         {
             foreach (SqlParameter item in parameters)
@@ -97,8 +109,12 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         }
 
         /// <summary>
-        /// Set the connection, command, and then execute the command and only return one value.
+        /// Ejecuta una consulta de retorno escalar (SELECT con una sola columna o valor).
         /// </summary>
+        /// <param name="commandText">Texto del comando SQL.</param>
+        /// <param name="commandType">Tipo de comando SQL (texto o procedimiento almacenado).</param>
+        /// <param name="parameters">Parámetros del comando SQL.</param>
+        /// <returns>Objeto que representa el valor escalar devuelto.</returns>
         protected Object ExecuteScalar(String commandText,
             CommandType commandType, params SqlParameter[] parameters)
         {
@@ -113,8 +129,12 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         }
 
         /// <summary>
-        /// Set the connection, command, and then execute the command with query and return the reader.
+        /// Ejecuta una consulta de retorno múltiple (SELECT) y devuelve un SqlDataReader.
         /// </summary>
+        /// <param name="commandText">Texto del comando SQL.</param>
+        /// <param name="commandType">Tipo de comando SQL (texto o procedimiento almacenado).</param>
+        /// <param name="parameters">Parámetros del comando SQL.</param>
+        /// <returns>Un SqlDataReader que contiene los resultados de la consulta.</returns>
         protected SqlDataReader ExecuteReader(String commandText,
             CommandType commandType, params SqlParameter[] parameters)
         {
@@ -130,200 +150,121 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
                 return reader;
             }
         }
+
+        /// <summary>
+        /// Inserta un nuevo registro en la base de datos.
+        /// </summary>
+        /// <param name="entity">Entidad a insertar.</param>
         public virtual void Create(T entity)
         {
-            string ColumnNames = QueryBuilder.BuildColumnNames(Props);
-
-            string ParamNames = QueryBuilder.BuildParamNames(Props);
-
-            SqlParameter[] parameters = QueryBuilder.BuildParams(Props, entity);
-
-            string CompleteStatement = $"{InsertStatement} ( {ColumnNames} ) VALUES ( {ParamNames} )";
-
-            ExecuteNonQuery(CompleteStatement, CommandType.Text, parameters);
+            string columnNames = QueryBuilder.BuildColumnNames<T>();
+            string paramNames = QueryBuilder.BuildParamNames<T>();
+            string insertStatement = $"{InsertStatement} ({columnNames}) VALUES ({paramNames})";
+            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            ExecuteNonQuery(insertStatement, CommandType.Text, parameters);
         }
 
+        /// <summary>
+        /// Obtiene una lista de registros que cumplen con los criterios de la entidad de ejemplo.
+        /// </summary>
+        /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
+        /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
+        /// <returns>Lista de entidades que coinciden con los criterios.</returns>
         public virtual List<T> Get(T entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            List<T> ret = new List<T>();
+            string whereClause = QueryBuilder.BuildWhere(entity);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            string selectStatement = $"{SelectStatement} {whereClause}";
 
-            List<PropertyInfo> filteredProps = Props.Where(prop =>
-            {
-                var value = prop.GetValue(entity);
-
-                // Si whereCallback está definido, se debe cumplir
-                if (whereCallback != null && !whereCallback(prop))
-                {
-                    return false;
-                }
-
-                // Verificar si la propiedad es Guid y si es Guid.Empty
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                {
-                    return false; // Excluir las propiedades que son Guid.Empty
-                }
-
-                return true; // Incluir todas las demás propiedades
-            }).ToList();
-
-            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
-
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
-
-            string buildedGetByStatement = $"{SelectStatement} {whereClause}";
-
-            using (var reader = ExecuteReader(buildedGetByStatement, CommandType.Text, parameters))
-            {
-                //Mientras tenga algo en mi tabla de Customers
-                while (reader.Read())
-                {
-                    object[] data = new object[reader.FieldCount];
-                    reader.GetValues(data);
-
-                    string test = $"{this.GetType().Namespace}.Mappers.{typeof(T).Name}Mapper";
-
-                    Type mapperType = Type.GetType($"{this.GetType().Namespace}.Mappers.{typeof(T).Name}Mapper");
-
-                    MethodInfo mapperMethod = mapperType.GetMethod("Map", BindingFlags.Static | BindingFlags.Public);
-
-                    ret.Add((T)mapperMethod.Invoke(null, new object[] { data }));
-                }
-            }
-            return ret;
+            return ExecuteSelectQuery(selectStatement, parameters);
         }
 
+        /// <summary>
+        /// Obtiene un solo registro que cumple con los criterios de la entidad de ejemplo.
+        /// </summary>
+        /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
+        /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
+        /// <returns>Una entidad que coincide con los criterios.</returns>
         public virtual T GetOne(T entity, Func<PropertyInfo, bool> whereCallback = null)
         {
-            T returning = default;
+            string whereClause = QueryBuilder.BuildWhere(entity);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            string selectStatement = $"{SelectSingleStatement} {whereClause}";
 
-            List<PropertyInfo> filteredProps = Props.Where(prop =>
+            return ExecuteSelectQuery(selectStatement, parameters).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Verifica si existe un registro que cumple con los criterios de la entidad de ejemplo.
+        /// </summary>
+        /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
+        /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
+        /// <returns>True si el registro existe, false en caso contrario.</returns>
+        public virtual bool Exists(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        {
+            string whereClause = QueryBuilder.BuildWhere(entity);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            string selectStatement = $"{SelectSingleStatement} {whereClause}";
+
+            return ExecuteScalar(selectStatement, CommandType.Text, parameters) != null;
+        }
+
+        /// <summary>
+        /// Actualiza un registro existente en la base de datos.
+        /// </summary>
+        /// <param name="entity">Entidad a actualizar.</param>
+        /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
+        public virtual void Update(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        {
+            string setClause = QueryBuilder.BuildSet(entity);
+            string whereClause = QueryBuilder.BuildWhere(entity);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+
+            string updateStatement = $"{UpdateStatement} {setClause} {whereClause}";
+            ExecuteNonQuery(updateStatement, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Elimina un registro de la base de datos.
+        /// </summary>
+        /// <param name="entity">Entidad a eliminar.</param>
+        /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
+        public virtual void Delete(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        {
+            string whereClause = QueryBuilder.BuildWhere(entity);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+
+            string deleteStatement = $"{DeleteStatement} {whereClause}";
+            ExecuteNonQuery(deleteStatement, CommandType.Text, parameters);
+        }
+        private List<T> ExecuteSelectQuery(string commandText, SqlParameter[] parameters)
+        {
+            List<T> results = new List<T>();
+
+            using (var reader = ExecuteReader(commandText, CommandType.Text, parameters))
             {
-                var value = prop.GetValue(entity);
-
-                // Si whereCallback está definido, se debe cumplir
-                if (whereCallback != null && !whereCallback(prop))
-                {
-                    return false;
-                }
-
-                // Verificar si la propiedad es Guid y si es Guid.Empty
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                {
-                    return false; // Excluir las propiedades que son Guid.Empty
-                }
-
-                return true; // Incluir todas las demás propiedades
-            }).ToList();
-
-            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
-
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
-
-            string buildedGetByStatement = $"{SelectSingleStatement} {whereClause}";
-
-            using (var reader = ExecuteReader(buildedGetByStatement, CommandType.Text, parameters))
-            {
-                //Mientras tenga algo en mi tabla de Customers
                 while (reader.Read())
                 {
                     object[] data = new object[reader.FieldCount];
                     reader.GetValues(data);
 
-                    string test = $"{this.GetType().Namespace}.Mappers.{typeof(T).Name}Mapper";
-
                     Type mapperType = Type.GetType($"{this.GetType().Namespace}.Mappers.{typeof(T).Name}Mapper");
-
                     MethodInfo mapperMethod = mapperType.GetMethod("Map", BindingFlags.Static | BindingFlags.Public);
 
-                    returning = ((T)mapperMethod.Invoke(null, new object[] { data }));
+                    results.Add((T)mapperMethod.Invoke(null, new object[] { data }));
                 }
             }
-            return returning;
+            return results;
         }
-        public virtual bool Exists(T entity, Func<PropertyInfo, bool> whereCallback = null)
+
+        /// <summary>
+        /// Crea un comando SQL a partir de la consulta proporcionada.
+        /// </summary>
+        /// <param name="query">Consulta SQL.</param>
+        /// <returns>Objeto SqlCommand listo para ejecutar.</returns>
+        private SqlCommand CreateCommand(string query)
         {
-            List<PropertyInfo> filteredProps = Props.Where(prop =>
-            {
-                var value = prop.GetValue(entity);
-
-                // Si whereCallback está definido, se debe cumplir
-                if (whereCallback != null && !whereCallback(prop))
-                {
-                    return false;
-                }
-
-                // Verificar si la propiedad es Guid y si es Guid.Empty
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                {
-                    return false; // Excluir las propiedades que son Guid.Empty
-                }
-
-                return true; // Incluir todas las demás propiedades
-            }).ToList();
-
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity).ToArray();
-
-            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
-
-            string finalQuery = $"{SelectSingleStatement} {whereClause}";
-
-            return ExecuteScalar(finalQuery, CommandType.Text, parameters) != null;
-        }
-        public virtual void Update(T entity, Func<PropertyInfo, bool> whereCallback = null)
-        {
-            List<PropertyInfo> filteredProps = Props.Where(prop =>
-            {
-                var value = prop.GetValue(entity);
-
-                // Si whereCallback está definido, se debe cumplir
-                if (whereCallback != null && !whereCallback(prop))
-                {
-                    return false;
-                }
-
-                // Verificar si la propiedad es Guid y si es Guid.Empty
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                {
-                    return false; // Excluir las propiedades que son Guid.Empty
-                }
-
-                return true; // Incluir todas las demás propiedades
-            }).ToList();
-
-            string set = QueryBuilder.BuildSet(filteredProps, entity);
-
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
-
-            ExecuteNonQuery(UpdateStatement, CommandType.Text, parameters);
-        }
-        public virtual void Delete(T entity, Func<PropertyInfo, bool> whereCallback = null)
-        {
-            List<PropertyInfo> filteredProps = Props.Where(prop =>
-            {
-                var value = prop.GetValue(entity);
-
-                // Si whereCallback está definido, se debe cumplir
-                if (whereCallback != null && !whereCallback(prop))
-                {
-                    return false;
-                }
-
-                // Verificar si la propiedad es Guid y si es Guid.Empty
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                {
-                    return false; // Excluir las propiedades que son Guid.Empty
-                }
-
-                return true; // Incluir todas las demás propiedades
-            }).ToList();
-
-            string whereClause = QueryBuilder.BuildWhere(filteredProps, entity);
-
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filteredProps, entity);
-
-            string buildedGetByStatement = $"{DeleteStatement} {whereClause}";
-
-            ExecuteNonQuery(buildedGetByStatement, CommandType.Text, parameters);
+            return new SqlCommand(query, _context, _transaction);
         }
     }
 }

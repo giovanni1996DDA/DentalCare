@@ -16,13 +16,31 @@ using System.Threading.Tasks;
 
 namespace Services.Logic
 {
+    /// <summary>
+    /// Proporciona servicios relacionados con la gestión de accesos, roles y permisos.
+    /// </summary>
     public class AccesoService
     {
         private static AccesoService instance = new AccesoService();
+
+        /// <summary>
+        /// Instancia única del servicio de acceso (patrón Singleton).
+        /// </summary>
         public static AccesoService Instance { get { return instance; } }
+
+        /// <summary>
+        /// Constructor privado para implementar el patrón Singleton.
+        /// </summary>
         private AccesoService()
         {
         }
+
+        /// <summary>
+        /// Obtiene una lista de accesos en función del tipo de acceso (Rol o Permiso).
+        /// </summary>
+        /// <param name="acceso">Objeto de tipo Acceso.</param>
+        /// <returns>Una lista de objetos de tipo Acceso.</returns>
+        /// <exception cref="ArgumentException">Si el tipo de acceso no es soportado.</exception>
         public List<Acceso> Get(Acceso acceso)
         {
             List<Acceso> returning = new List<Acceso>();
@@ -41,6 +59,13 @@ namespace Services.Logic
             }
             return returning;
         }
+
+        /// <summary>
+        /// Obtiene una lista de roles asociados.
+        /// </summary>
+        /// <param name="rol">Objeto de tipo Rol.</param>
+        /// <returns>Una lista de roles.</returns>
+        /// <exception cref="NoRolesFoundForUserException">Si no se encuentran roles para el usuario.</exception>
         private List<Rol> Get(Rol rol)
         {
             List<Rol> returning = new List<Rol>();
@@ -56,13 +81,20 @@ namespace Services.Logic
 
             if (returning.Count == 0) throw new NoRolesFoundForUserException();
 
-            foreach(Rol returningrole in returning)
+            foreach (Rol returningrole in returning)
             {
                 FillRol(returningrole, hidratationLevel);
             }
 
             return returning;
         }
+
+        /// <summary>
+        /// Obtiene una lista de permisos asociados.
+        /// </summary>
+        /// <param name="permiso">Objeto de tipo Permiso.</param>
+        /// <returns>Una lista de permisos.</returns>
+        /// <exception cref="NoPermissionFoundException">Si no se encuentran permisos asociados.</exception>
         private List<Permiso> Get(Permiso permiso)
         {
             List<Permiso> returning = new List<Permiso>();
@@ -78,11 +110,12 @@ namespace Services.Logic
 
             return returning;
         }
+
         /// <summary>
-        /// Crea o actualiza el acceso. El metodo se encarga de discernir si corresponde a un permiso o a un rol.
+        /// Crea o actualiza un acceso (Rol o Permiso) en la base de datos.
         /// </summary>
-        /// <param name="acceso"></param>
-        /// <exception cref="ArgumentException"></exception>
+        /// <param name="acceso">Objeto de tipo Acceso.</param>
+        /// <exception cref="ArgumentException">Si el tipo de acceso no es soportado.</exception>
         public void CreateOrUpdate(Acceso acceso)
         {
             switch (acceso)
@@ -99,13 +132,17 @@ namespace Services.Logic
                     throw new ArgumentException("Tipo de acceso no soportado");
             }
         }
+
         /// <summary>
-        /// Crea o actualiza un rol dependiendo de su existencia en la bbdd
+        /// Crea o actualiza un rol en la base de datos dependiendo de su existencia.
         /// </summary>
-        /// <param name="rol"></param>
+        /// <param name="rol">Objeto de tipo Rol.</param>
+        /// <exception cref="EmptyRoleException">Si el rol no tiene accesos.</exception>
         private void CreateOrUpdate(Rol rol)
         {
             if (rol.Accesos.Count == 0) throw new EmptyRoleException();
+
+            bool roleExists = false;
 
             List<ValidationResult> results = new List<ValidationResult>();
 
@@ -116,7 +153,19 @@ namespace Services.Logic
             {
                 IRolDao repo = context.Repositories.RolRepository;
 
-                if (repo.Exists(rol, (prop => prop.Name == "Id") ))
+                roleExists = repo.Exists(rol);
+
+                if (roleExists)
+                {
+                    rol = repo.GetOne(rol);
+                }
+            }
+
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IRolDao repo = context.Repositories.RolRepository;
+
+                if (roleExists)
                 {
                     repo.Update(rol);
 
@@ -132,7 +181,6 @@ namespace Services.Logic
                     repo.Create(rol);
                 }
 
-
                 foreach (Acceso acceso in rol.Accesos)
                 {
                     CreateRelation(context, rol, acceso);
@@ -141,10 +189,11 @@ namespace Services.Logic
                 context.SaveChanges();
             }
         }
+
         /// <summary>
-        /// Crea o actualiza un rol dependiendo de su existencia en la bbdd
+        /// Crea o actualiza un permiso en la base de datos dependiendo de su existencia.
         /// </summary>
-        /// <param name="permiso"></param>
+        /// <param name="permiso">Objeto de tipo Permiso.</param>
         private void CreateOrUpdate(Permiso permiso)
         {
             List<ValidationResult> results = new List<ValidationResult>();
@@ -168,13 +217,14 @@ namespace Services.Logic
                 context.SaveChanges();
             }
         }
+
         /// <summary>
-        /// Crea o actualiza una relacion entre el user y el acceso. El método se encarga de discernir si el acceso es un rol o un permiso.
+        /// Crea una relación entre un usuario y un acceso (Rol o Permiso).
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="user"></param>
-        /// <param name="acceso"></param>
-        /// <exception cref="ArgumentException"> si el acceso no esta previsto</exception>
+        /// <param name="context">Contexto de la unidad de trabajo.</param>
+        /// <param name="user">Objeto de tipo Usuario.</param>
+        /// <param name="acceso">Objeto de tipo Acceso.</param>
+        /// <exception cref="ArgumentException">Si el tipo de acceso no es soportado.</exception>
         public void CreateRelation(IUnitOfWorkAdapter context, User user, Acceso acceso)
         {
             switch (acceso)
@@ -191,13 +241,14 @@ namespace Services.Logic
                     throw new ArgumentException("Tipo de acceso no soportado");
             }
         }
+
         /// <summary>
-        /// Crea o actualiza una relacion entre un rol y un acceso. El método se encarga de discernir si el acceso es un rol o un permiso.
+        /// Crea una relación entre un rol y un acceso (Rol o Permiso).
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="rol"></param>
-        /// <param name="acceso"></param>
-        /// <exception cref="ArgumentException"></exception>
+        /// <param name="context">Contexto de la unidad de trabajo.</param>
+        /// <param name="rol">Objeto de tipo Rol.</param>
+        /// <param name="acceso">Objeto de tipo Acceso.</param>
+        /// <exception cref="ArgumentException">Si el tipo de acceso no es soportado.</exception>
         public void CreateRelation(IUnitOfWorkAdapter context, Rol rol, Acceso acceso)
         {
             switch (acceso)
@@ -214,12 +265,13 @@ namespace Services.Logic
                     throw new ArgumentException("Tipo de acceso no soportado");
             }
         }
+
         /// <summary>
-        /// Crea una relacion entre un user y un rol
+        /// Crea una relación entre un usuario y un rol.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="user"></param>
-        /// <param name="role"></param>
+        /// <param name="context">Contexto de la unidad de trabajo.</param>
+        /// <param name="user">Objeto de tipo Usuario.</param>
+        /// <param name="role">Objeto de tipo Rol.</param>
         private void CreateRelation(IUnitOfWorkAdapter context, User user, Rol role)
         {
             UserRolRelation relation = new UserRolRelation()
@@ -234,12 +286,13 @@ namespace Services.Logic
 
             repo.Create(relation);
         }
+
         /// <summary>
-        /// Crea una relacion entre un user y un permiso
+        /// Crea una relación entre un usuario y un permiso.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="user"></param>
-        /// <param name="role"></param>
+        /// <param name="context">Contexto de la unidad de trabajo.</param>
+        /// <param name="user">Objeto de tipo Usuario.</param>
+        /// <param name="permiso">Objeto de tipo Permiso.</param>
         private void CreateRelation(IUnitOfWorkAdapter context, User user, Permiso permiso)
         {
             UserPermisoRelation relation = new UserPermisoRelation()
@@ -254,12 +307,13 @@ namespace Services.Logic
 
             repo.Create(relation);
         }
+
         /// <summary>
-        /// Crea una relacion entre un rol y otro rol
+        /// Crea una relación entre un rol padre y un rol hijo.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="user"></param>
-        /// <param name="role"></param>
+        /// <param name="context">Contexto de la unidad de trabajo.</param>
+        /// <param name="rolPadre">Objeto de tipo Rol (padre).</param>
+        /// <param name="rolHijo">Objeto de tipo Rol (hijo).</param>
         private void CreateRelation(IUnitOfWorkAdapter context, Rol rolPadre, Rol rolHijo)
         {
             RolRolRelation relation = new RolRolRelation()
@@ -274,12 +328,13 @@ namespace Services.Logic
 
             repo.Create(relation);
         }
+
         /// <summary>
-        /// Crea una relacion entre un rol y un permiso
+        /// Crea una relación entre un rol y un permiso.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="user"></param>
-        /// <param name="role"></param>
+        /// <param name="context">Contexto de la unidad de trabajo.</param>
+        /// <param name="rol">Objeto de tipo Rol.</param>
+        /// <param name="permiso">Objeto de tipo Permiso.</param>
         private void CreateRelation(IUnitOfWorkAdapter context, Rol rol, Permiso permiso)
         {
             RolPermisoRelation relation = new RolPermisoRelation()
@@ -294,12 +349,12 @@ namespace Services.Logic
 
             repo.Create(relation);
         }
+
         /// <summary>
-        /// Obtiene todos los accesos del usuario desde la bbdd
+        /// Obtiene todos los accesos de un usuario desde la base de datos.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="user"></param>
-        /// <exception cref="NoRolesFoundForUserException"></exception>
+        /// <param name="user">Objeto de tipo Usuario.</param>
+        /// <exception cref="NoRolesFoundForUserException">Si no se encuentran roles asociados al usuario.</exception>
         public void GetAccesos(User user)
         {
             List<UserRolRelation> urRelation = null;
@@ -357,6 +412,11 @@ namespace Services.Logic
             }
         }
 
+        /// <summary>
+        /// Rellena un rol con sus accesos hasta el nivel de hidratación especificado.
+        /// </summary>
+        /// <param name="rol">Objeto de tipo Rol.</param>
+        /// <param name="hidratationLevel">Nivel de profundidad de hidratación.</param>
         private void FillRol(Rol rol, int hidratationLevel)
         {
             if (hidratationLevel == 0) return;
@@ -368,7 +428,7 @@ namespace Services.Logic
                 rrRelation = context.Repositories.RolRolRepository.Get(new RolRolRelation() { FatherId = rol.Id });
             }
 
-            //Levanto todos los roles que tenga el rol
+            // Levanto todos los roles que tenga el rol
             foreach (RolRolRelation relation in rrRelation)
             {
                 Rol fetchedRol = null;
@@ -380,7 +440,7 @@ namespace Services.Logic
                     fetchedRol = context.Repositories.RolRepository.GetOne(protoRol);
                 }
 
-                if(fetchedRol == null) throw new DatabaseInconsistencyException();
+                if (fetchedRol == null) throw new DatabaseInconsistencyException();
 
                 //Agregar nivel de hidratacion para que el programa no explote
                 FillRol(fetchedRol, --hidratationLevel);
@@ -390,12 +450,12 @@ namespace Services.Logic
 
             List<RolPermisoRelation> rpRelation = null;
 
-            using(var context = FactoryDao.UnitOfWork.Create())
+            using (var context = FactoryDao.UnitOfWork.Create())
             {
                 rpRelation = context.Repositories.RolPermisoRepository.Get(new RolPermisoRelation() { IdRol = rol.Id });
             }
 
-            //Si no hay permisos asociados entonces no hago nada
+            // Si no hay permisos asociados entonces no hago nada
             if (rpRelation.Count == 0) return;
 
             foreach (RolPermisoRelation relation in rpRelation)
@@ -412,6 +472,13 @@ namespace Services.Logic
                 }
             }
         }
+
+        /// <summary>
+        /// Valida si un objeto Acceso cumple con las reglas de validación.
+        /// </summary>
+        /// <param name="acceso">Objeto de tipo Acceso.</param>
+        /// <param name="results">Lista donde se almacenan los resultados de la validación.</param>
+        /// <returns>True si el objeto es válido, false si no lo es.</returns>
         private bool isValid(Acceso acceso, List<ValidationResult> results)
         {
             var valContext = new ValidationContext(acceso, serviceProvider: null, items: null);
