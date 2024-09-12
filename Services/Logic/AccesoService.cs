@@ -100,6 +100,8 @@ namespace Services.Logic
         /// <param name="rol"></param>
         private void CreateOrUpdate(Rol rol)
         {
+            if (rol.Accesos.Count == 0) throw new EmptyRoleException();
+            
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IRolDao repo = context.Repositories.RolRepository;
@@ -117,8 +119,6 @@ namespace Services.Logic
                 }
                 else
                 {
-                    //rol.Id = Guid.NewGuid();
-
                     repo.Create(rol);
                 }
 
@@ -143,13 +143,13 @@ namespace Services.Logic
 
                 if (repo.Exists(permiso))
                 {
-                    //Logica para update
-                    return;
+                    repo.Update(permiso);
                 }
-                permiso.Id = Guid.NewGuid();
-
-                repo.Create(permiso);
-
+                else
+                {
+                    permiso.Id = Guid.NewGuid();
+                    repo.Create(permiso);
+                }
                 context.SaveChanges();
             }
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Implementations.SQLServer.Mappers
 {
-    internal class RolPermisoMapper
+    internal class RolPermisoRelationMapper
     {
         public static RolPermisoRelation Map(object[] values)
         {

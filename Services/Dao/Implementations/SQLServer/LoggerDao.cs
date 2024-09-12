@@ -1,4 +1,4 @@
-﻿using Services.Dao.Helpers;
+﻿using Services.Dao.Implemenations.SQLServer.Helpers;
 using Services.Dao.Interfaces;
 using Services.Domain;
 using System;
@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Implementations.SQLServer
 {
-    public class LoggerDao : SqlTransactRepository
+    public class LoggerDao : SqlTransactRepository<Log>
     {
-        public LoggerDao(SqlConnection context, SqlTransaction _transaction) : base(typeof(Log), context, _transaction)
+        public LoggerDao(SqlConnection context, SqlTransaction _transaction) : base(context, _transaction)
         {
         }
         private static string PathLogError { get; set; } = ConfigurationManager.AppSettings["PathLogError"];

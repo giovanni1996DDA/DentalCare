@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Implementations.SQLServer.Mappers
 {
-    internal class RolRolMapper
+    internal class RolRolRelationMapper
     {
         public static RolRolRelation Map(object[] values)
         {

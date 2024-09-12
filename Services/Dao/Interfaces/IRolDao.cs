@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Interfaces
 {
-    public interface IRolDao : IGenericDao<Rol>
+    public interface IRolDao : IGenericDao<Rol> 
     {
     }
 }

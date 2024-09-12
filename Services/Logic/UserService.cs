@@ -29,8 +29,6 @@ namespace Services.Logic
         /// <param name="user"></param>
         public void RegisterUser(User user)
         {
-            user.Id = Guid.NewGuid();
-
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;

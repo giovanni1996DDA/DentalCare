@@ -45,15 +45,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dao\Factory\FactoryDao.cs" />
-    <Compile Include="Dao\Helpers\SqlTransactRepository.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\Helpers\SqlTransactRepository.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Mappers\PermisoMapper.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Mappers\RolMapper.cs" />
-    <Compile Include="Dao\Implementations\SQLServer\Mappers\RolPermisoMapper.cs" />
-    <Compile Include="Dao\Implementations\SQLServer\Mappers\RolRolMapper.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\Mappers\RolPermisoRelationMapper.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\Mappers\RolRolRelationMapper.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Mappers\UserMapper.cs" />
     <Compile Include="Dao\Implementations\SQLServer\LoggerDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Mappers\UserPermisoRelationMapper.cs" />
-    <Compile Include="Dao\Implementations\SQLServer\Mappers\UserRolMapper.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\Mappers\UserRolRelationMapper.cs" />
     <Compile Include="Dao\Implementations\SQLServer\PermisoDao.cs" />
     <Compile Include="Dao\Implementations\SQLServer\QueryBuilder.cs" />
     <Compile Include="Dao\Implementations\SQLServer\RolDao.cs" />
@@ -90,6 +90,7 @@
     <Compile Include="Facade\UserFacade.cs" />
     <Compile Include="Logic\AccesoService.cs" />
     <Compile Include="Logic\Exceptions\DatabaseInconsistencyException.cs" />
+    <Compile Include="Logic\Exceptions\EmptyRoleException.cs" />
     <Compile Include="Logic\Exceptions\NoPermissionFoundException.cs" />
     <Compile Include="Logic\Exceptions\NoRolesFoundForUserException.cs" />
     <Compile Include="Logic\Exceptions\NoUsersFoundException.cs" />

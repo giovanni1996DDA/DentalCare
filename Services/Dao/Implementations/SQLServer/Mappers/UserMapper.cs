@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Dao.Implementations.Mappers
+namespace Services.Dao.Implementations.SQLServer.Mappers
 {
     internal static class UserMapper
     {

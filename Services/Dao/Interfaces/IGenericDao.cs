@@ -10,16 +10,41 @@ namespace Services.Dao.Interfaces
 {
     public interface IGenericDao<T>
     {
-        void Create(T entity);
         /// <summary>
-        /// Obtiene los registros de la tabla en la BBDD en base a los filtros especificados
+        /// Crea un nuevo registro en la base de datos para la entidad especificada.
         /// </summary>
-        /// <param name="entity">La entidad prototipo por la cual se va a realizar la busqueda</param>
-        /// <param name="whereCallback"> los atributos de la entidad prototipo por la cual se va a realizar la busqueda. por default son todos los atributos.</param>
-        /// <returns></returns>
+        /// <param name="entity">La entidad de tipo <typeparamref name="T"/> que se va a crear.</param>
+        void Create(T entity);
+
+        /// <summary>
+        /// Obtiene los registros de la base de datos en base a los filtros especificados.
+        /// Devuelve una lista de objetos de tipo <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="entity">La entidad prototipo por la cual se realizará la búsqueda.</param>
+        /// <param name="whereCallback">Función opcional para filtrar las propiedades de la entidad en la búsqueda. Si no se especifica, se consideran todas las propiedades.</param>
+        /// <returns>Una lista de objetos de tipo <typeparamref name="T"/>.</returns>
         List<T> Get(T entity, Func<PropertyInfo, bool> whereCallback = null);
+
+        /// <summary>
+        /// Verifica si existe una entidad de tipo <typeparamref name="T"/> en la base de datos en base a los filtros especificados.
+        /// </summary>
+        /// <param name="entity">La entidad prototipo por la cual se realizará la verificación.</param>
+        /// <param name="whereCallback">Función opcional para filtrar las propiedades de la entidad en la verificación. Si no se especifica, se consideran todas las propiedades.</param>
+        /// <returns>Verdadero si la entidad existe; de lo contrario, falso.</returns>
         bool Exists(T entity, Func<PropertyInfo, bool> whereCallback = null);
+
+        /// <summary>
+        /// Actualiza un registro en la base de datos para la entidad especificada.
+        /// </summary>
+        /// <param name="entity">La entidad de tipo <typeparamref name="T"/> que se va a actualizar.</param>
+        /// <param name="whereCallback">Función opcional para filtrar las propiedades de la entidad en la actualización.</param>
         void Update(T entity, Func<PropertyInfo, bool> whereCallback = null);
+
+        /// <summary>
+        /// Elimina un registro de la base de datos para la entidad especificada.
+        /// </summary>
+        /// <param name="entity">La entidad de tipo <typeparamref name="T"/> que se va a eliminar.</param>
+        /// <param name="whereCallback">Función opcional para filtrar las propiedades de la entidad en la eliminación.</param>
         void Delete(T entity, Func<PropertyInfo, bool> whereCallback = null);
     }
 }

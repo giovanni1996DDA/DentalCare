@@ -9,6 +9,5 @@ namespace Services.Dao.Interfaces
 {
     public interface IRolPermisoDao : IGenericDao<RolPermisoRelation>
     {
-        bool HasPermisos(RolPermisoRelation rol);
     }
 }

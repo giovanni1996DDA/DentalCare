@@ -9,6 +9,5 @@ namespace Services.Dao.Interfaces
 {
     public interface IRolRolDao : IGenericDao<RolRolRelation>
     {
-        bool HasRoles(RolRolRelation relation);
     }
 }

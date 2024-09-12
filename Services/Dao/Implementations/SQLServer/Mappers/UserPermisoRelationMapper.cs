@@ -13,12 +13,12 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
         {
             return new UserPermisoRelation()
             {
-                IdUser = Guid.Parse($"{values[(int)UserColumns.IdUser]}"),
-                IdPermiso = Guid.Parse($"{values[(int)UserColumns.IdPermiso]}"),
+                IdUser = Guid.Parse($"{values[(int)UserPermisoRelationColumns.IdUser]}"),
+                IdPermiso = Guid.Parse($"{values[(int)UserPermisoRelationColumns.IdPermiso]}"),
             };
         }
     }
-    internal enum UserColumns
+    internal enum UserPermisoRelationColumns
     {
         IdUser = 0,
         IdPermiso = 1
