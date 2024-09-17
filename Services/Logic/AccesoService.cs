@@ -170,10 +170,10 @@ namespace Services.Logic
                     repo.Update(rol);
 
                     IRolRolDao rrRepo = context.Repositories.RolRolRepository;
-                    rrRepo.Delete(new RolRolRelation { FatherId = rol.Id }, (prop => prop.Name == "FatherId"));
+                    rrRepo.Delete(new RolRolRelation { FatherId = rol.Id });
 
                     IRolPermisoDao rpRepo = context.Repositories.RolPermisoRepository;
-                    rpRepo.Delete(new RolPermisoRelation { IdRol = rol.Id }, (prop => prop.Name == "IdRol"));
+                    rpRepo.Delete(new RolPermisoRelation { IdRol = rol.Id });
 
                 }
                 else

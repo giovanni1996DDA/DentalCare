@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dao\Factory\FactoryDao.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\FilterProperty.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Helpers\SqlTransactRepository.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Mappers\PermisoMapper.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Mappers\RolMapper.cs" />

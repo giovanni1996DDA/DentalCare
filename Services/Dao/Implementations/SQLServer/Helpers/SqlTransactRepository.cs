@@ -159,8 +159,11 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         {
             string columnNames = QueryBuilder.BuildColumnNames<T>();
             string paramNames = QueryBuilder.BuildParamNames<T>();
+
             string insertStatement = $"{InsertStatement} ({columnNames}) VALUES ({paramNames})";
-            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+
+            SqlParameter[] parameters = QueryBuilder.BuildParams<T>(entity);
+
             ExecuteNonQuery(insertStatement, CommandType.Text, parameters);
         }
 
@@ -170,12 +173,22 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
         /// <returns>Lista de entidades que coinciden con los criterios.</returns>
-        public virtual List<T> Get(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        public virtual List<T> Get(T entity, List<FilterProperty> filters = null)
         {
-            string whereClause = QueryBuilder.BuildWhere(entity);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            // Si no se pasan filtros, usar las propiedades de la entidad como filtros
+            if (filters == null)
+                filters = BuildFilters(entity);
+
+            // Construir la cláusula WHERE basada en los filtros
+            string whereClause = QueryBuilder.BuildWhere(filters);
+
+            // Construir los parámetros para las propiedades válidas
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
+
+            // Construir la consulta SELECT completa
             string selectStatement = $"{SelectStatement} {whereClause}";
 
+            // Ejecutar la consulta y devolver los resultados
             return ExecuteSelectQuery(selectStatement, parameters);
         }
 
@@ -185,10 +198,13 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
         /// <returns>Una entidad que coincide con los criterios.</returns>
-        public virtual T GetOne(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        public virtual T GetOne(T entity, List<FilterProperty> filters = null)
         {
-            string whereClause = QueryBuilder.BuildWhere(entity);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            if (filters == null)
+                filters = BuildFilters(entity);
+
+            string whereClause = QueryBuilder.BuildWhere(filters);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
             string selectStatement = $"{SelectSingleStatement} {whereClause}";
 
             return ExecuteSelectQuery(selectStatement, parameters).FirstOrDefault();
@@ -200,10 +216,13 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
         /// <returns>True si el registro existe, false en caso contrario.</returns>
-        public virtual bool Exists(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        public virtual bool Exists(T entity, List<FilterProperty> filters = null)
         {
-            string whereClause = QueryBuilder.BuildWhere(entity);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            if (filters == null)
+                filters = BuildFilters(entity);
+
+            string whereClause = QueryBuilder.BuildWhere(filters);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
             string selectStatement = $"{SelectSingleStatement} {whereClause}";
 
             return ExecuteScalar(selectStatement, CommandType.Text, parameters) != null;
@@ -214,11 +233,14 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// </summary>
         /// <param name="entity">Entidad a actualizar.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
-        public virtual void Update(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        public virtual void Update(T entity, List<FilterProperty> filters = null)
         {
+            if (filters == null)
+                filters = BuildFilters(entity);
+
             string setClause = QueryBuilder.BuildSet(entity);
-            string whereClause = QueryBuilder.BuildWhere(entity);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            string whereClause = QueryBuilder.BuildWhere(filters);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
 
             string updateStatement = $"{UpdateStatement} {setClause} {whereClause}";
             ExecuteNonQuery(updateStatement, CommandType.Text, parameters);
@@ -229,10 +251,13 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// </summary>
         /// <param name="entity">Entidad a eliminar.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
-        public virtual void Delete(T entity, Func<PropertyInfo, bool> whereCallback = null)
+        public virtual void Delete(T entity, List<FilterProperty> filters = null)
         {
-            string whereClause = QueryBuilder.BuildWhere(entity);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(entity);
+            if (filters == null)
+                filters = BuildFilters(entity);
+
+            string whereClause = QueryBuilder.BuildWhere(filters);
+            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
 
             string deleteStatement = $"{DeleteStatement} {whereClause}";
             ExecuteNonQuery(deleteStatement, CommandType.Text, parameters);
@@ -255,6 +280,25 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
                 }
             }
             return results;
+        }
+        private List<FilterProperty> BuildFilters(T entity)
+        {
+            var filters = new List<FilterProperty>();
+
+            var props = QueryBuilder.GetProperties(typeof(T));
+
+            foreach (var prop in props)
+            {
+                var value = prop.GetValue(entity);
+
+                // Excluir propiedades nulas o GUID.Empty
+                if (value == null || (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty))
+                    continue;
+
+                filters.Add(new FilterProperty(prop.Name, value, FilterOperation.Equals));
+            }
+
+            return filters;
         }
 
         /// <summary>

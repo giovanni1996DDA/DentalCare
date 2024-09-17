@@ -59,7 +59,7 @@ namespace Services.Logic
                 IUserDao userRepo = context.Repositories.UserRepository;
 
                 // Verifica si existe un usuario con ese UserName
-                if (userRepo.Exists(user, (prop => prop.Name == "UserName")))
+                if (userRepo.Exists(new User { UserName = user.UserName }))
                     throw new UserAlreadyRegisteredException();
             }
 
