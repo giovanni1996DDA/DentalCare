@@ -15,47 +15,44 @@ namespace UI_Consola
     {
         static void Main(string[] args)
         {
-            Rol rol = new Rol()
-            {
-                Nombre = "rol 1",
-                Descripcion = "rol 1"
-            };
+            //Rol rol = new Rol()
+            //{
+            //    Nombre = "rol 1",
+            //    Descripcion = "rol 1"
+            //};
 
-            Permiso permiso = new Permiso()
-            {
-                Nombre = "Permiso 1",
-                Modulo = (int)Modulo.UI
-            };
+            //Permiso permiso = new Permiso()
+            //{
+            //    Nombre = "Permiso 1",
+            //    Modulo = (int)Modulo.UI
+            //};
 
-            AccesoService.Instance.CreateOrUpdate(permiso);
+            //AccesoService.Instance.CreateOrUpdate(permiso);
 
-            rol.Add(permiso);
+            //rol.Add(permiso);
 
-            permiso = new Permiso()
-            {
-                Nombre = "Permiso 2",
-                Modulo = (int)Modulo.UseCases
-            };
+            //permiso = new Permiso()
+            //{
+            //    Nombre = "Permiso 2",
+            //    Modulo = (int)Modulo.UseCases
+            //};
 
-            AccesoService.Instance.CreateOrUpdate(permiso);
+            //AccesoService.Instance.CreateOrUpdate(permiso);
 
-            rol.Add(permiso);
+            //rol.Add(permiso);
 
-            AccesoService.Instance.CreateOrUpdate(rol);
+            //AccesoService.Instance.CreateOrUpdate(rol);
 
             User user = new User()
             {
                 UserName = "pito",
                 Password = "Password$1",
-                Accesos = new List<Acceso>()
-                {
-                    rol
-                }
+
             };
 
-            UserFacade.Register(user);
+            //UserFacade.Register(user);
 
-            List<User> getUser = UserFacade.Get(new User());
+            UserFacade.Login(user);
         }
     }
 }

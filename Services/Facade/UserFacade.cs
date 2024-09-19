@@ -36,7 +36,6 @@ namespace Services.Facade
                 throw;
             }
         }
-
         /// <summary>
         /// Obtiene una lista de usuarios que coinciden con los criterios especificados en el objeto User.
         /// </summary>
@@ -46,7 +45,10 @@ namespace Services.Facade
         {
             return UserService.Instance.Get(user);
         }
-
+        public static void Login(User user)
+        {
+            UserService.Instance.Login(user);
+        }
         /// <summary>
         /// Actualiza la información de un usuario en el sistema si está registrado.
         /// Muestra un mensaje de error si el usuario no está registrado.
@@ -54,15 +56,6 @@ namespace Services.Facade
         /// <param name="user">El objeto User que contiene la información actualizada del usuario.</param>
         public static void Update(User user)
         {
-            if (!UserService.Instance.IsRegistered(user))
-            {
-                MessageBox.Show("El usuario que se está intentando actualizar no se encuentra registrado en el sistema.",
-                                "El usuario no existe.",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error
-                                );
-                return;
-            }
             UserService.Instance.UpdateUser(user);
         }
 

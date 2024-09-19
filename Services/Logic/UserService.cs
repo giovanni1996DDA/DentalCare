@@ -77,6 +77,21 @@ namespace Services.Logic
                 context.SaveChanges();
             }
         }
+        public void Login(User user) 
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserDao userRepo = context.Repositories.UserRepository;
+
+                // Valida la existencia de un usuario con esa contraseña
+                if (!userRepo.Exists(user))
+                    throw new InvalidUserLoginException();
+
+                user = userRepo.GetOne(user);
+
+                SessionManager.SetUser(user);
+            }
+        }
 
         /// <summary>
         /// Obtiene una lista de usuarios que cumplen con los criterios del objeto de búsqueda.

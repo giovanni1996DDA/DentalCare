@@ -94,6 +94,7 @@
     <Compile Include="Logic\Exceptions\DatabaseInconsistencyException.cs" />
     <Compile Include="Logic\Exceptions\EmptyRoleException.cs" />
     <Compile Include="Logic\Exceptions\InvalidUserException.cs" />
+    <Compile Include="Logic\Exceptions\InvalidUserLoginException.cs" />
     <Compile Include="Logic\Exceptions\NoPermissionFoundException.cs" />
     <Compile Include="Logic\Exceptions\NoRolesFoundForUserException.cs" />
     <Compile Include="Logic\Exceptions\NoUsersFoundException.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Logic\Exceptions\UserDoesNotExistException.cs" />
     <Compile Include="Logic\LoggerService.cs" />
     <Compile Include="Logic\SecurityManagerService.cs" />
+    <Compile Include="Logic\SessionManager.cs" />
     <Compile Include="Logic\UserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
