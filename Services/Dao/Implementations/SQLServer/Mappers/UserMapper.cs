@@ -1,4 +1,5 @@
-﻿using Services.Domain;
+﻿using Domain;
+using Services.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,13 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
         {
             return new User()
             {
-                Id = Guid.Parse($"{values[(int)UserColumns.IdUser]}"),
+                Id = Guid.Parse($"{values[(int)UserColumns.Id]}"),
                 UserName = (string)values[(int)UserColumns.UserName],
                 Password = (string)values[(int)UserColumns.Password],
+                Nombre = (string)values[(int)UserColumns.Nombre],
+                Apellido = (string)values[(int)UserColumns.Apellido],
+                Email = (string)values[(int)UserColumns.Email],
+                Especialidad = new Especialidad { Id = Guid.Parse($"{values[(int)UserColumns.Id]}") }
             };
         }
     }
@@ -36,7 +41,7 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
         /// <summary>
         /// Índice de la columna que representa el Id del usuario.
         /// </summary>
-        IdUser = 0,
+        Id = 0,
 
         /// <summary>
         /// Índice de la columna que representa el nombre de usuario.
@@ -46,6 +51,26 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
         /// <summary>
         /// Índice de la columna que representa la contraseña del usuario.
         /// </summary>
-        Password = 2
+        Password = 2,
+
+        /// <summary>
+        /// Índice de la columna que representa el nombre del usuario.
+        /// </summary>
+        Nombre = 3,
+
+        /// <summary>
+        /// Índice de la columna que representa el apellido del usuario.
+        /// </summary>
+        Apellido = 4,
+
+        /// <summary>
+        /// Índice de la columna que representa el email del usuario.
+        /// </summary>
+        Email = 5,
+
+        /// <summary>
+        /// Índice de la columna que representa el Id de la especialidad del usuario.
+        /// </summary>
+        EspecialidadId = 6
     }
 }

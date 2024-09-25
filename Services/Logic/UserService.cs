@@ -1,4 +1,6 @@
-﻿using Services.Dao.Factory;
+﻿using Domain;
+using Logic;
+using Services.Dao.Factory;
 using Services.Dao.Interfaces;
 using Services.Domain;
 using Services.Logic.Exceptions;
@@ -114,10 +116,34 @@ namespace Services.Logic
 
             foreach (User returningUser in returning)
             {
-                AccesoService.Instance.GetAccesos(returningUser);
+                HidrateUser(returningUser);
             }
 
             return returning;
+        }
+        public User GetOne(User user)
+        {
+            User returning = null;
+
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserDao userRepo = context.Repositories.UserRepository;
+                returning = userRepo.GetOne(user);
+            }
+
+            if (returning is null)
+                throw new NoUsersFoundException();
+
+            HidrateUser(returning);
+
+            return returning;
+        }
+
+        private void HidrateUser(User usr)
+        {
+            AccesoService.Instance.GetAccesos(usr);
+
+            usr.Especialidad = EspecialidadService.Instance.GetOne(usr.Especialidad);
         }
 
         /// <summary>

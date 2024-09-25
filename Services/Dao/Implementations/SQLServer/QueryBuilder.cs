@@ -57,29 +57,30 @@ namespace Services.Dao.Implementations.SQLServer
 
         public static SqlParameter[] BuildParams<T>(T obj)
         {
-            var props = GetProperties(typeof(T))
-                        .Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)))
-                        .ToList();
+            var props = GetProperties(typeof(T)).Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)));
+            var parameters = new List<SqlParameter>();
 
-            var filteredProps = props.Where(prop =>
+            foreach (var prop in props)
             {
                 var value = prop.GetValue(obj);
 
-                if (value == null)
-                    return false;
+                if (IsComplexType(prop.PropertyType) && value != null)
+                {
+                    // Extraer el Id de la subclase
+                    var subValue = GetProperties(prop.PropertyType)
+                                   .Where(p => p.Name == "Id")
+                                   .Select(p => p.GetValue(value))
+                                   .FirstOrDefault();
 
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                    return false;
+                    parameters.Add(new SqlParameter($"@{prop.Name}Id", subValue ?? DBNull.Value)); // Parámetro es SubclaseId
+                }
+                else if (value != null)
+                {
+                    parameters.Add(new SqlParameter($"@{prop.Name}", value));
+                }
+            }
 
-                return true;
-            }).ToList();
-
-            if (!filteredProps.Any())
-                return new SqlParameter[0];
-
-            return filteredProps
-                   .Select(prop => new SqlParameter($"@{prop.Name}", prop.GetValue(obj)))
-                   .ToArray();
+            return parameters.ToArray();
         }
 
         /// <summary>
@@ -190,7 +191,18 @@ namespace Services.Dao.Implementations.SQLServer
         public static string BuildColumnNames<T>()
         {
             var props = GetProperties(typeof(T)).Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)));
-            return String.Join(", ", props.Select(prop => prop.Name));
+
+            return String.Join(", ", props.SelectMany(prop =>
+            {
+                if (IsComplexType(prop.PropertyType)) // Si es una clase compleja (subclase)
+                {
+                    // Extraer el nombre de la propiedad clave (ejemplo: Id) de la subclase
+                    return GetProperties(prop.PropertyType)
+                           .Where(p => p.Name == "Id")  // Por convención, usamos 'Id', pero esto puede ajustarse
+                           .Select(p => $"{prop.Name}Id"); // Generamos el nombre como SubclaseId
+                }
+                return new[] { prop.Name }; // Si no es una clase, usamos su nombre normalmente
+            }));
         }
 
         /// <summary>
@@ -201,7 +213,23 @@ namespace Services.Dao.Implementations.SQLServer
         public static string BuildParamNames<T>()
         {
             var props = GetProperties(typeof(T)).Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)));
-            return String.Join(", ", props.Select(prop => $"@{prop.Name}"));
+
+            return String.Join(", ", props.SelectMany(prop =>
+            {
+                if (IsComplexType(prop.PropertyType))
+                {
+                    // Extraer el nombre de la propiedad clave de la subclase (Id por convención)
+                    return GetProperties(prop.PropertyType)
+                           .Where(p => p.Name == "Id")
+                           .Select(p => $"@{prop.Name}Id");  // Parámetro será @SubclaseId
+                }
+                return new[] { $"@{prop.Name}" };
+            }));
+        }
+        private static bool IsComplexType(Type type)
+        {
+            // Determinar si el tipo es una clase compleja (excluyendo tipos básicos como string, Guid, int, etc.)
+            return type.IsClass && type != typeof(string) && type != typeof(Guid);
         }
     }
 }

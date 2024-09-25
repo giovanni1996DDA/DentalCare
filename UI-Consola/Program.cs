@@ -1,4 +1,5 @@
-﻿using Services.Dao.Factory;
+﻿using Domain;
+using Services.Dao.Factory;
 using Services.Domain;
 using Services.Facade;
 using Services.Logic;
@@ -47,7 +48,15 @@ namespace UI_Consola
             {
                 UserName = "pito",
                 Password = "Password$1",
-
+                //Nombre = "juan",
+                //Apellido = "diaz",
+                //Email = "pito@hotmail.com",
+                //Accesos = new List<Acceso> { permiso },
+                //Especialidad = new Especialidad()
+                //{
+                //    Id = Guid.Parse("73b1de97-ecc8-4468-9b9d-2e54c7cb1f0d"),
+                //    Nombre = "Clínico"
+                //}
             };
 
             //UserFacade.Register(user);

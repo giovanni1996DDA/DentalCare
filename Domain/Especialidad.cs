@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class Class1
+    public class Especialidad
     {
+        public Guid Id { get; set; }
+        public string Nombre { get; set; }
     }
 }
