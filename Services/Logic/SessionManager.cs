@@ -11,7 +11,6 @@ namespace Services.Logic
     {
         private static User currentUser;
 
-
         public static void SetUser(User user)
         {
             currentUser = user;

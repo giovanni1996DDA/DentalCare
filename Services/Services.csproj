@@ -89,6 +89,7 @@
     <Compile Include="Domain\UserRolRelation.cs" />
     <Compile Include="Facade\LoggerFacade.cs" />
     <Compile Include="Facade\SecurityManagerFacade.cs" />
+    <Compile Include="Facade\SessionManagerFacade.cs" />
     <Compile Include="Facade\UserFacade.cs" />
     <Compile Include="Logic\AccesoService.cs" />
     <Compile Include="Logic\Exceptions\DatabaseInconsistencyException.cs" />

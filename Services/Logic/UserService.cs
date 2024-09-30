@@ -142,8 +142,6 @@ namespace Services.Logic
         private void HidrateUser(User usr)
         {
             AccesoService.Instance.GetAccesos(usr);
-
-            usr.Especialidad = EspecialidadService.Instance.GetOne(usr.Especialidad);
         }
 
         /// <summary>

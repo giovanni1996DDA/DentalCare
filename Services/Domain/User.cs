@@ -30,7 +30,6 @@ namespace Services.Domain
         [Required
             (ErrorMessage = "Se debe especificar un email.")]
         public string Email { get; set; }
-        public Especialidad Especialidad { get; set; }
         [NotMapped]
         public List<Acceso> Accesos { get; set; } = new List<Acceso>();
         public User()

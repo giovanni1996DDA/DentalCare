@@ -27,8 +27,7 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
                 Password = (string)values[(int)UserColumns.Password],
                 Nombre = (string)values[(int)UserColumns.Nombre],
                 Apellido = (string)values[(int)UserColumns.Apellido],
-                Email = (string)values[(int)UserColumns.Email],
-                Especialidad = new Especialidad { Id = Guid.Parse($"{values[(int)UserColumns.Id]}") }
+                Email = (string)values[(int)UserColumns.Email]
             };
         }
     }
@@ -67,10 +66,5 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
         /// Índice de la columna que representa el email del usuario.
         /// </summary>
         Email = 5,
-
-        /// <summary>
-        /// Índice de la columna que representa el Id de la especialidad del usuario.
-        /// </summary>
-        EspecialidadId = 6
     }
 }

@@ -12,7 +12,8 @@ namespace Services.Logic
         #region singleton
         private static SecurityManagerService instance = new SecurityManagerService();
 
-        public static SecurityManagerService Instance { 
+        public static SecurityManagerService Instance
+        {
             get
             {
                 return instance;
