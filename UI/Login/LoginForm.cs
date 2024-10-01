@@ -59,9 +59,10 @@ namespace UI
 
             try
             {
-                ProfessionalLayoutForm.Instance.Show();
+                UserFacade.Login(user);
                 this.Hide();
-                //UserFacade.Login(user);
+                ProfessionalLayoutForm.Instance.Show();
+
             }
             catch (NoUsersFoundException ex)
             {
@@ -77,7 +78,7 @@ namespace UI
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         private void CenterControl(Control control)

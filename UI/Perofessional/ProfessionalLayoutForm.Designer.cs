@@ -89,5 +89,6 @@
         private MaterialSkin.Controls.MaterialTabControl tbcProfessionalPanel;
         private TabPage tabPage1;
         private TabPage tabPage2;
+        private MaterialSkin.Controls.MaterialLabel materialLabel1;
     }
 }

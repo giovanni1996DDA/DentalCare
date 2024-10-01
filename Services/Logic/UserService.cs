@@ -1,6 +1,4 @@
-﻿using Domain;
-using Logic;
-using Services.Dao.Factory;
+﻿using Services.Dao.Factory;
 using Services.Dao.Interfaces;
 using Services.Domain;
 using Services.Logic.Exceptions;
@@ -87,7 +85,7 @@ namespace Services.Logic
 
                 // Valida la existencia de un usuario con esa contraseña
                 if (!userRepo.Exists(user))
-                    throw new InvalidUserLoginException();
+                    throw new NoUsersFoundException();
 
                 user = userRepo.GetOne(user);
 

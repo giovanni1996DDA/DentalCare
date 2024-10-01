@@ -48,6 +48,7 @@ namespace Services.Facade
         public static void Login(User user)
         {
             UserService.Instance.Login(user);
+
         }
         /// <summary>
         /// Actualiza la información de un usuario en el sistema si está registrado.

@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Services.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,12 @@ namespace Logic
         }
 
         public Especialidad GetOne(Especialidad esp) 
+        {
+            //Agregar logica para especialidad
+            return new Especialidad();
+        }
+
+        public Especialidad FillSpec(User user)
         {
             //Agregar logica para especialidad
             return new Especialidad();
