@@ -69,5 +69,10 @@ namespace Services.Facade
         {
             return true;
         }
+
+        public static List<Rol> GetRoles(List<Acceso> accs)
+        {
+            return UserService.Instance.GetRoles(accs);
+        }
     }
 }

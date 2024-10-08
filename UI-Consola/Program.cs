@@ -1,5 +1,4 @@
-﻿using Domain;
-using Services.Dao.Factory;
+﻿using Services.Dao.Factory;
 using Services.Domain;
 using Services.Facade;
 using Services.Logic;

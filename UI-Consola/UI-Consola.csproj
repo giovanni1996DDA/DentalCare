@@ -35,6 +35,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SqlClient, Version=4.6.1.6, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.8.6\lib\net461\System.Data.SqlClient.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -69,18 +72,15 @@
     <None Include="DentalCareDBDataSet.xss">
       <DependentUpon>DentalCareDBDataSet.xsd</DependentUpon>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dao\Dao.csproj">
+    <ProjectReference Include="..\Dao\Domain.csproj">
       <Project>{bf7f6aee-c076-4583-ad0a-137726df28ba}</Project>
-      <Name>Dao</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{7FEACC94-CEBA-4BC0-B36D-7312B593129A}</Project>
       <Name>Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Services\Services.csproj">

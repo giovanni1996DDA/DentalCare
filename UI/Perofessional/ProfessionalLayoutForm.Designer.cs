@@ -1,4 +1,4 @@
-﻿namespace UI.Perofessional_layout
+﻿namespace UI.Perofessional
 {
     partial class ProfessionalLayoutForm
     {
@@ -28,26 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
-            tbcProfessionalPanel = new MaterialSkin.Controls.MaterialTabControl();
+            materialTabControl1 = new MaterialSkin.Controls.MaterialTabControl();
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
-            tbcProfessionalPanel.SuspendLayout();
+            materialTabControl1.SuspendLayout();
             SuspendLayout();
             // 
-            // tbcProfessionalPanel
+            // materialTabControl1
             // 
-            tbcProfessionalPanel.Controls.Add(tabPage1);
-            tbcProfessionalPanel.Controls.Add(tabPage2);
-            tbcProfessionalPanel.Depth = 0;
-            tbcProfessionalPanel.Dock = DockStyle.Fill;
-            tbcProfessionalPanel.Location = new Point(3, 64);
-            tbcProfessionalPanel.MouseState = MaterialSkin.MouseState.HOVER;
-            tbcProfessionalPanel.Multiline = true;
-            tbcProfessionalPanel.Name = "tbcProfessionalPanel";
-            tbcProfessionalPanel.RightToLeft = RightToLeft.No;
-            tbcProfessionalPanel.SelectedIndex = 0;
-            tbcProfessionalPanel.Size = new Size(1018, 701);
-            tbcProfessionalPanel.TabIndex = 0;
+            materialTabControl1.Controls.Add(tabPage1);
+            materialTabControl1.Controls.Add(tabPage2);
+            materialTabControl1.Depth = 0;
+            materialTabControl1.Dock = DockStyle.Fill;
+            materialTabControl1.Location = new Point(3, 64);
+            materialTabControl1.MouseState = MaterialSkin.MouseState.HOVER;
+            materialTabControl1.Multiline = true;
+            materialTabControl1.Name = "materialTabControl1";
+            materialTabControl1.SelectedIndex = 0;
+            materialTabControl1.Size = new Size(1018, 701);
+            materialTabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
@@ -64,7 +63,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(1010, 673);
+            tabPage2.Size = new Size(1004, 667);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -74,21 +73,16 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1024, 768);
-            Controls.Add(tbcProfessionalPanel);
-            DrawerTabControl = tbcProfessionalPanel;
+            Controls.Add(materialTabControl1);
             Name = "ProfessionalLayoutForm";
-            StartPosition = FormStartPosition.CenterScreen;
-            Text = "Bienvenido ";
-            Load += ProfessionalLayoutForm_Load;
-            tbcProfessionalPanel.ResumeLayout(false);
+            materialTabControl1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
 
-        private MaterialSkin.Controls.MaterialTabControl tbcProfessionalPanel;
+        private MaterialSkin.Controls.MaterialTabControl materialTabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
-        private MaterialSkin.Controls.MaterialLabel materialLabel1;
     }
 }

@@ -47,9 +47,26 @@ namespace Services.Dao.Implementations.SQLServer
             {
                 // Para IN no hace falta agregar un parametro
                 if (filter.Operation == FilterOperation.In)
-                    continue; 
+                    continue;
 
-                parameters.Add(new SqlParameter($"@{filter.PropertyName}", filter.Value));
+                var value = filter.Value;
+
+                // Verificar si el valor es de un tipo complejo
+                if (IsComplexType(value.GetType()) && value != null)
+                {
+                    // Extraer el Id de la subclase
+                    var subValue = GetProperties(value.GetType())
+                                   .Where(p => p.Name == "Id")
+                                   .Select(p => p.GetValue(value))
+                                   .FirstOrDefault();
+
+                    parameters.Add(new SqlParameter($"@{filter.PropertyName}Id", subValue ?? DBNull.Value)); // Parámetro es SubclaseId
+                }
+                else if (value != null)
+                {
+                    // Si no es un tipo complejo, agregarlo directamente
+                    parameters.Add(new SqlParameter($"@{filter.PropertyName}", value));
+                }
             }
 
             return parameters.ToArray();

@@ -16,6 +16,7 @@ namespace Services.Dao.Interfaces.UnitOfWork
         IUserRolDao UserRolRepository { get; }
         IUserPermisoDao UserPermisoRepository { get; }
         IRolPermisoDao RolPermisoRepository { get; }
+        IScreenDao ScreenRepository { get; }
         LoggerDao LoggerRepository { get; }
     }
 }

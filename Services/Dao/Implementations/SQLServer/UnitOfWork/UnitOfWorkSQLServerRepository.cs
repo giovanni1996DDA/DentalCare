@@ -21,6 +21,7 @@ namespace Services.Dao.Implementations.SQLServer.UnitOfWork
         public IUserRolDao UserRolRepository { get; private set; }
         public IUserPermisoDao UserPermisoRepository { get; private set; }
         public IRolPermisoDao RolPermisoRepository { get; private set; }
+        public IScreenDao ScreenRepository { get; private set; }
         public LoggerDao LoggerRepository { get; private set; }
 
         public UnitOfWorkSQLServerRepository(SqlConnection context, SqlTransaction transaction)

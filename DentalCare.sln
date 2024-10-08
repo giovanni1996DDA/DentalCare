@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dao", "Dao\Dao.csproj", "{BF7F6AEE-C076-4583-AD0A-137726DF28BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Dao\Domain.csproj", "{BF7F6AEE-C076-4583-AD0A-137726DF28BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic", "Logic\Logic.csproj", "{27578FAC-7A7F-4AFA-8F6B-4B48E998F948}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{7FEACC94-CEBA-4BC0-B36D-7312B593129A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{A1F68B94-A8B6-43D9-8D35-3AE9B4D411BE}"
 EndProject
@@ -29,10 +27,6 @@ Global
 		{27578FAC-7A7F-4AFA-8F6B-4B48E998F948}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27578FAC-7A7F-4AFA-8F6B-4B48E998F948}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27578FAC-7A7F-4AFA-8F6B-4B48E998F948}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7FEACC94-CEBA-4BC0-B36D-7312B593129A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FEACC94-CEBA-4BC0-B36D-7312B593129A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7FEACC94-CEBA-4BC0-B36D-7312B593129A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FEACC94-CEBA-4BC0-B36D-7312B593129A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1F68B94-A8B6-43D9-8D35-3AE9B4D411BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1F68B94-A8B6-43D9-8D35-3AE9B4D411BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1F68B94-A8B6-43D9-8D35-3AE9B4D411BE}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,5 +1,4 @@
-﻿using Domain;
-using Services.Domain;
+﻿using Services.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

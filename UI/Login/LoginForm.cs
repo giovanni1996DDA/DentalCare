@@ -1,4 +1,7 @@
-﻿using MaterialSkin;
+﻿using Dao;
+using Logic;
+using Logic.Exceptions;
+using MaterialSkin;
 using MaterialSkin.Controls;
 using Services.Domain;
 using Services.Facade;
@@ -12,7 +15,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using UI.Perofessional_layout;
+using UI.NonProfessional;
+using UI.Perofessional;
+using Screen = Services.Domain.Screen;
 
 namespace UI
 {
@@ -59,10 +64,51 @@ namespace UI
 
             try
             {
-                UserFacade.Login(user);
-                this.Hide();
-                ProfessionalLayoutForm.Instance.Show();
+                Form nextForm = null;
 
+                UserFacade.Login(user);
+
+                User loggedUser = SessionManagerFacade.GetLoggedUser();
+
+                List<TabPage> tabs = new List<TabPage>();
+
+                //RECODATORIO
+                //VOY A VERIFICAR QUE PANTALLAS TIENE EN BASE A SUS ROLES.
+                //EN BASE A ESO DEFINO QUE OPCIONES CARGA EL SIGUIENTE FORM
+                //ACORDATE PELOTUDO
+
+                foreach (Rol rol in UserFacade.GetRoles(loggedUser.Accesos))
+                {
+
+                    Screen scr = new Screen()
+                    {
+                        rol = rol.Id,
+                    };
+
+                    scr = ScreenFacade.GetOne(scr);
+
+                    if (scr.ScreenName != null)
+                        tabs.Add(new TabPage() { Name = scr.ScreenName,
+                                                 Text = scr.OptionName});
+                }
+
+                if (tabs.Count == 0) 
+                {
+                    MessageBox.Show("El usuario no posee ningún permiso para ver menús.", 
+                                    "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                Especialidad especialidad = EspecialidadService.Instance.GetOne(user);
+
+                if (especialidad != null)
+                    nextForm = new ProfessionalLayoutForm();
+                else
+                    nextForm = new NonProfessionalLayoutForm(tabs);
+
+                this.Hide();
+
+                nextForm.ShowDialog();
             }
             catch (NoUsersFoundException ex)
             {

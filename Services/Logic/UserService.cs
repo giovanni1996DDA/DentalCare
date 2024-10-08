@@ -89,6 +89,8 @@ namespace Services.Logic
 
                 user = userRepo.GetOne(user);
 
+                HidrateUser(user);
+
                 SessionManager.SetUser(user);
             }
         }
