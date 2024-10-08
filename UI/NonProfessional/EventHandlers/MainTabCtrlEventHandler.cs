@@ -28,7 +28,7 @@ namespace UI.NonProfessional.EventHandlers
             LoadFormInTab(selectedTab);
         }
 
-        private void LoadFormInTab(TabPage tabPage)
+        public void LoadFormInTab(TabPage tabPage)
         {
             Form formToLoad = null;
 

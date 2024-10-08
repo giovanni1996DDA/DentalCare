@@ -28,57 +28,53 @@
         /// </summary>
         private void InitializeComponent()
         {
-            TabCtrlPacientes = new MaterialSkin.Controls.MaterialTabControl();
-            pgFind = new TabPage();
-            pgModify = new TabPage();
-            pgCreate = new TabPage();
+            TabCtrlPacientes = new TabControl();
+            Create = new TabPage();
+            Modify = new TabPage();
+            Visualize = new TabPage();
             TabCtrlPacientes.SuspendLayout();
             SuspendLayout();
             // 
             // TabCtrlPacientes
             // 
-            TabCtrlPacientes.Controls.Add(pgFind);
-            TabCtrlPacientes.Controls.Add(pgModify);
-            TabCtrlPacientes.Controls.Add(pgCreate);
-            TabCtrlPacientes.Depth = 0;
-            TabCtrlPacientes.Dock = DockStyle.Bottom;
-            TabCtrlPacientes.DrawMode = TabDrawMode.OwnerDrawFixed;
+            TabCtrlPacientes.Controls.Add(Create);
+            TabCtrlPacientes.Controls.Add(Modify);
+            TabCtrlPacientes.Controls.Add(Visualize);
+            TabCtrlPacientes.Dock = DockStyle.Fill;
             TabCtrlPacientes.Location = new Point(0, 0);
-            TabCtrlPacientes.MouseState = MaterialSkin.MouseState.HOVER;
-            TabCtrlPacientes.Multiline = true;
             TabCtrlPacientes.Name = "TabCtrlPacientes";
             TabCtrlPacientes.SelectedIndex = 0;
             TabCtrlPacientes.Size = new Size(800, 450);
-            TabCtrlPacientes.TabIndex = 1;
+            TabCtrlPacientes.TabIndex = 0;
             // 
-            // pgFind
+            // Create
             // 
-            pgFind.Location = new Point(4, 24);
-            pgFind.Name = "pgFind";
-            pgFind.Size = new Size(792, 422);
-            pgFind.TabIndex = 2;
-            pgFind.Text = "Buscar";
-            pgFind.UseVisualStyleBackColor = true;
+            Create.Location = new Point(4, 24);
+            Create.Name = "Create";
+            Create.Padding = new Padding(3);
+            Create.Size = new Size(792, 422);
+            Create.TabIndex = 0;
+            Create.Text = "Crear";
+            Create.UseVisualStyleBackColor = true;
             // 
-            // pgModify
+            // Modify
             // 
-            pgModify.Location = new Point(4, 24);
-            pgModify.Name = "pgModify";
-            pgModify.Padding = new Padding(3);
-            pgModify.Size = new Size(792, 422);
-            pgModify.TabIndex = 1;
-            pgModify.Text = "Modificar";
-            pgModify.UseVisualStyleBackColor = true;
+            Modify.Location = new Point(4, 24);
+            Modify.Name = "Modify";
+            Modify.Padding = new Padding(3);
+            Modify.Size = new Size(792, 422);
+            Modify.TabIndex = 1;
+            Modify.Text = "Modificar";
+            Modify.UseVisualStyleBackColor = true;
             // 
-            // pgCreate
+            // Visualize
             // 
-            pgCreate.Location = new Point(4, 24);
-            pgCreate.Name = "pgCreate";
-            pgCreate.Padding = new Padding(3);
-            pgCreate.Size = new Size(792, 422);
-            pgCreate.TabIndex = 0;
-            pgCreate.Text = "Crear";
-            pgCreate.UseVisualStyleBackColor = true;
+            Visualize.Location = new Point(4, 24);
+            Visualize.Name = "Visualize";
+            Visualize.Size = new Size(792, 422);
+            Visualize.TabIndex = 2;
+            Visualize.Text = "Visualizar";
+            Visualize.UseVisualStyleBackColor = true;
             // 
             // PacientesForm
             // 
@@ -94,9 +90,10 @@
         }
 
         #endregion
-        private MaterialSkin.Controls.MaterialTabControl TabCtrlPacientes;
-        private TabPage pgCreate;
-        private TabPage pgModify;
-        private TabPage pgFind;
+
+        private TabControl TabCtrlPacientes;
+        private TabPage Create;
+        private TabPage Modify;
+        private TabPage Visualize;
     }
 }

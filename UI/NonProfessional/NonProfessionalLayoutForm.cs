@@ -21,20 +21,23 @@ namespace UI.NonProfessional
     public partial class NonProfessionalLayoutForm : MaterialForm
     {
         private MainTabCtrlEventHandler _tabEventHandler;
-        public NonProfessionalLayoutForm()
-        {
-            InitializeComponent();
+        //public NonProfessionalLayoutForm()
+        //{
+        //    InitializeComponent();
 
-
-            User currentUser = SessionManagerFacade.GetLoggedUser();
-            this.Text += $"Bienvenido {currentUser.Nombre}";
-        }
+        //    User currentUser = SessionManagerFacade.GetLoggedUser();
+        //    this.Text += $"Bienvenido {currentUser.Nombre}";
+        //}
 
         public NonProfessionalLayoutForm(List<TabPage> tabs)
         {
             InitializeComponent();
 
             InitializeTabControls(tabs);
+
+            TabCtrlMain.SelectedIndex = 0;
+
+            _tabEventHandler.LoadFormInTab(TabCtrlMain.SelectedTab);
 
             User currentUser = SessionManagerFacade.GetLoggedUser();
             this.Text += $"Bienvenido {currentUser.Nombre}";
@@ -47,11 +50,6 @@ namespace UI.NonProfessional
         }
         private void InitializeTabControls(List<TabPage> tabs)
         {
-
-            TabPage dummy = new TabPage("Dummy");
-
-            TabCtrlMain.TabPages.Add(dummy);
-
             foreach (TabPage tab in tabs)
             {
                 TabCtrlMain.TabPages.Add(tab);

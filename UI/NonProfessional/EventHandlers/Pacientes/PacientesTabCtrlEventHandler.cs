@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UI.NonProfessional.EventHandlers
+namespace UI.NonProfessional.EventHandlers.Pacientes
 {
     internal class PacientesTabCtrlEventHandler
     {
-        private MaterialTabControl _tabControl;
+        private TabControl _tabControl;
 
-        public PacientesTabCtrlEventHandler(MaterialTabControl tabControl)
+        public PacientesTabCtrlEventHandler(TabControl tabControl)
         {
             _tabControl = tabControl;
         }
@@ -28,14 +28,16 @@ namespace UI.NonProfessional.EventHandlers
             LoadFormInTab(selectedTab);
         }
 
-        private void LoadFormInTab(TabPage tabPage)
+
+
+        public void LoadFormInTab(TabPage tabPage)
         {
             Form formToLoad = null;
 
             try
             {
                 // Construir el nombre del formulario a partir del nombre de la pestaña
-                string formName = $"UI.NonProfessional.{tabPage.Name}PacienteForm";
+                string formName = $"UI.NonProfessional.FormsPacientes.{tabPage.Name}PacienteForm";
                 Type formType = Type.GetType($"{formName}");
 
                 if (formType != null)

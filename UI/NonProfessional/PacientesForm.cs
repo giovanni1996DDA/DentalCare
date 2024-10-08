@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using UI.NonProfessional.EventHandlers;
+using UI.NonProfessional.EventHandlers.Pacientes;
 
 namespace UI.NonProfessional
 {
@@ -18,12 +18,17 @@ namespace UI.NonProfessional
         {
             InitializeComponent();
 
+            _tabEventHandler = new PacientesTabCtrlEventHandler(TabCtrlPacientes);
+
             InitializeTabControls();
+
+            TabCtrlPacientes.SelectedIndex = 0;
+
+            _tabEventHandler.LoadFormInTab(TabCtrlPacientes.SelectedTab);
         }
 
         private void InitializeTabControls()
         {
-            _tabEventHandler = new PacientesTabCtrlEventHandler(TabCtrlPacientes);
 
             TabCtrlPacientes.SelectedIndexChanged += _tabEventHandler.OnTabChanged;
         }

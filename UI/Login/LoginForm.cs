@@ -5,6 +5,7 @@ using MaterialSkin;
 using MaterialSkin.Controls;
 using Services.Domain;
 using Services.Facade;
+using Services.Logic;
 using Services.Logic.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace UI
             if (txtUname.Text == "" || txtPassword.Text == "")
             {
                 MessageBox.Show("Complete los campos obligatorios", "Error de consistencia.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
+
                 if (txtUname.Text == "")
                 {
                     txtUname.Focus();
@@ -64,18 +65,26 @@ namespace UI
 
             try
             {
-                Form nextForm = null;
+                Form? nextForm = null;
 
-                UserFacade.Login(user);
+                //BORRAR Y DESCOMENTAR
+                //UserFacade.Login(user);
+
+                User usr = new User()
+                {
+                    Nombre = "Juan",
+                    Apellido = "Diaz",
+                    Email = "Pito@pito.com",
+                    Password = txtPassword.Text,
+                    UserName = txtUname.Text
+                };
+
+                SessionManager.SetUser(usr);
+                //FIN BORRAR Y DESCOMENTAR
 
                 User loggedUser = SessionManagerFacade.GetLoggedUser();
 
                 List<TabPage> tabs = new List<TabPage>();
-
-                //RECODATORIO
-                //VOY A VERIFICAR QUE PANTALLAS TIENE EN BASE A SUS ROLES.
-                //EN BASE A ESO DEFINO QUE OPCIONES CARGA EL SIGUIENTE FORM
-                //ACORDATE PELOTUDO
 
                 foreach (Rol rol in UserFacade.GetRoles(loggedUser.Accesos))
                 {
@@ -88,18 +97,34 @@ namespace UI
                     scr = ScreenFacade.GetOne(scr);
 
                     if (scr.ScreenName != null)
-                        tabs.Add(new TabPage() { Name = scr.ScreenName,
-                                                 Text = scr.OptionName});
+                        tabs.Add(new TabPage()
+                        {
+                            Name = scr.ScreenName,
+                            Text = scr.OptionName
+                        });
                 }
-
-                if (tabs.Count == 0) 
+                //BORRAR
+                tabs.Add(new TabPage()
                 {
-                    MessageBox.Show("El usuario no posee ningún permiso para ver menús.", 
+                    Name = "Pacientes",
+                    Text = "Pacientes"
+                });
+                //FIN BORRAR
+
+                if (tabs.Count == 0)
+                {
+                    MessageBox.Show("El usuario no posee ningún permiso para ver menús.",
                                     "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                Especialidad especialidad = EspecialidadService.Instance.GetOne(user);
+                //BORRAR Y DESCOMENTAR
+
+                //Especialidad especialidad = EspecialidadService.Instance.GetOne(user);
+
+                Especialidad? especialidad = null;
+
+                //FIN BORRAR Y DESCOMENTAR
 
                 if (especialidad != null)
                     nextForm = new ProfessionalLayoutForm();
@@ -110,7 +135,7 @@ namespace UI
 
                 nextForm.ShowDialog();
             }
-            catch (NoUsersFoundException ex)
+            catch (NoUsersFoundException)
             {
                 MessageBox.Show("Usuario o contraseña incorrectos", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
