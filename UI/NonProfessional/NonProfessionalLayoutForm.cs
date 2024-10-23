@@ -1,5 +1,4 @@
-﻿using Dao;
-using Logic.Exceptions;
+﻿using Logic.Exceptions;
 using MaterialSkin.Controls;
 using Services.Domain;
 using Services.Facade;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UI.Exceptions;
 using UI.NonProfessional.EventHandlers;
 using UI.Perofessional;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -21,43 +21,50 @@ namespace UI.NonProfessional
     public partial class NonProfessionalLayoutForm : MaterialForm
     {
         private MainTabCtrlEventHandler _tabEventHandler;
-        //public NonProfessionalLayoutForm()
-        //{
-        //    InitializeComponent();
 
-        //    User currentUser = SessionManagerFacade.GetLoggedUser();
-        //    this.Text += $"Bienvenido {currentUser.Nombre}";
-        //}
-
-        public NonProfessionalLayoutForm(List<TabPage> tabs)
+        public NonProfessionalLayoutForm()
         {
             InitializeComponent();
 
-            InitializeTabControls(tabs);
+            PopulateTabControl();
 
-            TabCtrlMain.SelectedIndex = 0;
+            _tabEventHandler = new MainTabCtrlEventHandler(this);
 
-            _tabEventHandler.LoadFormInTab(TabCtrlMain.SelectedTab);
-
-            User currentUser = SessionManagerFacade.GetLoggedUser();
-            this.Text += $"Bienvenido {currentUser.Nombre}";
-
-
+            InitializeHandlers();
         }
-        private void NonProfessionalLayoutForm_Load(object sender, EventArgs e)
+        private void InitializeHandlers()
         {
-
+            this.Load += _tabEventHandler.HandleOnLoad;
+            TabCtrlMain.SelectedIndexChanged += _tabEventHandler.HandleOnTabChanged;
         }
-        private void InitializeTabControls(List<TabPage> tabs)
+
+        private void PopulateTabControl()
         {
-            foreach (TabPage tab in tabs)
+            User loggedUser = SessionManagerFacade.GetLoggedUser();
+
+            foreach (Rol rol in UserFacade.GetRoles(loggedUser.Accesos))
             {
-                TabCtrlMain.TabPages.Add(tab);
+
+                Services.Domain.Screen protoScreen = new Services.Domain.Screen()
+                {
+                    Acceso = rol.Id,
+                };
+
+                List<Services.Domain.Screen> screens = ScreenFacade.Get(protoScreen);
+
+                foreach (var scr in screens)
+                {
+                    if (scr.ScreenName != null)
+                        TabCtrlMain.TabPages.Add(new TabPage()
+                        {
+                            Name = scr.ScreenName,
+                            Text = scr.OptionName
+                        });
+                }
             }
 
-            _tabEventHandler = new MainTabCtrlEventHandler(TabCtrlMain);
-
-            TabCtrlMain.SelectedIndexChanged += _tabEventHandler.OnTabChanged;
+            if (TabCtrlMain.TabPages.Count == 0)
+                throw new NoMenuOptionsAvailableException(loggedUser.UserName);
         }
     }
 }

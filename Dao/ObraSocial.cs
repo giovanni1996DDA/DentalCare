@@ -21,7 +21,7 @@ namespace Dao
             this.Paciente = new HashSet<Paciente>();
         }
     
-        public System.Guid IdObraSocial { get; set; }
+        public System.Guid Id { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public Nullable<System.Guid> CtaCorriente { get; set; }

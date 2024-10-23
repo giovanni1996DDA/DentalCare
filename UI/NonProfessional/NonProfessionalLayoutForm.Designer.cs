@@ -1,4 +1,8 @@
-﻿namespace UI.NonProfessional
+﻿using Services.Domain;
+using Services.Facade;
+using UI.Exceptions;
+
+namespace UI.NonProfessional
 {
     partial class NonProfessionalLayoutForm
     {
@@ -77,7 +81,6 @@
             Name = "NonProfessionalLayoutForm";
             Sizable = false;
             StartPosition = FormStartPosition.CenterScreen;
-            Load += NonProfessionalLayoutForm_Load;
             ResumeLayout(false);
         }
 

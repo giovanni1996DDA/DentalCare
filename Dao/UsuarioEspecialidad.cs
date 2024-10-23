@@ -14,9 +14,9 @@ namespace Dao
     
     public partial class UsuarioEspecialidad
     {
-        public System.Guid Usuario { get; set; }
-        public System.Guid Especialidad { get; set; }
+        public System.Guid UserId { get; set; }
+        public System.Guid EspecialidadId { get; set; }
     
-        public virtual Especialidad Especialidad1 { get; set; }
+        public virtual Especialidad Especialidad { get; set; }
     }
 }

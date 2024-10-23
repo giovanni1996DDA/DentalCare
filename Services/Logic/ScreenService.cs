@@ -41,5 +41,21 @@ namespace Services.Logic
 
             return returning;
         }
+
+        public List<Screen> Get(Screen scr)
+        {
+            List<Screen> returning = new List<Screen>();
+
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IScreenDao scrRepo = context.Repositories.ScreenRepository;
+                returning = scrRepo.Get(scr);
+            }
+
+            if (!returning.Any())
+                throw new NoScreensFoundException();
+
+            return returning;
+        }
     }
 }

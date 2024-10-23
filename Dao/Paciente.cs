@@ -28,10 +28,11 @@ namespace Dao
         public string Direccion { get; set; }
         public System.DateTime FechaNacimiento { get; set; }
         public System.Guid TipoDocumento { get; set; }
-        public int NumeroDocumento { get; set; }
+        public string NumeroDocumento { get; set; }
         public int Telefono { get; set; }
-        public System.Guid ObraSocial { get; set; }
+        public Nullable<System.Guid> ObraSocial { get; set; }
         public Nullable<System.Guid> CtaCorriente { get; set; }
+        public string Email { get; set; }
     
         public virtual CtaCorriente CtaCorriente1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

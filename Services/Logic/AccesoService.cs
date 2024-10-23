@@ -11,8 +11,10 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Services.Logic
 {
@@ -94,7 +96,7 @@ namespace Services.Logic
         /// </summary>
         /// <param name="permiso">Objeto de tipo Permiso.</param>
         /// <returns>Una lista de permisos.</returns>
-        /// <exception cref="NoPermissionFoundException">Si no se encuentran permisos asociados.</exception>
+        /// <exception cref="NoPermissionsFoundException">Si no se encuentran permisos asociados.</exception>
         private List<Permiso> Get(Permiso permiso)
         {
             List<Permiso> returning = new List<Permiso>();
@@ -106,7 +108,97 @@ namespace Services.Logic
                 returning = rolRepo.Get(permiso);
             }
 
-            if (returning.Count == 0) throw new NoPermissionFoundException();
+            if (returning.Count == 0) throw new NoPermissionsFoundException();
+
+            return returning;
+        }
+
+        private List<Acceso> Get()
+        {
+            List<Acceso> returning = new List<Acceso>();
+
+            try
+            {
+                returning.AddRange(Get(new Rol()));
+            }
+            catch (NoRolesFoundForUserException)
+            {
+                try
+                {
+                    returning.AddRange(Get(new Permiso()));
+                }
+                catch (NoPermissionsFoundException)
+                {
+                    throw new NoAccesosFoundException();
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}. Revisar logs.", "Error inesperado.", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return returning;
+        }
+
+        public Acceso GetOne(Acceso acc)
+        {
+            try
+            {
+                if (acc is Rol rol)
+                    return GetOne(rol);
+
+                if (acc is Permiso permiso)
+                    return GetOne(permiso);
+
+                return null;
+            }
+            catch (NoRolesFoundException)
+            {
+                throw;
+            }
+            catch (NoPermissionsFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}. Revisar logs.", "Error inesperado.", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public Rol GetOne(Rol rol)
+        {
+            Rol returning = null;
+
+            int hidratationLevel = int.Parse(ConfigurationManager.AppSettings["AccessesHidrationLvl"]);
+
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IRolDao rolRepo = context.Repositories.RolRepository;
+
+                returning =  rolRepo.GetOne(rol);
+            }
+
+            if (returning == null) throw new NoRolesFoundException();
+
+            FillRol(returning, hidratationLevel);
+
+            return returning;
+        }
+
+        public Permiso GetOne(Permiso permiso)
+        {
+            Permiso returning = null;
+
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IPermisoDao rolRepo = context.Repositories.PermisoRepository;
+
+                returning = rolRepo.GetOne(permiso);
+            }
+
+            if (returning == null) throw new NoPermissionsFoundException();
 
             return returning;
         }

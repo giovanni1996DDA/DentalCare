@@ -15,7 +15,7 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
             {
                 OptionName = $"{values[(int)ScreenColumns.OptionName]}",
                 ScreenName = $"{values[(int)ScreenColumns.ScreenName]}",
-                rol = Guid.Parse($"{values[(int)ScreenColumns.Rol]}"),
+                Acceso = Guid.Parse($"{values[(int)ScreenColumns.Rol]}"),
             };
         }
     }

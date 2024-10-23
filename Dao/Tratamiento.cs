@@ -24,7 +24,6 @@ namespace Dao
         public System.DateTime FechaFin { get; set; }
         public System.DateTime FechaInicio { get; set; }
         public System.Guid TipoTratamiento { get; set; }
-        public System.Guid UsuCreacion { get; set; }
         public System.Guid Paciente { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

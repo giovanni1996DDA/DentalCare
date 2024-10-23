@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dao\Domain.csproj" />
+    <ProjectReference Include="..\Dao\Dao.csproj" />
     <ProjectReference Include="..\Logic\Logic.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>

@@ -31,19 +31,14 @@ namespace Logic
         {
             using (DentalCareDBEntities context = new DentalCareDBEntities())
             {
-                var especialida = context.Especialidad.FirstOrDefault();
-                Console.WriteLine(especialida?.Nombre);
-
                 // Buscar la especialidad asociada al usuario en la tabla UsuarioEspecialidad
                 Especialidad especialidad= context.UsuarioEspecialidad
-                                            .Where(ue => ue.Usuario == user.Id)  // Filtrar por el usuario pasado como parámetro
-                                            .Select(ue => ue.Especialidad1)  // Seleccionar la especialidad asociada
+                                            .Where(ue => ue.UserId == user.Id)  // Filtrar por el usuario pasado como parámetro
+                                            .Select(ue => ue.Especialidad)  // Seleccionar la especialidad asociada
                                             .FirstOrDefault();  // Obtener la primera o default (null si no encuentra)
 
-                //if (especialidad == null)
-                //{
-                //    throw new NoEspecialidadFoundException();
-                //}
+                if (especialidad == null)
+                    throw new NoEspecialidadFoundException();
 
                 return especialidad;
             }

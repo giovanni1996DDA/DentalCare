@@ -23,7 +23,8 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
             {
                 Id = Guid.Parse($"{values[(int)PermisoColumns.Id]}"),
                 Nombre = (string)values[(int)PermisoColumns.Nombre],
-                Modulo = (int)PermisoColumns.Modulo,
+                Modulo = (int)values[(int)PermisoColumns.Modulo],
+                TipoPermiso = (int)values[(int)PermisoColumns.TipoPermiso]
             };
         }
     }
@@ -39,13 +40,17 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
         Modulo = 0,
 
         /// <summary>
+        /// Índice de la columna que representa el Nombre del permiso.
+        /// </summary>
+        TipoPermiso = 1,
+        /// <summary>
         /// Índice de la columna que representa el Id del permiso.
         /// </summary>
-        Id = 1,
-
+        Id = 2,
         /// <summary>
         /// Índice de la columna que representa el Nombre del permiso.
         /// </summary>
-        Nombre = 2
+        Nombre = 3
+
     }
 }

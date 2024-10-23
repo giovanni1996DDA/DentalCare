@@ -16,167 +16,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UI.Login.EventHandler;
 using UI.NonProfessional;
+using UI.NonProfessional.EventHandlers.Pacientes;
 using UI.Perofessional;
+using static MaterialSkin.MaterialItemCollection;
 using Screen = Services.Domain.Screen;
 
 namespace UI
 {
     public partial class LoginForm : Form
     {
+        private LoginEventHandler _eventHandler;
         public LoginForm()
         {
             InitializeComponent();
 
-            //MaterialSkinManager mngr = MaterialSkinManager.Instance;
-            //mngr.AddFormToManage(this);
-            //mngr.Theme = MaterialSkinManager.Themes.LIGHT;
+            _eventHandler = new LoginEventHandler(this);
+
+            InitializeHandlers();
         }
 
-        private void LoginForm_Load(object sender, EventArgs e)
+        private void InitializeHandlers()
         {
-            //CenterSpecificControls(this);   
-        }
-
-        private void btnLogin_Click(object sender, EventArgs e)
-        {
-            if (txtUname.Text == "" || txtPassword.Text == "")
-            {
-                MessageBox.Show("Complete los campos obligatorios", "Error de consistencia.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                if (txtUname.Text == "")
-                {
-                    txtUname.Focus();
-                    return;
-                }
-
-                if (txtPassword.Text == "")
-                {
-                    txtPassword.Focus();
-                    return;
-                }
-            }
-
-            User user = new User()
-            {
-                UserName = txtUname.Text,
-                Password = txtPassword.Text,
-            };
-
-            try
-            {
-                Form? nextForm = null;
-
-                //BORRAR Y DESCOMENTAR
-                //UserFacade.Login(user);
-
-                User usr = new User()
-                {
-                    Nombre = "Juan",
-                    Apellido = "Diaz",
-                    Email = "Pito@pito.com",
-                    Password = txtPassword.Text,
-                    UserName = txtUname.Text
-                };
-
-                SessionManager.SetUser(usr);
-                //FIN BORRAR Y DESCOMENTAR
-
-                User loggedUser = SessionManagerFacade.GetLoggedUser();
-
-                List<TabPage> tabs = new List<TabPage>();
-
-                foreach (Rol rol in UserFacade.GetRoles(loggedUser.Accesos))
-                {
-
-                    Screen scr = new Screen()
-                    {
-                        rol = rol.Id,
-                    };
-
-                    scr = ScreenFacade.GetOne(scr);
-
-                    if (scr.ScreenName != null)
-                        tabs.Add(new TabPage()
-                        {
-                            Name = scr.ScreenName,
-                            Text = scr.OptionName
-                        });
-                }
-                //BORRAR
-                tabs.Add(new TabPage()
-                {
-                    Name = "Pacientes",
-                    Text = "Pacientes"
-                });
-                //FIN BORRAR
-
-                if (tabs.Count == 0)
-                {
-                    MessageBox.Show("El usuario no posee ningún permiso para ver menús.",
-                                    "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                //BORRAR Y DESCOMENTAR
-
-                //Especialidad especialidad = EspecialidadService.Instance.GetOne(user);
-
-                Especialidad? especialidad = null;
-
-                //FIN BORRAR Y DESCOMENTAR
-
-                if (especialidad != null)
-                    nextForm = new ProfessionalLayoutForm();
-                else
-                    nextForm = new NonProfessionalLayoutForm(tabs);
-
-                this.Hide();
-
-                nextForm.ShowDialog();
-            }
-            catch (NoUsersFoundException)
-            {
-                MessageBox.Show("Usuario o contraseña incorrectos", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void chkShowPassword_CheckedChanged(object sender, EventArgs e)
-        {
-            txtPassword.Password = !txtPassword.Password;
-            txtPassword.Refresh();
-        }
-
-        private void btnExit_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
-        private void CenterControl(Control control)
-        {
-            // Centro horizontalmente el control dentro del formulario
-            int centerX = (this.ClientSize.Width - control.Width) / 2;
-            control.Left = centerX;
-        }
-
-        private void CenterSpecificControls(Control parent)
-        {
-            // Recorrer todos los controles del formulario
-            foreach (Control control in parent.Controls)
-            {
-                // Verificar si el nombre del control comienza con lbl, btn, txt o img
-                if (control.Name.StartsWith("lbl") || control.Name.StartsWith("btn") ||
-                    control.Name.StartsWith("txt") || control.Name.StartsWith("img"))
-                {
-                    CenterControl(control); // Centrar el control
-                }
-
-                // Si el control tiene hijos, recorrerlos también (para Paneles, GroupBoxes, etc.)
-                if (control.HasChildren)
-                {
-                    CenterSpecificControls(control);
-                }
-            }
+            btnLogin.Click += _eventHandler.HandleOnLogin;
+            chkShowPassword.CheckedChanged += _eventHandler.HandleShowPassword;
+            btnExit.Click += _eventHandler.HandleExit;
         }
     }
 }

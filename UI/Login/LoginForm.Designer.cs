@@ -96,7 +96,6 @@
             btnLogin.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             btnLogin.UseAccentColor = false;
             btnLogin.UseVisualStyleBackColor = true;
-            btnLogin.Click += btnLogin_Click;
             // 
             // btnExit
             // 
@@ -118,7 +117,6 @@
             btnExit.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Outlined;
             btnExit.UseAccentColor = false;
             btnExit.UseVisualStyleBackColor = false;
-            btnExit.Click += btnExit_Click;
             // 
             // lblPassword
             // 
@@ -162,7 +160,6 @@
             chkShowPassword.TabIndex = 7;
             chkShowPassword.TextAlign = ContentAlignment.MiddleCenter;
             chkShowPassword.UseVisualStyleBackColor = true;
-            chkShowPassword.CheckedChanged += chkShowPassword_CheckedChanged;
             // 
             // lchShowPassword
             // 
@@ -203,7 +200,6 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Load += LoginForm_Load;
             ((System.ComponentModel.ISupportInitialize)imgLoginImg).EndInit();
             ResumeLayout(false);
             PerformLayout();

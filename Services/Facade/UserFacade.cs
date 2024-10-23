@@ -74,5 +74,9 @@ namespace Services.Facade
         {
             return UserService.Instance.GetRoles(accs);
         }
+        public static List<Permiso> GetPermisos(List<Acceso> accs)
+        {
+            return UserService.Instance.GetPermisos(accs);
+        }
     }
 }

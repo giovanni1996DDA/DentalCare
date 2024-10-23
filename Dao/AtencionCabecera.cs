@@ -24,7 +24,6 @@ namespace Dao
         public System.Guid Id { get; set; }
         public string Descripcion { get; set; }
         public string Fecha { get; set; }
-        public System.Guid UsuarioCreacion { get; set; }
         public System.Guid Turno { get; set; }
         public Nullable<System.Guid> Tratamiento { get; set; }
     

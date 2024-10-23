@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Services.Logic.Exceptions
 {
-    internal class NoPermissionFoundException : Exception
+    public class NoAccesosFoundException : Exception
     {
-        public NoPermissionFoundException() : base("No se encontraron permisos con el criterio especificado")
-        { 
+        public NoAccesosFoundException() : base("No se encontraro accesos con el criterio de busqueda seleccionado")
+        {
+
         }
     }
 }

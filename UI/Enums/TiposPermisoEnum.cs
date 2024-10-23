@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dao.ExtendedModels
+namespace UI.Enums
 {
-    public partial class User
+    public enum TiposPermisoEnum
     {
+        Crear,
+        Leer,
+        Actualizar,
+        Eliminar
     }
 }

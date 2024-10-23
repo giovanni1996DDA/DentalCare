@@ -45,7 +45,7 @@ namespace UI_Consola
 
             User user = new User()
             {
-                UserName = "pito",
+                UserName = "asd",
                 Password = "Password$1",
                 //Nombre = "juan",
                 //Apellido = "diaz",

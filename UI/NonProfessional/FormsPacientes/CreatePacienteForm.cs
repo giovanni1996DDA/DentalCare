@@ -32,6 +32,7 @@ namespace UI.NonProfessional.FormsPacientes
 
         private void InitializeHandlers()
         {
+            this.Load += _eventHandler.HandleOnLoad;
             btnCreate.Click += _eventHandler.HandleOnCreate;
         }
     }

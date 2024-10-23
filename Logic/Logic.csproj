@@ -158,12 +158,20 @@
   <ItemGroup>
     <Compile Include="EspecialidadService.cs" />
     <Compile Include="Exceptions\NoEspecialidadFoundException.cs" />
+    <Compile Include="Exceptions\NoObraSocialFoundException.cs" />
+    <Compile Include="Exceptions\NoTipoDocumentoFoundException.cs" />
+    <Compile Include="Exceptions\PacienteAlreadyExistsException.cs" />
+    <Compile Include="Exceptions\PacienteDoesNotExistsException.cs" />
+    <Compile Include="Helpers\LogicHelpers.cs" />
+    <Compile Include="ObraSocialService.cs" />
+    <Compile Include="PacienteService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TipoDocumentoService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dao\Domain.csproj">
+    <ProjectReference Include="..\Dao\Dao.csproj">
       <Project>{BF7F6AEE-C076-4583-AD0A-137726DF28BA}</Project>
-      <Name>Domain</Name>
+      <Name>Dao</Name>
     </ProjectReference>
     <ProjectReference Include="..\Services\Services.csproj">
       <Project>{a1f68b94-a8b6-43d9-8d35-3ae9b4d411be}</Project>

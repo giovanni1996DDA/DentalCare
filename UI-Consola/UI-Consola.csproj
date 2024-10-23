@@ -79,9 +79,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dao\Domain.csproj">
+    <ProjectReference Include="..\Dao\Dao.csproj">
       <Project>{bf7f6aee-c076-4583-ad0a-137726df28ba}</Project>
-      <Name>Domain</Name>
+      <Name>Dao</Name>
     </ProjectReference>
     <ProjectReference Include="..\Services\Services.csproj">
       <Project>{A1F68B94-A8B6-43D9-8D35-3AE9B4D411BE}</Project>

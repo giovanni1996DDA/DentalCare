@@ -197,6 +197,7 @@
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserPermisoRelation.cs" />
     <Compile Include="Domain\UserRolRelation.cs" />
+    <Compile Include="Facade\AccesoFacade.cs" />
     <Compile Include="Facade\LoggerFacade.cs" />
     <Compile Include="Facade\ScreenFacade.cs" />
     <Compile Include="Facade\SecurityManagerFacade.cs" />
@@ -207,13 +208,15 @@
     <Compile Include="Logic\Exceptions\EmptyRoleException.cs" />
     <Compile Include="Logic\Exceptions\InvalidUserException.cs" />
     <Compile Include="Logic\Exceptions\InvalidUserLoginException.cs" />
-    <Compile Include="Logic\Exceptions\NoPermissionFoundException.cs" />
+    <Compile Include="Logic\Exceptions\NoAccesosFoundException.cs" />
+    <Compile Include="Logic\Exceptions\NoPermissionsFoundException.cs" />
     <Compile Include="Logic\Exceptions\NoRolesFoundForUserException.cs" />
     <Compile Include="Logic\Exceptions\NoScreensFoundException.cs" />
     <Compile Include="Logic\Exceptions\NoUsersFoundException.cs" />
     <Compile Include="Logic\Exceptions\UserAlreadyRegisteredException.cs" />
     <Compile Include="Logic\Exceptions\UserDoesNotExistException.cs" />
     <Compile Include="Logic\LoggerService.cs" />
+    <Compile Include="Logic\Exceptions\NoRolesFoundException.cs" />
     <Compile Include="Logic\ScreenService.cs" />
     <Compile Include="Logic\SecurityManagerService.cs" />
     <Compile Include="Logic\SessionManager.cs" />

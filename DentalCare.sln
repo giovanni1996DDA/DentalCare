@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Dao\Domain.csproj", "{BF7F6AEE-C076-4583-AD0A-137726DF28BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dao", "Dao\Dao.csproj", "{BF7F6AEE-C076-4583-AD0A-137726DF28BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic", "Logic\Logic.csproj", "{27578FAC-7A7F-4AFA-8F6B-4B48E998F948}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "UI\UI.csproj", "{5E80B072-6BBF-43B8-A729-1C01216D15AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI-Consola", "UI-Consola\UI-Consola.csproj", "{1BFB5D27-5B48-4236-8411-7A467416197C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{3CA6505F-3285-4460-8F25-B4370762B982}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{1BFB5D27-5B48-4236-8411-7A467416197C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BFB5D27-5B48-4236-8411-7A467416197C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BFB5D27-5B48-4236-8411-7A467416197C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CA6505F-3285-4460-8F25-B4370762B982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CA6505F-3285-4460-8F25-B4370762B982}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CA6505F-3285-4460-8F25-B4370762B982}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CA6505F-3285-4460-8F25-B4370762B982}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

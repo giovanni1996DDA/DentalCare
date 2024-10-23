@@ -10,6 +10,6 @@ namespace Services.Domain
     {
         public string OptionName { get; set; }
         public string ScreenName { get; set; }
-        public Guid rol { get; set; }
+        public Guid Acceso { get; set; }
     }
 }

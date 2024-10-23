@@ -4,8 +4,8 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="9e156713281742d29f00901dab4c0c67" Name="Diagram1">
-        <EntityTypeShape EntityType="DentalCareDBModel.AtencionCabecera" Width="1.5" PointX="12.75" PointY="6.375" IsExpanded="true" />
+      <Diagram DiagramId="1ad38a7f1756417999c25132a2153f89" Name="Diagram1">
+        <EntityTypeShape EntityType="DentalCareDBModel.AtencionCabecera" Width="1.5" PointX="12.75" PointY="6.5" IsExpanded="true" />
         <EntityTypeShape EntityType="DentalCareDBModel.AtencionPosicion" Width="1.5" PointX="15" PointY="6.75" IsExpanded="true" />
         <EntityTypeShape EntityType="DentalCareDBModel.Consumible" Width="1.5" PointX="12.75" PointY="2.625" IsExpanded="true" />
         <EntityTypeShape EntityType="DentalCareDBModel.CtaCorriente" Width="1.5" PointX="0.75" PointY="8.125" IsExpanded="true" />

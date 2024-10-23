@@ -1,61 +1,44 @@
 ﻿using MaterialSkin.Controls;
+using Services.Domain;
+using Services.Facade;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using UI.Helpers;
 
 namespace UI.NonProfessional.EventHandlers
 {
     public class MainTabCtrlEventHandler
     {
-        private MaterialTabControl _tabControl;
+        private MaterialForm _form;
+        private MaterialTabControl TabCtrlMain;
 
-        public MainTabCtrlEventHandler(MaterialTabControl tabControl)
+        public MainTabCtrlEventHandler(MaterialForm form)
         {
-            _tabControl = tabControl;
+            _form = form;
+            TabCtrlMain = (MaterialTabControl)FormHelpers.FindControl(_form, "TabCtrlMain");
+        }
+        public void HandleOnLoad(object sender, EventArgs e)
+        {            
+            TabCtrlMain.SelectedIndex = 0;
+
+            FormHelpers.LoadFormInTab(TabCtrlMain.SelectedTab);
+
+            User currentUser = SessionManagerFacade.GetLoggedUser();
+            TabCtrlMain.Text += $"Bienvenido {currentUser.Nombre}";
+
         }
 
-        // Este es el método que se suscribirá al evento SelectedIndexChanged
-        public void OnTabChanged(object sender, EventArgs e)
+        public void HandleOnTabChanged(object sender, EventArgs e)
         {
-            TabPage selectedTab = _tabControl.SelectedTab;
+            TabPage selectedTab = TabCtrlMain.SelectedTab;
 
-            // Limpiar los controles actuales en la pestaña
             selectedTab.Controls.Clear();
 
-            // Lógica para cargar el formulario adecuado, en este caso puedes usar reflection
-            LoadFormInTab(selectedTab);
-        }
-
-        public void LoadFormInTab(TabPage tabPage)
-        {
-            Form formToLoad = null;
-
-            try
-            {
-                // Construir el nombre del formulario a partir del nombre de la pestaña
-                string formName = $"UI.NonProfessional.{tabPage.Name}Form";
-                Type formType = Type.GetType($"{formName}");
-
-                if (formType != null)
-                {
-                    formToLoad = (Form)Activator.CreateInstance(formType);
-                    formToLoad.TopLevel = false;
-                    formToLoad.FormBorderStyle = FormBorderStyle.None;
-                    formToLoad.Dock = DockStyle.Fill;
-                    tabPage.Controls.Add(formToLoad);
-                    formToLoad.Show();
-                }
-                else
-                {
-                    MessageBox.Show($"Formulario {formName} no encontrado.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar el formulario: {ex.Message}");
-            }
+            FormHelpers.LoadFormInTab(selectedTab);
         }
     }
 }

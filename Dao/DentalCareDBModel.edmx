@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DentalCareDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="DentalCareDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AtencionCabecera">
           <Key>
             <PropertyRef Name="Id" />
@@ -12,7 +12,6 @@
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Descripcion" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Fecha" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="UsuarioCreacion" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Turno" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Tratamiento" Type="uniqueidentifier" />
         </EntityType>
@@ -48,7 +47,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Nombre" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="EstadoTurno">
           <Key>
@@ -98,9 +97,9 @@
         </EntityType>
         <EntityType Name="ObraSocial">
           <Key>
-            <PropertyRef Name="IdObraSocial" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="IdObraSocial" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Descripcion" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="CtaCorriente" Type="uniqueidentifier" />
@@ -112,13 +111,14 @@
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Apellido" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="Direccion" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Direccion" Type="varchar" MaxLength="50" />
           <Property Name="FechaNacimiento" Type="datetime" Nullable="false" />
           <Property Name="TipoDocumento" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="NumeroDocumento" Type="int" Nullable="false" />
+          <Property Name="NumeroDocumento" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Telefono" Type="int" Nullable="false" />
-          <Property Name="ObraSocial" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ObraSocial" Type="uniqueidentifier" />
           <Property Name="CtaCorriente" Type="uniqueidentifier" />
+          <Property Name="Email" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="TipoDocumento">
           <Key>
@@ -143,7 +143,6 @@
           <Property Name="FechaFin" Type="datetime" Nullable="false" />
           <Property Name="FechaInicio" Type="datetime" Nullable="false" />
           <Property Name="TipoTratamiento" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="UsuCreacion" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Paciente" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Turno">
@@ -166,11 +165,11 @@
         </EntityType>
         <EntityType Name="UsuarioEspecialidad">
           <Key>
-            <PropertyRef Name="Usuario" />
-            <PropertyRef Name="Especialidad" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="EspecialidadId" />
           </Key>
-          <Property Name="Usuario" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Especialidad" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="EspecialidadId" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <Association Name="FK_AtencionCabecera_Tratamiento">
           <End Role="Tratamiento" Type="Self.Tratamiento" Multiplicity="0..1" />
@@ -237,7 +236,7 @@
           <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ObraSocial">
-              <PropertyRef Name="IdObraSocial" />
+              <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Factura">
               <PropertyRef Name="ObraSocial" />
@@ -317,11 +316,11 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Paciente_ObraSocial">
-          <End Role="ObraSocial" Type="Self.ObraSocial" Multiplicity="1" />
+          <End Role="ObraSocial" Type="Self.ObraSocial" Multiplicity="0..1" />
           <End Role="Paciente" Type="Self.Paciente" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ObraSocial">
-              <PropertyRef Name="IdObraSocial" />
+              <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Paciente">
               <PropertyRef Name="ObraSocial" />
@@ -396,7 +395,7 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="UsuarioEspecialidad">
-              <PropertyRef Name="Especialidad" />
+              <PropertyRef Name="EspecialidadId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -496,7 +495,8 @@
             <End Role="UsuarioEspecialidad" EntitySet="UsuarioEspecialidad" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="DentalCareDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -507,7 +507,6 @@
           <Property Name="Id" Type="Guid" Nullable="false" />
           <Property Name="Descripcion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Fecha" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="UsuarioCreacion" Type="Guid" Nullable="false" />
           <Property Name="Turno" Type="Guid" Nullable="false" />
           <Property Name="Tratamiento" Type="Guid" />
           <NavigationProperty Name="Tratamiento1" Relationship="Self.FK_AtencionCabecera_Tratamiento" FromRole="AtencionCabecera" ToRole="Tratamiento" />
@@ -554,7 +553,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="Nombre" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="UsuarioEspecialidad" Relationship="Self.FK_UsuarioEspecialidad_Especialidad" FromRole="Especialidad" ToRole="UsuarioEspecialidad" />
         </EntityType>
         <EntityType Name="EstadoTurno">
@@ -612,9 +611,9 @@
         </EntityType>
         <EntityType Name="ObraSocial">
           <Key>
-            <PropertyRef Name="IdObraSocial" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="IdObraSocial" Type="Guid" Nullable="false" />
+          <Property Name="Id" Type="Guid" Nullable="false" />
           <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Descripcion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="CtaCorriente" Type="Guid" />
@@ -629,13 +628,14 @@
           <Property Name="Id" Type="Guid" Nullable="false" />
           <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Apellido" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Direccion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Direccion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="FechaNacimiento" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="TipoDocumento" Type="Guid" Nullable="false" />
-          <Property Name="NumeroDocumento" Type="Int32" Nullable="false" />
+          <Property Name="NumeroDocumento" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Telefono" Type="Int32" Nullable="false" />
-          <Property Name="ObraSocial" Type="Guid" Nullable="false" />
+          <Property Name="ObraSocial" Type="Guid" />
           <Property Name="CtaCorriente" Type="Guid" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CtaCorriente1" Relationship="Self.FK_Paciente_CtaCorriente" FromRole="Paciente" ToRole="CtaCorriente" />
           <NavigationProperty Name="Factura" Relationship="Self.FK_Factura_Paciente" FromRole="Paciente" ToRole="Factura" />
           <NavigationProperty Name="ObraSocial1" Relationship="Self.FK_Paciente_ObraSocial" FromRole="Paciente" ToRole="ObraSocial" />
@@ -668,7 +668,6 @@
           <Property Name="FechaFin" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="FechaInicio" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="TipoTratamiento" Type="Guid" Nullable="false" />
-          <Property Name="UsuCreacion" Type="Guid" Nullable="false" />
           <Property Name="Paciente" Type="Guid" Nullable="false" />
           <NavigationProperty Name="AtencionCabecera" Relationship="Self.FK_AtencionCabecera_Tratamiento" FromRole="Tratamiento" ToRole="AtencionCabecera" />
           <NavigationProperty Name="Paciente1" Relationship="Self.FK_Tratamiento_Paciente" FromRole="Tratamiento" ToRole="Paciente" />
@@ -698,12 +697,12 @@
         </EntityType>
         <EntityType Name="UsuarioEspecialidad">
           <Key>
-            <PropertyRef Name="Usuario" />
-            <PropertyRef Name="Especialidad" />
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="EspecialidadId" />
           </Key>
-          <Property Name="Usuario" Type="Guid" Nullable="false" />
-          <Property Name="Especialidad" Type="Guid" Nullable="false" />
-          <NavigationProperty Name="Especialidad1" Relationship="Self.FK_UsuarioEspecialidad_Especialidad" FromRole="UsuarioEspecialidad" ToRole="Especialidad" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="EspecialidadId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Especialidad" Relationship="Self.FK_UsuarioEspecialidad_Especialidad" FromRole="UsuarioEspecialidad" ToRole="Especialidad" />
         </EntityType>
         <Association Name="FK_AtencionCabecera_Tratamiento">
           <End Role="Tratamiento" Type="Self.Tratamiento" Multiplicity="0..1" />
@@ -821,7 +820,7 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="UsuarioEspecialidad">
-              <PropertyRef Name="Especialidad" />
+              <PropertyRef Name="EspecialidadId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -842,7 +841,7 @@
           <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ObraSocial">
-              <PropertyRef Name="IdObraSocial" />
+              <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Factura">
               <PropertyRef Name="ObraSocial" />
@@ -874,11 +873,11 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Paciente_ObraSocial">
-          <End Role="ObraSocial" Type="Self.ObraSocial" Multiplicity="1" />
+          <End Role="ObraSocial" Type="Self.ObraSocial" Multiplicity="0..1" />
           <End Role="Paciente" Type="Self.Paciente" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ObraSocial">
-              <PropertyRef Name="IdObraSocial" />
+              <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Paciente">
               <PropertyRef Name="ObraSocial" />
@@ -1041,7 +1040,6 @@
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
                 <ScalarProperty Name="Fecha" ColumnName="Fecha" />
-                <ScalarProperty Name="UsuarioCreacion" ColumnName="UsuarioCreacion" />
                 <ScalarProperty Name="Turno" ColumnName="Turno" />
                 <ScalarProperty Name="Tratamiento" ColumnName="Tratamiento" />
               </MappingFragment>
@@ -1138,7 +1136,7 @@
           <EntitySetMapping Name="ObraSocial">
             <EntityTypeMapping TypeName="DentalCareDBModel.ObraSocial">
               <MappingFragment StoreEntitySet="ObraSocial">
-                <ScalarProperty Name="IdObraSocial" ColumnName="IdObraSocial" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Nombre" ColumnName="Nombre" />
                 <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
                 <ScalarProperty Name="CtaCorriente" ColumnName="CtaCorriente" />
@@ -1158,6 +1156,7 @@
                 <ScalarProperty Name="Telefono" ColumnName="Telefono" />
                 <ScalarProperty Name="ObraSocial" ColumnName="ObraSocial" />
                 <ScalarProperty Name="CtaCorriente" ColumnName="CtaCorriente" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1185,7 +1184,6 @@
                 <ScalarProperty Name="FechaFin" ColumnName="FechaFin" />
                 <ScalarProperty Name="FechaInicio" ColumnName="FechaInicio" />
                 <ScalarProperty Name="TipoTratamiento" ColumnName="TipoTratamiento" />
-                <ScalarProperty Name="UsuCreacion" ColumnName="UsuCreacion" />
                 <ScalarProperty Name="Paciente" ColumnName="Paciente" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1213,8 +1211,8 @@
           <EntitySetMapping Name="UsuarioEspecialidad">
             <EntityTypeMapping TypeName="DentalCareDBModel.UsuarioEspecialidad">
               <MappingFragment StoreEntitySet="UsuarioEspecialidad">
-                <ScalarProperty Name="Usuario" ColumnName="Usuario" />
-                <ScalarProperty Name="Especialidad" ColumnName="Especialidad" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="EspecialidadId" ColumnName="EspecialidadId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

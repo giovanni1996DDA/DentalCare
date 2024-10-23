@@ -14,6 +14,8 @@ namespace Services.Domain
         /// 
         public int? Modulo { get; set; } = null;
 
+        public int? TipoPermiso { get; set; }
+
         /// <summary>
         /// Nunca tiene hijos, es un Leaf.
         /// </summary>

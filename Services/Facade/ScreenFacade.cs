@@ -14,5 +14,10 @@ namespace Services.Facade
         {
             return ScreenService.Instance.GetOne(scr);
         }
+
+        public static List<Screen> Get(Screen scr)
+        {
+            return ScreenService.Instance.Get(scr);
+        }
     }
 }
