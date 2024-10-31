@@ -8,11 +8,11 @@ using UI.Helpers;
 
 namespace UI.NonProfessional.EventHandlers.Pacientes
 {
-    internal class PacientesTabCtrlEventHandler
+    internal class TabCtrlEventHandler
     {
         private TabControl _tabControl;
 
-        public PacientesTabCtrlEventHandler(TabControl tabControl)
+        public TabCtrlEventHandler(TabControl tabControl)
         {
             _tabControl = tabControl;
         }

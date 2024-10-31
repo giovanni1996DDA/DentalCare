@@ -1,7 +1,9 @@
 ﻿using Services.Dao.Factory;
+using Services.Dao.Implementations.SQLServer;
 using Services.Dao.Interfaces;
 using Services.Dao.Interfaces.UnitOfWork;
 using Services.Domain;
+using Services.Facade;
 using Services.Logic.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -11,7 +13,9 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,7 +25,7 @@ namespace Services.Logic
     /// <summary>
     /// Proporciona servicios relacionados con la gestión de accesos, roles y permisos.
     /// </summary>
-    public class AccesoService
+    public class AccesoService : Logic<Acceso>
     {
         private static AccesoService instance = new AccesoService();
 
@@ -68,7 +72,7 @@ namespace Services.Logic
         /// <param name="rol">Objeto de tipo Rol.</param>
         /// <returns>Una lista de roles.</returns>
         /// <exception cref="NoRolesFoundForUserException">Si no se encuentran roles para el usuario.</exception>
-        private List<Rol> Get(Rol rol)
+        public List<Rol> Get(Rol rol)
         {
             List<Rol> returning = new List<Rol>();
 
@@ -78,7 +82,9 @@ namespace Services.Logic
             {
                 IRolDao rolRepo = context.Repositories.RolRepository;
 
-                returning = rolRepo.Get(rol);
+                List<FilterProperty> filters = BuildFilters(rol);
+
+                returning = rolRepo.Get(filters);
             }
 
             if (returning.Count == 0) throw new NoRolesFoundForUserException();
@@ -97,7 +103,7 @@ namespace Services.Logic
         /// <param name="permiso">Objeto de tipo Permiso.</param>
         /// <returns>Una lista de permisos.</returns>
         /// <exception cref="NoPermissionsFoundException">Si no se encuentran permisos asociados.</exception>
-        private List<Permiso> Get(Permiso permiso)
+        public List<Permiso> Get(Permiso permiso)
         {
             List<Permiso> returning = new List<Permiso>();
 
@@ -105,7 +111,28 @@ namespace Services.Logic
             {
                 IPermisoDao rolRepo = context.Repositories.PermisoRepository;
 
-                returning = rolRepo.Get(permiso);
+                List<FilterProperty> filters = BuildFilters(permiso);
+
+                returning = rolRepo.Get(filters);
+
+                IScreenDao screenRepo = context.Repositories.ScreenRepository;
+
+                returning.ForEach(p =>
+                {
+                    List<Permiso> aux = new List<Permiso>();
+
+                    try
+                    {
+                        p.Screens.AddRange(ScreenService.Instance.Get(new Screen()
+                        {
+                            Acceso = p.Id
+                        }));
+                    }
+                    catch (NoScreensFoundException)
+                    {
+                    }
+
+                });
             }
 
             if (returning.Count == 0) throw new NoPermissionsFoundException();
@@ -177,7 +204,9 @@ namespace Services.Logic
             {
                 IRolDao rolRepo = context.Repositories.RolRepository;
 
-                returning =  rolRepo.GetOne(rol);
+                List<FilterProperty> filters = BuildFilters(rol);
+
+                returning =  rolRepo.GetOne(filters);
             }
 
             if (returning == null) throw new NoRolesFoundException();
@@ -195,10 +224,28 @@ namespace Services.Logic
             {
                 IPermisoDao rolRepo = context.Repositories.PermisoRepository;
 
-                returning = rolRepo.GetOne(permiso);
+                List<FilterProperty> filters = BuildFilters(permiso);
+
+                returning = rolRepo.GetOne(filters);
             }
 
             if (returning == null) throw new NoPermissionsFoundException();
+
+            try
+            {
+                returning.Screens = ScreenService.Instance.Get(new Screen()
+                {
+                    Acceso = returning.Id
+                });
+            }
+            catch (NoScreensFoundException)
+            {
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             return returning;
         }
@@ -224,33 +271,48 @@ namespace Services.Logic
                     throw new ArgumentException("Tipo de acceso no soportado");
             }
         }
+        public bool Exists(Rol rol)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IRolDao repo = context.Repositories.RolRepository;
+
+                List<FilterProperty> filters = BuildFilters(rol);
+
+                return repo.Exists(filters);
+            }
+        }
+        public bool Exists(Permiso permiso)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IPermisoDao repo = context.Repositories.PermisoRepository;
+
+                List<FilterProperty> filters = BuildFilters(permiso);
+
+                return repo.Exists(filters);
+            }
+        }
 
         /// <summary>
         /// Crea o actualiza un rol en la base de datos dependiendo de su existencia.
         /// </summary>
         /// <param name="rol">Objeto de tipo Rol.</param>
         /// <exception cref="EmptyRoleException">Si el rol no tiene accesos.</exception>
-        private void CreateOrUpdate(Rol rol)
+        public void CreateOrUpdate(Rol rol)
         {
-            if (rol.Accesos.Count == 0) throw new EmptyRoleException();
+            if (rol.Accesos.Count == 0) 
+                throw new EmptyRoleException();
 
             bool roleExists = false;
-
-            List<ValidationResult> results = new List<ValidationResult>();
-
-            if (!isValid(rol, results))
-                throw new InvalidUserException(results.FirstOrDefault()?.ErrorMessage);
 
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IRolDao repo = context.Repositories.RolRepository;
 
-                roleExists = repo.Exists(rol);
+                List<FilterProperty> filters = BuildFilters(rol);
 
-                if (roleExists)
-                {
-                    rol = repo.GetOne(rol);
-                }
+                roleExists = repo.Exists(filters);
             }
 
             using (var context = FactoryDao.UnitOfWork.Create())
@@ -259,17 +321,16 @@ namespace Services.Logic
 
                 if (roleExists)
                 {
-                    repo.Update(rol);
+                    List<FilterProperty> filters = BuildFilters(rol);
 
-                    IRolRolDao rrRepo = context.Repositories.RolRolRepository;
-                    rrRepo.Delete(new RolRolRelation { FatherId = rol.Id });
+                    repo.Update(filters);
 
-                    IRolPermisoDao rpRepo = context.Repositories.RolPermisoRepository;
-                    rpRepo.Delete(new RolPermisoRelation { IdRol = rol.Id });
+                    DeleteChildRelations(context, rol);
 
                 }
                 else
                 {
+                    rol.Id = Guid.NewGuid();
                     repo.Create(rol);
                 }
 
@@ -286,30 +347,33 @@ namespace Services.Logic
         /// Crea o actualiza un permiso en la base de datos dependiendo de su existencia.
         /// </summary>
         /// <param name="permiso">Objeto de tipo Permiso.</param>
-        private void CreateOrUpdate(Permiso permiso)
+        public void CreateOrUpdate(Permiso permiso)
         {
-            List<ValidationResult> results = new List<ValidationResult>();
-
-            if (!isValid(permiso, results))
-                throw new InvalidUserException(results.FirstOrDefault()?.ErrorMessage);
-
             using (var context = FactoryDao.UnitOfWork.Create())
             {
-                IPermisoDao repo = context.Repositories.PermisoRepository;
+                IPermisoDao permisoRepo = context.Repositories.PermisoRepository;
 
-                if (repo.Exists(permiso))
+                List<FilterProperty> filters = BuildFilters(permiso);
+
+                if (permisoRepo.Exists(filters))
                 {
-                    repo.Update(permiso);
+                    filters = BuildFilters(permiso);
+
+                    permisoRepo.Update(filters);
                 }
                 else
                 {
                     permiso.Id = Guid.NewGuid();
-                    repo.Create(permiso);
+                    permisoRepo.Create(permiso);
                 }
                 context.SaveChanges();
             }
-        }
 
+            ScreenService.Instance.DeleteRelations(permiso);
+
+            permiso.Screens.ForEach(scr => ScreenService.Instance.CreateRelation(permiso, scr));
+
+        }
         /// <summary>
         /// Crea una relación entre un usuario y un acceso (Rol o Permiso).
         /// </summary>
@@ -317,20 +381,27 @@ namespace Services.Logic
         /// <param name="user">Objeto de tipo Usuario.</param>
         /// <param name="acceso">Objeto de tipo Acceso.</param>
         /// <exception cref="ArgumentException">Si el tipo de acceso no es soportado.</exception>
-        public void CreateRelation(IUnitOfWorkAdapter context, User user, Acceso acceso)
+        public void CreateRelations(User user)
         {
-            switch (acceso)
+            using (var context = FactoryDao.UnitOfWork.Create())
             {
-                case Rol rol:
-                    CreateRelation(context, user, rol);
-                    break;
+                user.Accesos.ForEach(acceso =>
+                {
+                    switch (acceso)
+                    {
+                        case Rol rol:
+                            CreateRelation(context, user, rol);
+                            break;
 
-                case Permiso permiso:
-                    CreateRelation(context, user, permiso);
-                    break;
+                        case Permiso permiso:
+                            CreateRelation(context, user, permiso);
+                            break;
 
-                default:
-                    throw new ArgumentException("Tipo de acceso no soportado");
+                        default:
+                            throw new ArgumentException("Tipo de acceso no soportado");
+                    }
+                });
+                context.SaveChanges();
             }
         }
 
@@ -374,7 +445,23 @@ namespace Services.Logic
 
             IUserRolDao repo = context.Repositories.UserRolRepository;
 
-            if (repo.Exists(relation)) return;
+            List<FilterProperty> filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = user.Id,
+                    PropertyName = "IdUser",
+                    Operation = FilterOperation.Equals
+                },
+                new FilterProperty()
+                {
+                    Value = role.Id,
+                    PropertyName = "IdRol",
+                    Operation = FilterOperation.Equals
+                }
+            };
+
+            if (repo.Exists(filters)) return;
 
             repo.Create(relation);
         }
@@ -395,7 +482,23 @@ namespace Services.Logic
 
             IUserPermisoDao repo = context.Repositories.UserPermisoRepository;
 
-            if (repo.Exists(relation)) return;
+            List<FilterProperty> filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = user.Id,
+                    PropertyName = "IdUser",
+                    Operation = FilterOperation.Equals
+                },
+                new FilterProperty()
+                {
+                    Value = permiso.Id,
+                    PropertyName = "IdPermiso",
+                    Operation = FilterOperation.Equals
+                }
+            };
+
+            if (repo.Exists(filters)) return;
 
             repo.Create(relation);
         }
@@ -416,7 +519,23 @@ namespace Services.Logic
 
             IRolRolDao repo = context.Repositories.RolRolRepository;
 
-            if (repo.Exists(relation)) return;
+            List<FilterProperty> filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = rolPadre.Id,
+                    PropertyName = "FatherId",
+                    Operation = FilterOperation.Equals
+                },
+                new FilterProperty()
+                {
+                    Value = rolHijo.Id,
+                    PropertyName = "ChildId",
+                    Operation = FilterOperation.Equals
+                }
+            };
+
+            if (repo.Exists(filters)) return;
 
             repo.Create(relation);
         }
@@ -437,7 +556,23 @@ namespace Services.Logic
 
             IRolPermisoDao repo = context.Repositories.RolPermisoRepository;
 
-            if (repo.Exists(relation)) return;
+            List<FilterProperty> filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = rol.Id,
+                    PropertyName = "IdRol",
+                    Operation = FilterOperation.Equals
+                },
+                new FilterProperty()
+                {
+                    Value = permiso.Id,
+                    PropertyName = "IdPermiso",
+                    Operation = FilterOperation.Equals
+                }
+            };
+
+            if (repo.Exists(filters)) return;
 
             repo.Create(relation);
         }
@@ -457,7 +592,17 @@ namespace Services.Logic
             {
                 IUserRolDao userRolRepo = context.Repositories.UserRolRepository;
 
-                urRelation = userRolRepo.Get(new UserRolRelation { IdUser = user.Id });
+                List<FilterProperty> filters = new List<FilterProperty>()
+                {
+                    new FilterProperty()
+                    {
+                        Operation = FilterOperation.Equals,
+                        PropertyName = "IdUser",
+                        Value = user.Id
+                    }
+                };
+
+                urRelation = userRolRepo.Get(filters);
             }
 
             foreach (UserRolRelation relation in urRelation)
@@ -466,8 +611,9 @@ namespace Services.Logic
                 using (var context = FactoryDao.UnitOfWork.Create())
                 {
                     IRolDao rolRepo = context.Repositories.RolRepository;
+
                     //Agrego el rol de cada relación
-                    user.Accesos.Add(rolRepo.GetOne(new Rol { Id = relation.IdRol }));
+                    user.Accesos.Add(rolRepo.GetOne(BuildFilters(new Rol() { Id = relation.IdRol })));
                 }
             }
 
@@ -481,7 +627,17 @@ namespace Services.Logic
 
             using (var context = FactoryDao.UnitOfWork.Create())
             {
-                upRelation = context.Repositories.UserPermisoRepository.Get(new UserPermisoRelation { IdUser = user.Id });
+                List<FilterProperty> filters = new List<FilterProperty>()
+                {
+                    new FilterProperty()
+                    {
+                        Operation = FilterOperation.Equals,
+                        PropertyName = "IdUser",
+                        Value = user.Id
+                    }
+                };
+
+                upRelation = context.Repositories.UserPermisoRepository.Get(filters);
             }
 
             //Si no tiene permisos asociados, no sigo operando
@@ -494,7 +650,7 @@ namespace Services.Logic
 
                 using (var context = FactoryDao.UnitOfWork.Create())
                 {
-                    fetchedPermiso = context.Repositories.PermisoRepository.GetOne(new Permiso { Id = relation.IdPermiso });
+                    fetchedPermiso = context.Repositories.PermisoRepository.GetOne(BuildFilters(new Permiso() { Id = relation.IdPermiso }));
                 }
 
                 if (fetchedPermiso == null) throw new DatabaseInconsistencyException();
@@ -517,7 +673,18 @@ namespace Services.Logic
 
             using (var context = FactoryDao.UnitOfWork.Create())
             {
-                rrRelation = context.Repositories.RolRolRepository.Get(new RolRolRelation() { FatherId = rol.Id });
+
+                List<FilterProperty> filters = new List<FilterProperty>()
+                {
+                    new FilterProperty()
+                    {
+                        Value = rol.Id,
+                        PropertyName = "FatherId",
+                        Operation = FilterOperation.Equals
+                    },
+                };
+
+                rrRelation = context.Repositories.RolRolRepository.Get(filters);
             }
 
             // Levanto todos los roles que tenga el rol
@@ -527,9 +694,7 @@ namespace Services.Logic
 
                 using (var context = FactoryDao.UnitOfWork.Create())
                 {
-                    Rol protoRol = new Rol() { Id = relation.ChildId };
-
-                    fetchedRol = context.Repositories.RolRepository.GetOne(protoRol);
+                    fetchedRol = context.Repositories.RolRepository.GetOne(BuildFilters(new Rol() { Id = relation.ChildId }));
                 }
 
                 if (fetchedRol == null) throw new DatabaseInconsistencyException();
@@ -544,7 +709,17 @@ namespace Services.Logic
 
             using (var context = FactoryDao.UnitOfWork.Create())
             {
-                rpRelation = context.Repositories.RolPermisoRepository.Get(new RolPermisoRelation() { IdRol = rol.Id });
+                List<FilterProperty> filters = new List<FilterProperty>()
+                {
+                    new FilterProperty()
+                    {
+                        Value = rol.Id,
+                        PropertyName = "IdRol",
+                        Operation = FilterOperation.Equals
+                    },
+                };
+
+                rpRelation = context.Repositories.RolPermisoRepository.Get(filters);
             }
 
             // Si no hay permisos asociados entonces no hago nada
@@ -554,9 +729,19 @@ namespace Services.Logic
             {
                 using (var context = FactoryDao.UnitOfWork.Create())
                 {
-                    Permiso protoPermiso = new Permiso { Id = relation.IdPermiso };
 
-                    protoPermiso = context.Repositories.PermisoRepository.GetOne(protoPermiso);
+                    List<FilterProperty> filters = new List<FilterProperty>()
+                    {
+                        new FilterProperty()
+                        {
+                            Value = relation.IdPermiso,
+                            PropertyName = "Id",
+                            Operation = FilterOperation.Equals
+                        },
+                    };
+
+                    Permiso protoPermiso = context.Repositories.PermisoRepository
+                                            .GetOne(BuildFilters(new Permiso() { Id = relation.IdPermiso }));
 
                     if (protoPermiso == null) throw new DatabaseInconsistencyException();
 
@@ -576,6 +761,237 @@ namespace Services.Logic
             var valContext = new ValidationContext(acceso, serviceProvider: null, items: null);
 
             return Validator.TryValidateObject(acceso, valContext, results, true);
+        }
+
+        public void AgregarRolaRol(Rol rolPadre, Rol rolHijo)
+        {
+            //Completo los accesos del rol hijo
+            rolHijo = GetOne(rolHijo);
+
+            //si el que estoy intentando agregar como hijo ya tiene al padre como hijo, se arroja error de recursividad
+            if (GetAllChildrenRoles(rolHijo).Any(rh => rh.Id == rolPadre.Id))
+                throw new RecursiveRoleAdditionException();
+
+            if (rolPadre.Accesos.Any(rol => rol.Id == rolHijo.Id))
+                throw new RoleAlreadyExistInFatherException();
+
+            rolPadre.Add(rolHijo);
+        }
+        public void AgregarPermisoaRol(Rol rolPadre, Permiso permisoHijo)
+        {
+            if (rolPadre.Accesos.Any(rol => rol.Id == permisoHijo.Id))
+                throw new PermisoAlreadyExistInFatherException();
+
+            rolPadre.Add(permisoHijo);
+        }
+        private List<Rol> GetAllChildrenRoles(Rol rol)
+        {
+            List<Rol> returningRoles = new List<Rol>();
+
+            foreach (var acceso in rol.Accesos)
+            {
+                // Si no tiene hijos, no es un rol, por lo que se omite
+                if (!acceso.HasChildren)
+                    continue;
+
+                if (!returningRoles.Any(o => o.Id == acceso.Id))
+                    returningRoles.Add(acceso as Rol);
+
+                returningRoles.AddRange(GetAllChildrenRoles((acceso as Rol)));
+            }
+            return returningRoles;
+        }
+
+        private List<Permiso> GetAllChildrenPermisos(Rol rol)
+        {
+            List<Permiso> returningPermiso = new List<Permiso>();
+
+            foreach (var acceso in rol.Accesos)
+            {
+                // Si no tiene hijos, no es un rol, por lo que se omite
+                if (acceso.HasChildren)
+                    continue;
+
+                if (!returningPermiso.Any(o => o.Id == acceso.Id))
+                    returningPermiso.Add(acceso as Permiso);
+            }
+            return returningPermiso;
+        }
+
+        public List<Permiso> GetAllPermisosFromUser(User usr)
+        {
+            List<Permiso> returning = new List<Permiso>();
+
+            GetAllPermisos(usr.Accesos, returning);
+
+            return returning;
+        }
+        private void GetAllPermisos(List<Acceso> accesos, List<Permiso> returning)
+        {
+            foreach (Acceso acceso in accesos)
+            {
+                if (acceso.HasChildren)
+                {
+                    GetAllPermisos((acceso as Rol).Accesos, returning);
+                }
+                else
+                {
+                    returning.Add(acceso as Permiso);
+                }
+            }
+        }
+        public void RemoveRolFromRol(Rol rolPadre, Rol rolHijo)
+        {
+            rolPadre.Remove(rolHijo);
+        }
+        public void RemovePermisoFromRol(Rol rolPadre, Permiso permisoHijo)
+        {
+            rolPadre.Remove(permisoHijo);
+        }
+        public void ClearRelations(User user)
+        {
+            ClearRoleRelations(user);
+            ClearPermisoRelations(user);
+        }
+        private void ClearRoleRelations(User user)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserRolDao repo = context.Repositories.UserRolRepository;
+
+                List<FilterProperty> filters = new List<FilterProperty>()
+                {
+                    new FilterProperty()
+                    {
+                        Operation = FilterOperation.Equals,
+                        PropertyName = "IdUser",
+                        Value = user.Id
+                    }
+                };
+
+                repo.Delete(filters);
+
+                context.SaveChanges();
+            }
+        }
+        private void ClearPermisoRelations(User user)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IUserPermisoDao repo = context.Repositories.UserPermisoRepository;
+
+                List<FilterProperty> filters = new List<FilterProperty>()
+                {
+                    new FilterProperty()
+                    {
+                        Operation = FilterOperation.Equals,
+                        PropertyName = "IdUser",
+                        Value = user.Id
+                    }
+                };
+
+                repo.Delete(filters);
+
+                context.SaveChanges();
+            }
+        }
+        public void Delete(Rol rol)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IRolDao repo = context.Repositories.RolRepository;
+
+                DeleteFatherRelations(context, rol);
+                DeleteChildRelations(context, rol);
+
+                List<FilterProperty> filters = BuildFilters(rol);
+
+                repo.Delete(filters);
+
+                context.SaveChanges();
+            }
+        }
+        public void Delete(Permiso permiso)
+        {
+            using (var context = FactoryDao.UnitOfWork.Create())
+            {
+                IPermisoDao repo = context.Repositories.PermisoRepository;
+
+                ScreenService.Instance.DeleteRelations(permiso);
+
+                List<FilterProperty> filters = BuildFilters(permiso);
+
+                repo.Delete(filters);
+
+                DeleteFatherRelations(context, permiso);
+
+                context.SaveChanges();
+            }
+        }
+        private void DeleteChildRelations(IUnitOfWorkAdapter context, Rol rol)
+        {
+            IRolRolDao rrRepo = context.Repositories.RolRolRepository;
+
+            List<FilterProperty> filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = rol.Id,
+                    PropertyName = "FatherId",
+                    Operation = FilterOperation.Equals
+                },
+            };
+
+            rrRepo.Delete(filters);
+
+            IRolPermisoDao rpRepo = context.Repositories.RolPermisoRepository;
+
+            filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = rol.Id,
+                    PropertyName = "IdRol",
+                    Operation = FilterOperation.Equals
+                },
+            };
+
+            rpRepo.Delete(filters);
+        }
+        private void DeleteFatherRelations(IUnitOfWorkAdapter context, Rol rol)
+        {
+            IRolRolDao rrRepo = context.Repositories.RolRolRepository;
+
+            List<FilterProperty> filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = rol.Id,
+                    PropertyName = "ChildId",
+                    Operation = FilterOperation.Equals
+                },
+            };
+
+            rrRepo.Delete(filters);
+        }
+        private void DeleteFatherRelations(IUnitOfWorkAdapter context, Permiso permiso)
+        {
+            IRolPermisoDao rpRepo = context.Repositories.RolPermisoRepository;
+            IUserPermisoDao upRepo = context.Repositories.UserPermisoRepository;
+
+            List<FilterProperty> filters = new List<FilterProperty>()
+            {
+                new FilterProperty()
+                {
+                    Value = permiso.Id,
+                    PropertyName = "IdPermiso",
+                    Operation = FilterOperation.Equals
+                },
+            };
+
+            rpRepo.Delete(filters);
+
+            upRepo.Delete(filters);
         }
     }
 }

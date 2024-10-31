@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.Logic.Exceptions
 {
-    internal class UserAlreadyRegisteredException : Exception
+    public class UserAlreadyRegisteredException : Exception
     {
         public UserAlreadyRegisteredException() : base("El usuario ya se encuentra registrado en el sistema.") 
         {

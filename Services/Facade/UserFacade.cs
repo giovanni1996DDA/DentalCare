@@ -23,18 +23,7 @@ namespace Services.Facade
         /// <exception cref="Exception">Se lanza en caso de cualquier otra excepción durante el registro.</exception>
         public static void Register(User user)
         {
-            try
-            {
-                UserService.Instance.RegisterUser(user);
-            }
-            catch (UserAlreadyRegisteredException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            UserService.Instance.RegisterUser(user);
         }
         /// <summary>
         /// Obtiene una lista de usuarios que coinciden con los criterios especificados en el objeto User.
@@ -44,6 +33,14 @@ namespace Services.Facade
         public static List<User> Get(User user)
         {
             return UserService.Instance.Get(user);
+        }
+        public static User GetOne(User user)
+        {
+            return UserService.Instance.GetOne(user);
+        }
+        public static void Delete(User user)
+        {
+            UserService.Instance.Delete(user);
         }
         public static void Login(User user)
         {

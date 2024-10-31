@@ -1,35 +1,52 @@
 ﻿using MaterialSkin.Controls;
 using Services.Domain;
 using Services.Facade;
+using Services.Logic;
 using Services.Logic.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Enums;
+using UI.Generic;
 using UI.Helpers;
+using UI.NonProfessional.FormsParametrizaciones.FormsRoles;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using EventHandler = UI.Generic.EventHandler;
 
 namespace UI.NonProfessional.EventHandlers.Parametrizaciones.Roles
 {
-    public class GestionRolesEventHandler : EventHandler
+    public class GestionRolesEventHandler : EventHandler, IObserver<object>
     {
         private DataGridView dgvRol;
-        private MaterialTextBox txtRol;
         private DataGridView dgvPermiso;
-
+        private MaterialTextBox txtRol;
+        private MaterialTextBox txtDescripcion;
+        private MaterialButton btnSave;
+        private MaterialButton btnAddRole;
+        private MaterialButton btnRemoveRole;
+        private MaterialButton btnAddPermiso;
+        private MaterialButton btnRemovePermiso;
 
 
         public GestionRolesEventHandler(Form form)
         {
             _form = form;
 
-            dgvRol = (DataGridView)FormHelpers.FindControl(_form, "dgvRol");
-            txtRol = (MaterialTextBox)FormHelpers.FindControl(_form, "txtRol");
-            dgvPermiso = (DataGridView)FormHelpers.FindControl(_form, "dgvPermiso");
+            dgvRol           = (DataGridView)FormHelpers.FindControl(_form, "dgvRol");
+            txtRol           = (MaterialTextBox)FormHelpers.FindControl(_form, "txtRol");
+            txtDescripcion   = (MaterialTextBox)FormHelpers.FindControl(_form, "txtDescripcion");
+            dgvPermiso       = (DataGridView)FormHelpers.FindControl(_form, "dgvPermiso");
+            btnSave          = (MaterialButton)FormHelpers.FindControl(_form, "btnSave");
+            btnAddRole       = (MaterialButton)FormHelpers.FindControl(_form, "btnAddRole");
+            btnRemoveRole    = (MaterialButton)FormHelpers.FindControl(_form, "btnRemoveRole");
+            btnAddPermiso    = (MaterialButton)FormHelpers.FindControl(_form, "btnAddPermiso");
+            btnRemovePermiso = (MaterialButton)FormHelpers.FindControl(_form, "btnRemovePermiso");
         }
-        public override void HandleExit(object sender, EventArgs e)
+        public override void HandleOnExit(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -46,7 +63,8 @@ namespace UI.NonProfessional.EventHandlers.Parametrizaciones.Roles
 
         public override void HandleOnLoad(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            (_form as GestionRolesForm).dgvRolEventHandler.Subscribe(this);
+            (_form as GestionRolesForm).dgvPermisoEventHandler.Subscribe(this);
         }
 
         public override void HandleOnLogin(object sender, EventArgs e)
@@ -59,43 +77,91 @@ namespace UI.NonProfessional.EventHandlers.Parametrizaciones.Roles
             throw new NotImplementedException();
         }
 
-        public override void HandleSaveChanges(object sender, EventArgs e)
+        public override void HandleOnSaveChanges(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Rol previewingRole = (_form as GestionRolesForm).previewingRole;
+
+                previewingRole.Descripcion = txtDescripcion.Text;
+
+                AccesoFacade.CreateOrUpdate(previewingRole);
+
+                MessageBox.Show($"El rol {previewingRole.Nombre} se guardó con exito.",
+                    "Operación exitosa.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                btnSave.Enabled = false;
+                btnSave.TextChanged -= HandleOnDescriptionChanged;
+
+            }
+            catch (EmptyRoleException ex)
+            {
+                MessageBox.Show($"{ex.Message}",
+                    "Error Guardando cambios", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.Message}. Revisar logs.",
+                                 "Error inesperado", 
+                                 MessageBoxButtons.OK, 
+                                 MessageBoxIcon.Error);
+            }
         }
 
-        public override void HandleVisualize(object sender, EventArgs e)
+        public override void HandleOnVisualize(object sender, EventArgs e)
         {
-            if (dgvPermiso.Rows.Count > 0)
-                dgvPermiso.DataSource = null;
-
-            if (dgvRol.Rows.Count > 0)
-                dgvRol.DataSource = null;
+            if (string.IsNullOrEmpty(txtRol.Text))
+            {
+                DialogResult wishToContinue = MessageBox.Show("Debe especificar al menos un rol",
+                                                              "Complete los campos obligatorios", 
+                                                              MessageBoxButtons.OK, 
+                                                              MessageBoxIcon.Error);
+                return;
+            }
 
             try
             {
-                Rol rol = AccesoFacade.GetOne(new Rol()
+                Rol protoRol = new Rol(){
+                                            Nombre = txtRol.Text,
+                                        };
+
+                bool RoleExists = AccesoFacade.Exists(protoRol);
+                
+                if(RoleExists)
                 {
-                    Nombre = txtRol.Text
-                });
-
-                List<Rol> chidlrenRoles = new List<Rol>();
-                List<Permiso> chidlrenPermiso = new List<Permiso>();
-
-                foreach (Acceso acc in rol.Accesos) 
+                    protoRol = AccesoFacade.GetOne(new Rol(){
+                                                                Nombre = txtRol.Text
+                                                            });
+                }
+                else
                 {
-                    if(acc is Rol)
-                        chidlrenRoles.Add((Rol) acc);
-
-                    if (acc is Permiso)
-                        chidlrenPermiso.Add((Permiso)acc);
+                    DialogResult wishToContinue = MessageBox.Show("El rol no existe, desea crearlo?",
+                                                                  "Rol Inexistente", 
+                                                                  MessageBoxButtons.YesNo, 
+                                                                  MessageBoxIcon.Question);
+                    
+                    if (wishToContinue == DialogResult.No)
+                    {
+                        RefreshScreen();
+                        return;
+                    }
                 }
 
-                if (chidlrenRoles.Count > 0)
-                    FillDgvRol(chidlrenRoles);
+                txtDescripcion.Text = protoRol.Descripcion;
+                (_form as GestionRolesForm).previewingRole = protoRol;
 
-                if (chidlrenPermiso.Count > 0)
-                    fillDgvPermiso(chidlrenPermiso);
+                (_form as GestionRolesForm).dgvRolEventHandler.RefreshDgv();
+                (_form as GestionRolesForm).dgvPermisoEventHandler.RefreshDgv();
+
+                if (AccesoFacade.GetPermisosFromUser(SessionManager.GetCurrentUser())
+                    .Any(p => p.TipoPermiso == (int)TiposPermisoEnum.Actualizar))
+                {
+                    btnAddRole.Enabled = true;
+                    btnRemoveRole.Enabled = true;
+                    btnAddPermiso.Enabled = true;
+                    btnRemovePermiso.Enabled = true;
+                    txtDescripcion.Enabled = true;
+                }
 
             }
             catch (NoRolesFoundException ex)
@@ -106,58 +172,62 @@ namespace UI.NonProfessional.EventHandlers.Parametrizaciones.Roles
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex.Message}. Revisar logs.",
-                        "Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                $"Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void FillDgvRol(List<Rol> datasource)
+        public void HandleOnDescriptionChanged(object sender, EventArgs e)
         {
-            dgvRol.DataSource = datasource;
-
-            dgvRol.Columns["Id"].Visible = false;
-            dgvRol.Columns["HasChildren"].Visible = false;
+            btnSave.Enabled = true;
+        }
+        public void OnCompleted()
+        {
+            throw new NotImplementedException();
         }
 
-        private void fillDgvPermiso(List<Permiso> datasource)
+        public void OnError(Exception error)
         {
+            throw new NotImplementedException();
+        }
 
+        public void OnNext(object value)
+        {
+            btnSave.Enabled = true;
+        }
 
-            dgvPermiso.DataSource = datasource;
+        public override void HandleOnShowPassword(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
-            dgvPermiso.Columns["Id"].Visible = false;
-            dgvPermiso.Columns["HasChildren"].Visible = false;
-            dgvPermiso.Columns["Modulo"].Visible = false;
-            dgvPermiso.Columns["TipoPermiso"].Visible = false;
+        public override void HandleOnDelete(object sender, EventArgs e)
+        {
+            Rol previewingRole = (_form as GestionRolesForm).previewingRole;
 
-            if (!dgvPermiso.Columns.Contains("ModuloNombre"))
+            if (MessageBox.Show($"Esta seguro de que desea eliminar el rol {previewingRole.Nombre}",
+                                "Eliminar rol",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question) == DialogResult.No)
+                return;
+
+            try
             {
-                dgvPermiso.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "ModuloNombre",
-                    HeaderText = "Módulo"
-                });
-            }
+                AccesoFacade.Delete(previewingRole);
 
-            if (!dgvPermiso.Columns.Contains("TipoPermisoNombre"))
+                (_form as GestionRolesForm).previewingRole = null;
+
+                RefreshScreen();
+            }
+            catch (Exception ex)
             {
-                dgvPermiso.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    Name = "TipoPermisoNombre",
-                    HeaderText = "Tipo de Permiso"
-                });
+                MessageBox.Show($"{ex.Message}. Revisar logs.",
+                                $"Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            foreach (DataGridViewRow row in dgvPermiso.Rows)
-            {
-                Permiso boundPermiso = row.DataBoundItem as Permiso;
-
-                string moduloNombre = Enum.GetName(typeof(SystemModulesEnum), boundPermiso.Modulo.Value) ?? "Desconocido";
-
-                row.Cells["ModuloNombre"].Value = moduloNombre;
-
-                string TipoPermisoNombre = Enum.GetName(typeof(TiposPermisoEnum), boundPermiso.TipoPermiso.Value) ?? "Desconocido";
-
-                row.Cells["TipoPermisoNombre"].Value = TipoPermisoNombre;
-            }
+        }
+        private void RefreshScreen()
+        {
+            FormHelpers.ClearControls(_form);
+            (_form as GestionRolesForm).dgvRolEventHandler.RefreshDgv();
+            (_form as GestionRolesForm).dgvPermisoEventHandler.RefreshDgv();
         }
     }
 }

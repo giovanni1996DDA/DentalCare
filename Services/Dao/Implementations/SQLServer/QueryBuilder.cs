@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
 using System.Linq;
@@ -39,49 +40,70 @@ namespace Services.Dao.Implementations.SQLServer
         /// <typeparam name="T">El tipo del objeto a analizar.</typeparam>
         /// <param name="obj">El objeto cuyas propiedades se convertirán en parámetros SQL.</param>
         /// <returns>Un array de SqlParameter basado en las propiedades no nulas del objeto.</returns>
-        public static SqlParameter[] BuildParams(List<FilterProperty> filters)
+        public static SqlParameter[] BuildParams<T>(List<FilterProperty> filters, bool includeKeys = true, bool includeNonKeys = true)
         {
             var parameters = new List<SqlParameter>();
 
             foreach (var filter in filters)
             {
-                // Para IN no hace falta agregar un parametro
+                // Para IN no hace falta agregar un parámetro
                 if (filter.Operation == FilterOperation.In)
                     continue;
 
                 var value = filter.Value;
+                var property = GetProperties(typeof(T)).FirstOrDefault(p => p.Name == filter.PropertyName);
 
-                // Verificar si el valor es de un tipo complejo
-                if (IsComplexType(value.GetType()) && value != null)
+                if (property != null)
                 {
-                    // Extraer el Id de la subclase
-                    var subValue = GetProperties(value.GetType())
-                                   .Where(p => p.Name == "Id")
-                                   .Select(p => p.GetValue(value))
-                                   .FirstOrDefault();
+                    bool isKey = Attribute.IsDefined(property, typeof(KeyAttribute));
 
-                    parameters.Add(new SqlParameter($"@{filter.PropertyName}Id", subValue ?? DBNull.Value)); // Parámetro es SubclaseId
-                }
-                else if (value != null)
-                {
-                    // Si no es un tipo complejo, agregarlo directamente
-                    parameters.Add(new SqlParameter($"@{filter.PropertyName}", value));
+                    // Filtrar según los parámetros includeKeys y includeNonKeys
+                    if ((isKey && includeKeys) || (!isKey && includeNonKeys))
+                    {
+                        // Verificar si el valor es de un tipo complejo
+                        if (IsComplexType(value.GetType()) && value != null)
+                        {
+                            // Extraer el Id de la subclase
+                            var subValue = GetProperties(value.GetType())
+                                           .Where(p => p.Name == "Id")
+                                           .Select(p => p.GetValue(value))
+                                           .FirstOrDefault();
+
+                            parameters.Add(new SqlParameter($"@{filter.PropertyName}Id", subValue ?? DBNull.Value)); // Parámetro es SubclaseId
+                        }
+                        else
+                        {
+                            parameters.Add(new SqlParameter($"@{filter.PropertyName}", value ?? DBNull.Value));
+                            //// Si el valor es Guid.Empty, incluirlo como DBNull
+                            //if (property.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
+                            //{
+                            //    parameters.Add(new SqlParameter($"@{filter.PropertyName}", DBNull.Value));
+                            //}
+                            //else
+                            //{
+                            //    // Agregar el valor como está, o como DBNull si es null
+                            //    parameters.Add(new SqlParameter($"@{filter.PropertyName}", value ?? DBNull.Value));
+                            //}
+                        }
+                    }
                 }
             }
 
             return parameters.ToArray();
         }
 
-        public static SqlParameter[] BuildParams<T>(T obj)
+
+        public static SqlParameter[] BuildParams<T>(T obj, bool includeNulls = true)
         {
-            var props = GetProperties(typeof(T)).Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)));
+            var props = GetProperties(typeof(T))
+                        .Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)));
             var parameters = new List<SqlParameter>();
 
             foreach (var prop in props)
             {
                 var value = prop.GetValue(obj);
 
-                if (IsComplexType(prop.PropertyType) && value != null)
+                if (IsComplexType(prop.PropertyType))
                 {
                     // Extraer el Id de la subclase
                     var subValue = GetProperties(prop.PropertyType)
@@ -89,11 +111,15 @@ namespace Services.Dao.Implementations.SQLServer
                                    .Select(p => p.GetValue(value))
                                    .FirstOrDefault();
 
-                    parameters.Add(new SqlParameter($"@{prop.Name}Id", subValue ?? DBNull.Value)); // Parámetro es SubclaseId
+                    parameters.Add(new SqlParameter($"@{prop.Name}Id", subValue ?? DBNull.Value)); // SubclaseId
                 }
-                else if (value != null)
+                else
                 {
-                    parameters.Add(new SqlParameter($"@{prop.Name}", value));
+                    // Incluir el valor o DBNull si es null y se permite incluir nulls
+                    if (value != null || includeNulls)
+                    {
+                        parameters.Add(new SqlParameter($"@{prop.Name}", value ?? DBNull.Value));
+                    }
                 }
             }
 
@@ -106,7 +132,7 @@ namespace Services.Dao.Implementations.SQLServer
         /// <typeparam name="T">El tipo del objeto a analizar.</typeparam>
         /// <param name="obj">El objeto cuyas propiedades se usarán para generar la cláusula WHERE.</param>
         /// <returns>Una cadena que representa la cláusula WHERE basada en las propiedades no nulas del objeto.</returns>
-        public static string BuildWhere(List<FilterProperty> filters)
+        public static string BuildWhere<T>(List<FilterProperty> filters, bool includeKeys = true, bool includeNonKeys = true)
         {
             if (filters == null || !filters.Any())
                 return string.Empty;
@@ -115,43 +141,60 @@ namespace Services.Dao.Implementations.SQLServer
 
             foreach (var filter in filters)
             {
-                string condition = string.Empty;
+                // Obtener la propiedad de la clase
+                var propInfo = typeof(T).GetProperty(filter.PropertyName);
 
-                switch (filter.Operation)
+                // Validar si la propiedad está marcada como [Key]
+                bool isKey = Attribute.IsDefined(propInfo, typeof(KeyAttribute));
+
+                // Filtrar según los parámetros includeKeys e includeNonKeys
+                if ((includeKeys && isKey) || (includeNonKeys && !isKey))
                 {
-                    case FilterOperation.Equals:
-                        condition = $"{filter.PropertyName} = @{filter.PropertyName}";
-                        break;
+                    string condition = string.Empty;
 
-                    case FilterOperation.NotEquals:
-                        condition = $"{filter.PropertyName} != @{filter.PropertyName}";
-                        break;
+                    switch (filter.Operation)
+                    {
+                        case FilterOperation.Equals:
+                            condition = $"{filter.PropertyName} = @{filter.PropertyName}";
+                            break;
 
-                    case FilterOperation.GreaterThan:
-                        condition = $"{filter.PropertyName} > @{filter.PropertyName}";
-                        break;
+                        case FilterOperation.NotEquals:
+                            condition = $"{filter.PropertyName} != @{filter.PropertyName}";
+                            break;
 
-                    case FilterOperation.LessThan:
-                        condition = $"{filter.PropertyName} < @{filter.PropertyName}";
-                        break;
+                        case FilterOperation.GreaterThan:
+                            condition = $"{filter.PropertyName} > @{filter.PropertyName}";
+                            break;
 
-                    case FilterOperation.In:
-                        condition = $"{filter.PropertyName} IN ({BuildInClause(filter.Value)})";
-                        break;
+                        case FilterOperation.LessThan:
+                            condition = $"{filter.PropertyName} < @{filter.PropertyName}";
+                            break;
 
-                    case FilterOperation.Like:
-                        condition = $"{filter.PropertyName} LIKE @{filter.PropertyName}";
-                        break;
+                        case FilterOperation.In:
+                            condition = $"{filter.PropertyName} IN ({BuildInClause(filter.Value)})";
+                            break;
 
-                    default:
-                        throw new ArgumentException("Operación no soportada");
+                        case FilterOperation.Like:
+                            condition = $"{filter.PropertyName} LIKE @{filter.PropertyName}";
+                            break;
+
+                        default:
+                            throw new ArgumentException("Operación no soportada");
+                    }
+
+                    conditions.Add(condition);
                 }
-
-                conditions.Add(condition);
             }
 
+            // Si no hay condiciones, retornar cadena vacía
+            if (!conditions.Any())
+                return string.Empty;
+
+            // Construir y retornar la cláusula WHERE
             return "WHERE " + string.Join(" AND ", conditions);
         }
+
+
 
         // Método auxiliar para manejar el operador IN
         private static string BuildInClause(object value)
@@ -169,37 +212,22 @@ namespace Services.Dao.Implementations.SQLServer
         /// <typeparam name="T">El tipo del objeto a analizar.</typeparam>
         /// <param name="obj">El objeto cuyas propiedades se usarán para generar la cláusula SET.</param>
         /// <returns>Una cadena que representa la cláusula SET para una sentencia UPDATE en SQL.</returns>
-        public static string BuildSet<T>(T obj)
+        public static string BuildSet<T>(List<FilterProperty> filters)
         {
-            // Obtener propiedades que no tengan [NotMapped] y puedan leerse.
+            // Obtener las propiedades no clave que no tienen [Key] y están en los filtros
             var props = GetProperties(typeof(T))
-                        .Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)))
+                        .Where(prop => !Attribute.IsDefined(prop, typeof(NotMappedAttribute)) &&
+                                       !Attribute.IsDefined(prop, typeof(KeyAttribute)) &&
+                                       filters.Any(f => f.PropertyName == prop.Name))
                         .ToList();
 
-            // Filtrar propiedades que no sean nulas y, en el caso de GUIDs, que no sean GUID.Empty
-            var filteredProps = props.Where(prop =>
-            {
-                var value = prop.GetValue(obj);
-
-                // Excluir propiedades nulas
-                if (value == null)
-                    return false;
-
-                // Si la propiedad es de tipo GUID, excluir GUID.Empty
-                if (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty)
-                    return false;
-
-                return true;
-            }).ToList();
-
             // Si no hay propiedades válidas, retornar string.Empty
-            if (!filteredProps.Any())
+            if (!props.Any())
                 return string.Empty;
 
-            // Construir la cláusula SET
-            return "SET " + String.Join(", ", filteredProps.Select(prop => $"{prop.Name} = @{prop.Name}"));
+            // Construir la cláusula SET solo para las propiedades seleccionadas
+            return "SET " + String.Join(", ", props.Select(prop => $"{prop.Name} = @{prop.Name}"));
         }
-
         /// <summary>
         /// Construye una cadena con los nombres de las columnas para ser utilizada en una consulta SELECT o INSERT en SQL.
         /// </summary>

@@ -10,6 +10,8 @@ namespace UI.Enums
     {
         None = 0,
         Pacientes = 1,
-        Roles = 2
+        Roles = 2,
+        Usuarios = 3,
+        Turnos = 4
     }
 }

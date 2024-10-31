@@ -188,9 +188,6 @@
     <Compile Include="Especialidad.cs">
       <DependentUpon>DentalCareDBModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="EstadoTurno.cs">
-      <DependentUpon>DentalCareDBModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Factura.cs">
       <DependentUpon>DentalCareDBModel.tt</DependentUpon>
     </Compile>
@@ -244,6 +241,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ExtendedModels\" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="DentalCareDBModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>DentalCareDBModel.edmx</DependentUpon>
@@ -254,9 +254,6 @@
       <DependentUpon>DentalCareDBModel.edmx</DependentUpon>
       <LastGenOutput>DentalCareDBModel.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ExtendedModels\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

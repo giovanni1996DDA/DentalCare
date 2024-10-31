@@ -49,13 +49,6 @@
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <EntityType Name="EstadoTurno">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Descripcion" Type="varchar" MaxLength="50" Nullable="false" />
-        </EntityType>
         <EntityType Name="Factura">
           <Key>
             <PropertyRef Name="Id" />
@@ -153,7 +146,7 @@
           <Property Name="Profesional" Type="uniqueidentifier" Nullable="false" />
           <Property Name="FechaHora" Type="datetime" Nullable="false" />
           <Property Name="Paciente" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Estado" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Estado" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="UnidadMedida">
           <Key>
@@ -363,18 +356,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Turno_EstadoTurno">
-          <End Role="EstadoTurno" Type="Self.EstadoTurno" Multiplicity="1" />
-          <End Role="Turno" Type="Self.Turno" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="EstadoTurno">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Turno">
-              <PropertyRef Name="Estado" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Turno_Paciente">
           <End Role="Paciente" Type="Self.Paciente" Multiplicity="1" />
           <End Role="Turno" Type="Self.Turno" Multiplicity="*" />
@@ -405,7 +386,6 @@
           <EntitySet Name="Consumible" EntityType="Self.Consumible" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CtaCorriente" EntityType="Self.CtaCorriente" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Especialidad" EntityType="Self.Especialidad" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="EstadoTurno" EntityType="Self.EstadoTurno" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Factura" EntityType="Self.Factura" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Imagen" EntityType="Self.Imagen" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MetodoPago" EntityType="Self.MetodoPago" Schema="dbo" store:Type="Tables" />
@@ -482,10 +462,6 @@
             <End Role="TipoTratamiento" EntitySet="TipoTratamiento" />
             <End Role="Tratamiento" EntitySet="Tratamiento" />
           </AssociationSet>
-          <AssociationSet Name="FK_Turno_EstadoTurno" Association="Self.FK_Turno_EstadoTurno">
-            <End Role="EstadoTurno" EntitySet="EstadoTurno" />
-            <End Role="Turno" EntitySet="Turno" />
-          </AssociationSet>
           <AssociationSet Name="FK_Turno_Paciente" Association="Self.FK_Turno_Paciente">
             <End Role="Paciente" EntitySet="Paciente" />
             <End Role="Turno" EntitySet="Turno" />
@@ -555,14 +531,6 @@
           <Property Name="Id" Type="Guid" Nullable="false" />
           <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="UsuarioEspecialidad" Relationship="Self.FK_UsuarioEspecialidad_Especialidad" FromRole="Especialidad" ToRole="UsuarioEspecialidad" />
-        </EntityType>
-        <EntityType Name="EstadoTurno">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="Descripcion" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Turno" Relationship="Self.FK_Turno_EstadoTurno" FromRole="EstadoTurno" ToRole="Turno" />
         </EntityType>
         <EntityType Name="Factura">
           <Key>
@@ -681,9 +649,8 @@
           <Property Name="Profesional" Type="Guid" Nullable="false" />
           <Property Name="FechaHora" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Paciente" Type="Guid" Nullable="false" />
-          <Property Name="Estado" Type="Guid" Nullable="false" />
+          <Property Name="Estado" Type="Int32" Nullable="false" />
           <NavigationProperty Name="AtencionCabecera" Relationship="Self.FK_AtencionCabecera_Turno" FromRole="Turno" ToRole="AtencionCabecera" />
-          <NavigationProperty Name="EstadoTurno" Relationship="Self.FK_Turno_EstadoTurno" FromRole="Turno" ToRole="EstadoTurno" />
           <NavigationProperty Name="Paciente1" Relationship="Self.FK_Turno_Paciente" FromRole="Turno" ToRole="Paciente" />
         </EntityType>
         <EntityType Name="UnidadMedida">
@@ -824,18 +791,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Turno_EstadoTurno">
-          <End Role="EstadoTurno" Type="Self.EstadoTurno" Multiplicity="1" />
-          <End Role="Turno" Type="Self.Turno" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="EstadoTurno">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Turno">
-              <PropertyRef Name="Estado" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Factura_ObraSocial">
           <End Role="ObraSocial" Type="Self.ObraSocial" Multiplicity="0..1" />
           <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
@@ -938,7 +893,6 @@
           <EntitySet Name="Consumible" EntityType="Self.Consumible" />
           <EntitySet Name="CtaCorriente" EntityType="Self.CtaCorriente" />
           <EntitySet Name="Especialidad" EntityType="Self.Especialidad" />
-          <EntitySet Name="EstadoTurno" EntityType="Self.EstadoTurno" />
           <EntitySet Name="Factura" EntityType="Self.Factura" />
           <EntitySet Name="Imagen" EntityType="Self.Imagen" />
           <EntitySet Name="MetodoPago" EntityType="Self.MetodoPago" />
@@ -990,10 +944,6 @@
           <AssociationSet Name="FK_UsuarioEspecialidad_Especialidad" Association="Self.FK_UsuarioEspecialidad_Especialidad">
             <End Role="Especialidad" EntitySet="Especialidad" />
             <End Role="UsuarioEspecialidad" EntitySet="UsuarioEspecialidad" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Turno_EstadoTurno" Association="Self.FK_Turno_EstadoTurno">
-            <End Role="EstadoTurno" EntitySet="EstadoTurno" />
-            <End Role="Turno" EntitySet="Turno" />
           </AssociationSet>
           <AssociationSet Name="FK_Factura_ObraSocial" Association="Self.FK_Factura_ObraSocial">
             <End Role="ObraSocial" EntitySet="ObraSocial" />
@@ -1079,14 +1029,6 @@
               <MappingFragment StoreEntitySet="Especialidad">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Nombre" ColumnName="Nombre" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EstadoTurno">
-            <EntityTypeMapping TypeName="DentalCareDBModel.EstadoTurno">
-              <MappingFragment StoreEntitySet="EstadoTurno">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

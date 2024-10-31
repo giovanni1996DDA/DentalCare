@@ -43,7 +43,7 @@ namespace Logic
             }
         }
 
-        public Paciente GetOne(Paciente paciente)
+        public Paciente GetOneByDocument(Paciente paciente)
         {
             using (DentalCareDBEntities context = new DentalCareDBEntities())
             {

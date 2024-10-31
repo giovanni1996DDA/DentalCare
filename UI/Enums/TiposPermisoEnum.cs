@@ -8,6 +8,7 @@ namespace UI.Enums
 {
     public enum TiposPermisoEnum
     {
+        None,
         Crear,
         Leer,
         Actualizar,

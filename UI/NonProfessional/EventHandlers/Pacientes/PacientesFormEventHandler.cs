@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UI.Generic;
 using UI.Helpers;
+using EventHandler = UI.Generic.EventHandler;
 
 namespace UI.NonProfessional.EventHandlers.Pacientes
 {
@@ -17,7 +19,7 @@ namespace UI.NonProfessional.EventHandlers.Pacientes
             _form = form;
         }
 
-        public override void HandleExit(object sender, EventArgs e)
+        public override void HandleOnExit(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -51,12 +53,22 @@ namespace UI.NonProfessional.EventHandlers.Pacientes
             throw new NotImplementedException();
         }
 
-        public override void HandleSaveChanges(object sender, EventArgs e)
+        public override void HandleOnSaveChanges(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        public override void HandleVisualize(object sender, EventArgs e)
+        public override void HandleOnVisualize(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void HandleOnShowPassword(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void HandleOnDelete(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }

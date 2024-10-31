@@ -28,7 +28,7 @@ namespace UI.NonProfessional.FormsPacientes
             this.Load += _eventHandler.HandleOnLoad;
             this.KeyPreview = true;
             this.KeyDown += new KeyEventHandler(_eventHandler.OnKeyDown);
-            btnVisualize.Click += _eventHandler.HandleVisualize;
+            btnVisualize.Click += _eventHandler.HandleOnVisualize;
         }
     }
 }

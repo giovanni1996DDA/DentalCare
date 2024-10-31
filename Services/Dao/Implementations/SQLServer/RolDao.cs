@@ -26,8 +26,6 @@ namespace Services.Dao.Implementations.SQLServer
 
         public override void Create(Rol entity)
         {
-            entity.Id = Guid.NewGuid();
-
             base.Create(entity);
         }
     }

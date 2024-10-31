@@ -14,10 +14,18 @@ namespace Services.Facade
         {
             return ScreenService.Instance.GetOne(scr);
         }
-
         public static List<Screen> Get(Screen scr)
         {
             return ScreenService.Instance.Get(scr);
+        }
+        public static void RemoveScreenFromPermiso(Permiso permiso, Screen scr)
+        {
+            ScreenService.Instance.RemoveScreenFromPermiso(permiso, scr);
+        }
+
+        public static void AgregarPermisoAScreen(Permiso permiso, Screen scr)
+        {
+            ScreenService.Instance.AgregarPermisoAScreen(permiso, scr);
         }
     }
 }

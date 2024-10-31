@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +17,9 @@ namespace Services.Domain
         public int? Modulo { get; set; } = null;
 
         public int? TipoPermiso { get; set; }
+
+        [NotMapped]
+        public List<Screen> Screens { get; set; } = new List<Screen>();
 
         /// <summary>
         /// Nunca tiene hijos, es un Leaf.

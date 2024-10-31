@@ -20,12 +20,5 @@ namespace Services.Dao.Implementations.SQLServer
         public UserDao(SqlConnection context, SqlTransaction _transaction) : base(context, _transaction)
         {
         }
-
-        public override void Create(User entity)
-        {
-            entity.Id = Guid.NewGuid();
-
-            base.Create(entity);
-        }
     }
 }

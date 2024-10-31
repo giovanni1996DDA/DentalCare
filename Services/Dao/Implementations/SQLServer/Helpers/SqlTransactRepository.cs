@@ -10,6 +10,8 @@ using System.Linq;
 using Services.Dao.Implementations.SQLServer;
 using Services.Dao.Interfaces;
 using Services.Dao.Implementations.SQLServer.Mappers;
+using System.ComponentModel.DataAnnotations;
+using Services.Logic.Exceptions;
 
 namespace Services.Dao.Implemenations.SQLServer.Helpers
 {
@@ -173,17 +175,13 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
         /// <returns>Lista de entidades que coinciden con los criterios.</returns>
-        public virtual List<T> Get(T entity, List<FilterProperty> filters = null)
+        public virtual List<T> Get(List<FilterProperty> filters )
         {
-            // Si no se pasan filtros, usar las propiedades de la entidad como filtros
-            if (filters == null)
-                filters = BuildFilters(entity);
-
             // Construir la cláusula WHERE basada en los filtros
-            string whereClause = QueryBuilder.BuildWhere(filters);
+            string whereClause = QueryBuilder.BuildWhere<T>(filters);
 
             // Construir los parámetros para las propiedades válidas
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
+            SqlParameter[] parameters = QueryBuilder.BuildParams<T>(filters);
 
             // Construir la consulta SELECT completa
             string selectStatement = $"{SelectStatement} {whereClause}";
@@ -198,16 +196,21 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
         /// <returns>Una entidad que coincide con los criterios.</returns>
-        public virtual T GetOne(T entity, List<FilterProperty> filters = null)
+        public virtual T GetOne(List<FilterProperty> filters = null)
         {
-            if (filters == null)
-                filters = BuildFilters(entity);
+            //if (filters == null)
+            //    filters = BuildFilters(entity);
 
-            string whereClause = QueryBuilder.BuildWhere(filters);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
-            string selectStatement = $"{SelectSingleStatement} {whereClause}";
+            //string whereClause = QueryBuilder.BuildWhere<T>(filters);
+            //SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
+            //string selectStatement = $"{SelectSingleStatement} {whereClause}";
 
-            return ExecuteSelectQuery(selectStatement, parameters).FirstOrDefault();
+            List<T> returning = Get(filters);
+
+            if (returning.Count == 0)
+                return default;
+
+            return returning.FirstOrDefault();
         }
 
         /// <summary>
@@ -216,31 +219,36 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// <param name="entity">Entidad de ejemplo para aplicar filtros.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
         /// <returns>True si el registro existe, false en caso contrario.</returns>
-        public virtual bool Exists(T entity, List<FilterProperty> filters = null)
+        public virtual bool Exists(List<FilterProperty> filters = null)
         {
-            if (filters == null)
-                filters = BuildFilters(entity);
-
-            string whereClause = QueryBuilder.BuildWhere(filters);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
+            string whereClause = QueryBuilder.BuildWhere<T>(filters, includeNonKeys: false);
+            SqlParameter[] parameters = QueryBuilder.BuildParams<T>(filters);
             string selectStatement = $"{SelectSingleStatement} {whereClause}";
 
             return ExecuteScalar(selectStatement, CommandType.Text, parameters) != null;
         }
+        //public virtual bool ExistsNonKeys(T entity, List<FilterProperty> filters = null)
+        //{
+        //    if (filters == null)
+        //        filters = BuildFilters(entity,includeKeys: false, includeNonKeys: true);
+
+        //    string whereClause = QueryBuilder.BuildWhere<T>(filters,includeKeys:false, includeNonKeys: true);
+        //    SqlParameter[] parameters = QueryBuilder.BuildParams<T>(filters, includeKeys:false, includeNonKeys:true);
+        //    string selectStatement = $"{SelectSingleStatement} {whereClause}";
+
+        //    return ExecuteScalar(selectStatement, CommandType.Text, parameters) != null;
+        //}
 
         /// <summary>
         /// Actualiza un registro existente en la base de datos.
         /// </summary>
         /// <param name="entity">Entidad a actualizar.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
-        public virtual void Update(T entity, List<FilterProperty> filters = null)
+        public virtual void Update(List<FilterProperty> filters = null)
         {
-            if (filters == null)
-                filters = BuildFilters(entity);
-
-            string setClause = QueryBuilder.BuildSet(entity);
-            string whereClause = QueryBuilder.BuildWhere(filters);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
+            string setClause = QueryBuilder.BuildSet<T>(filters);
+            string whereClause = QueryBuilder.BuildWhere<T>(filters, includeKeys:true, includeNonKeys:false);
+            SqlParameter[] parameters = QueryBuilder.BuildParams<T>(filters, includeKeys: true, includeNonKeys: true);
 
             string updateStatement = $"{UpdateStatement} {setClause} {whereClause}";
             ExecuteNonQuery(updateStatement, CommandType.Text, parameters);
@@ -251,13 +259,10 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
         /// </summary>
         /// <param name="entity">Entidad a eliminar.</param>
         /// <param name="whereCallback">Callback opcional para personalizar los filtros de búsqueda.</param>
-        public virtual void Delete(T entity, List<FilterProperty> filters = null)
+        public virtual void Delete(List<FilterProperty> filters = null)
         {
-            if (filters == null)
-                filters = BuildFilters(entity);
-
-            string whereClause = QueryBuilder.BuildWhere(filters);
-            SqlParameter[] parameters = QueryBuilder.BuildParams(filters);
+            string whereClause = QueryBuilder.BuildWhere<T>(filters);
+            SqlParameter[] parameters = QueryBuilder.BuildParams<T>(filters);
 
             string deleteStatement = $"{DeleteStatement} {whereClause}";
             ExecuteNonQuery(deleteStatement, CommandType.Text, parameters);
@@ -281,25 +286,34 @@ namespace Services.Dao.Implemenations.SQLServer.Helpers
             }
             return results;
         }
-        private List<FilterProperty> BuildFilters(T entity)
+        private List<FilterProperty> BuildFilters(T entity, bool includeKeys = true, bool includeNonKeys = true)
         {
             var filters = new List<FilterProperty>();
 
+            // Obtener todas las propiedades de la clase T
             var props = QueryBuilder.GetProperties(typeof(T));
 
             foreach (var prop in props)
             {
-                var value = prop.GetValue(entity);
+                bool isKey = Attribute.IsDefined(prop, typeof(KeyAttribute));
 
-                // Excluir propiedades nulas o GUID.Empty
-                if (value == null || (prop.PropertyType == typeof(Guid) && (Guid)value == Guid.Empty))
+                // Filtrar según los parámetros includeKeys y includeNonKeys
+                if ((isKey && !includeKeys) || (!isKey && !includeNonKeys))
                     continue;
 
+                var value = prop.GetValue(entity);
+
+                // Incluir Guid.Empty como valor válido
+                if (value == null)
+                    continue;
+
+                // Agregar la propiedad al filtro
                 filters.Add(new FilterProperty(prop.Name, value, FilterOperation.Equals));
             }
 
             return filters;
         }
+
 
         /// <summary>
         /// Crea un comando SQL a partir de la consulta proporcionada.

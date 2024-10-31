@@ -18,7 +18,7 @@ namespace UI.NonProfessional
 {
     public partial class ParametrizacionesForm: Form
     {
-        //private PacientesTabCtrlEventHandler _tabEventHandler;
+        private TabCtrlEventHandler _tabEventHandler;
         private ParametrizacionesFormEventHandler _ParametrizacionesFormEventHandler;
         public ParametrizacionesForm()
         {
@@ -27,6 +27,7 @@ namespace UI.NonProfessional
             PopulateTabControl();
 
             _ParametrizacionesFormEventHandler = new ParametrizacionesFormEventHandler(this);
+            _tabEventHandler = new TabCtrlEventHandler(tabCtrlParametrizaciones);
 
             InitializeHandlers();
 
@@ -35,6 +36,7 @@ namespace UI.NonProfessional
         private void InitializeHandlers()
         {
             this.Load += _ParametrizacionesFormEventHandler.HandleOnLoad;
+            tabCtrlParametrizaciones.SelectedIndexChanged += _tabEventHandler.HandleOnTabChanged;
         }
         private void PopulateTabControl()
         {
@@ -47,7 +49,12 @@ namespace UI.NonProfessional
                 tabCtrlParametrizaciones.TabPages.Add(new TabPage()
                 {
                     Name = "GestionRoles",
-                    Text = "Accesos"
+                    Text = "Roles"
+                });
+                tabCtrlParametrizaciones.TabPages.Add(new TabPage()
+                {
+                    Name = "GestionPermisos",
+                    Text = "Permisos"
                 });
             }
             try

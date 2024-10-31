@@ -30,7 +30,6 @@ namespace Dao
         public virtual DbSet<Consumible> Consumible { get; set; }
         public virtual DbSet<CtaCorriente> CtaCorriente { get; set; }
         public virtual DbSet<Especialidad> Especialidad { get; set; }
-        public virtual DbSet<EstadoTurno> EstadoTurno { get; set; }
         public virtual DbSet<Factura> Factura { get; set; }
         public virtual DbSet<Imagen> Imagen { get; set; }
         public virtual DbSet<MetodoPago> MetodoPago { get; set; }

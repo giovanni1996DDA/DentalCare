@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,13 @@ using UI.Interfaces;
 
 namespace UI.NonProfessional.EventHandlers
 {
-    public abstract class DgvEventHandler : IDgvEventHandler
+    public abstract class DgvEventHandler<T> : IDgvEventHandler<T>
     {
         protected Form _form;
+        public abstract void FillDgv(List<T> datasource);
+        public abstract void HandleAddItem(object sender, EventArgs e);
         public abstract void HandleDoubleClick(object sender, DataGridViewCellEventArgs e);
+        public abstract void HandleRemoveItem(object sender, EventArgs e);
+        public abstract void RefreshDgv();
     }
 }

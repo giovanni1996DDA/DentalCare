@@ -16,7 +16,7 @@ namespace UI.NonProfessional
 {
     public partial class PacientesForm : Form
     {
-        private PacientesTabCtrlEventHandler _tabEventHandler;
+        private TabCtrlEventHandler _tabEventHandler;
         private PacientesFormEventHandler _PacientesFormEventHandler;
         public PacientesForm()
         {
@@ -25,7 +25,7 @@ namespace UI.NonProfessional
             PopulateTabControl();
 
             _PacientesFormEventHandler = new PacientesFormEventHandler(this);
-            _tabEventHandler = new PacientesTabCtrlEventHandler(TabCtrlPacientes);
+            _tabEventHandler = new TabCtrlEventHandler(TabCtrlPacientes);
 
             InitializeHandlers();
 

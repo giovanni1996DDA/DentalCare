@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.Domain;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,23 +15,34 @@ namespace UI.NonProfessional.FormsParametrizaciones.FormsRoles
 {
     public partial class GestionRolesForm : Form
     {
-        private GestionRolesEventHandler _eventHandler;
-        private DgvRolEventHandler _dgvRolEventHandler;
+        public GestionRolesEventHandler eventHandler;
+        public DgvRolEventHandler dgvRolEventHandler;
+        public DgvPermisoEventHandler dgvPermisoEventHandler;
+
+        public Rol previewingRole { get; set; }
         public GestionRolesForm()
         {
             InitializeComponent();
 
-            _eventHandler = new GestionRolesEventHandler(this);
-            _dgvRolEventHandler = new DgvRolEventHandler(this);
+            eventHandler = new GestionRolesEventHandler(this);
+            dgvRolEventHandler = new DgvRolEventHandler(this);
+            dgvPermisoEventHandler = new DgvPermisoEventHandler(this);
 
             InitializeHandlers();
         }
 
         private void InitializeHandlers()
         {
-            btnSave.Click += _eventHandler.HandleSaveChanges;
-            btnSearch.Click += _eventHandler.HandleVisualize;
-            dgvRol.CellDoubleClick += _dgvRolEventHandler.HandleDoubleClick;
+            this.Load += eventHandler.HandleOnLoad;
+            txtDescripcion.TextChanged += eventHandler.HandleOnDescriptionChanged;
+            btnSave.Click += eventHandler.HandleOnSaveChanges;
+            btnSearch.Click += eventHandler.HandleOnVisualize;
+            dgvRol.CellDoubleClick += dgvRolEventHandler.HandleDoubleClick;
+            btnAddRole.Click += dgvRolEventHandler.HandleAddItem;
+            btnRemoveRole.Click += dgvRolEventHandler.HandleRemoveItem;
+            btnAddPermiso.Click += dgvPermisoEventHandler.HandleAddItem;
+            btnRemovePermiso.Click += dgvPermisoEventHandler.HandleRemoveItem;
+            btnDelete.Click += eventHandler.HandleOnDelete;
         }
     }
 }

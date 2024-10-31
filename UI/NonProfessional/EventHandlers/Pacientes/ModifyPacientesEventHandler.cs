@@ -45,7 +45,7 @@ namespace UI.NonProfessional.EventHandlers.Pacientes
             }
         }
 
-        public override void HandleSaveChanges(object sender, EventArgs e)
+        public override void HandleOnSaveChanges(object sender, EventArgs e)
         {
             if(modifyingPaciente == null)
             {
@@ -148,17 +148,27 @@ namespace UI.NonProfessional.EventHandlers.Pacientes
             throw new NotImplementedException();
         }
 
-        public override void HandleVisualize(object sender, EventArgs e)
+        public override void HandleOnVisualize(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }
 
-        public override void HandleExit(object sender, EventArgs e)
+        public override void HandleOnExit(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }
 
         public override void HandleOnLogin(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void HandleOnShowPassword(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void HandleOnDelete(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }

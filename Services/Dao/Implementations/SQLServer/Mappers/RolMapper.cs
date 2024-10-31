@@ -23,7 +23,10 @@ namespace Services.Dao.Implementations.SQLServer.Mappers
             {
                 Id = Guid.Parse($"{values[(int)RolColumns.Id]}"),
                 Nombre = (string)values[(int)RolColumns.Nombre],
-                Descripcion = (string)values[(int)RolColumns.Descripcion],
+                Descripcion = values[(int)RolColumns.Descripcion] == DBNull.Value
+                                                                      ? null
+                                                                      : (string)values[(int)RolColumns.Descripcion]
+
             };
         }
     }

@@ -10,7 +10,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Exceptions;
+using UI.Generic;
 using UI.Helpers;
+using EventHandler = UI.Generic.EventHandler;
 
 namespace UI.NonProfessional.EventHandlers.Pacientes
 {
@@ -27,7 +29,7 @@ namespace UI.NonProfessional.EventHandlers.Pacientes
 
             try
             {
-                List<TipoDocumento> tiposDocumento = TipoDocumentoService.Instance.GetAll();
+                List<TipoDocumento> tiposDocumento = TipoDocumentoService.Instance.Get();
 
                 cbxTipoDoc.DataSource = tiposDocumento;
                 cbxTipoDoc.DisplayMember = "Descripcion";
@@ -95,7 +97,7 @@ namespace UI.NonProfessional.EventHandlers.Pacientes
                 NumeroDocumento = txtNroDoc.Text
             };
 
-            modifyingPaciente = PacienteService.Instance.GetOne(protoPaciente);
+            modifyingPaciente = PacienteService.Instance.GetOneByDocument(protoPaciente);
 
             txtNombre.Text = modifyingPaciente.Nombre;
             txtApellido.Text = modifyingPaciente.Apellido;

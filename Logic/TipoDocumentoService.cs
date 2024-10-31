@@ -23,7 +23,7 @@ namespace Logic
         {
         }
 
-        public List<TipoDocumento> GetAll()
+        public List<TipoDocumento> Get()
         {
             using (DentalCareDBEntities context = new DentalCareDBEntities())
             {

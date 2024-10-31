@@ -34,15 +34,16 @@
             btnSave = new MaterialSkin.Controls.MaterialButton();
             btnSearch = new MaterialSkin.Controls.MaterialButton();
             lblDestalle = new MaterialSkin.Controls.MaterialLabel();
-            btnAgregar = new MaterialSkin.Controls.MaterialButton();
-            btnEliminar = new MaterialSkin.Controls.MaterialButton();
+            btnAddRole = new MaterialSkin.Controls.MaterialButton();
+            btnRemoveRole = new MaterialSkin.Controls.MaterialButton();
             txtRol = new MaterialSkin.Controls.MaterialTextBox();
-            materialButton1 = new MaterialSkin.Controls.MaterialButton();
-            materialButton2 = new MaterialSkin.Controls.MaterialButton();
+            btnRemovePermiso = new MaterialSkin.Controls.MaterialButton();
+            btnAddPermiso = new MaterialSkin.Controls.MaterialButton();
             materialLabel1 = new MaterialSkin.Controls.MaterialLabel();
             dgvPermiso = new DataGridView();
             txtDescripcion = new MaterialSkin.Controls.MaterialTextBox();
             lblDescripcion = new MaterialSkin.Controls.MaterialLabel();
+            btnDelete = new MaterialSkin.Controls.MaterialButton();
             ((System.ComponentModel.ISupportInitialize)dgvRol).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvPermiso).BeginInit();
             SuspendLayout();
@@ -125,47 +126,47 @@
             lblDestalle.TabIndex = 7;
             lblDestalle.Text = "Roles hijos";
             // 
-            // btnAgregar
+            // btnAddRole
             // 
-            btnAgregar.AutoSize = false;
-            btnAgregar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            btnAgregar.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            btnAgregar.Depth = 0;
-            btnAgregar.Enabled = false;
-            btnAgregar.HighEmphasis = true;
-            btnAgregar.Icon = null;
-            btnAgregar.Location = new Point(166, 511);
-            btnAgregar.Margin = new Padding(4, 6, 4, 6);
-            btnAgregar.MouseState = MaterialSkin.MouseState.HOVER;
-            btnAgregar.Name = "btnAgregar";
-            btnAgregar.NoAccentTextColor = Color.Empty;
-            btnAgregar.Size = new Size(157, 36);
-            btnAgregar.TabIndex = 8;
-            btnAgregar.Text = "Agregar";
-            btnAgregar.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            btnAgregar.UseAccentColor = false;
-            btnAgregar.UseVisualStyleBackColor = true;
+            btnAddRole.AutoSize = false;
+            btnAddRole.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnAddRole.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnAddRole.Depth = 0;
+            btnAddRole.Enabled = false;
+            btnAddRole.HighEmphasis = true;
+            btnAddRole.Icon = null;
+            btnAddRole.Location = new Point(166, 511);
+            btnAddRole.Margin = new Padding(4, 6, 4, 6);
+            btnAddRole.MouseState = MaterialSkin.MouseState.HOVER;
+            btnAddRole.Name = "btnAddRole";
+            btnAddRole.NoAccentTextColor = Color.Empty;
+            btnAddRole.Size = new Size(157, 36);
+            btnAddRole.TabIndex = 8;
+            btnAddRole.Text = "Agregar";
+            btnAddRole.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnAddRole.UseAccentColor = false;
+            btnAddRole.UseVisualStyleBackColor = true;
             // 
-            // btnEliminar
+            // btnRemoveRole
             // 
-            btnEliminar.AutoSize = false;
-            btnEliminar.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            btnEliminar.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            btnEliminar.Depth = 0;
-            btnEliminar.Enabled = false;
-            btnEliminar.HighEmphasis = true;
-            btnEliminar.Icon = null;
-            btnEliminar.Location = new Point(331, 511);
-            btnEliminar.Margin = new Padding(4, 6, 4, 6);
-            btnEliminar.MouseState = MaterialSkin.MouseState.HOVER;
-            btnEliminar.Name = "btnEliminar";
-            btnEliminar.NoAccentTextColor = Color.Empty;
-            btnEliminar.Size = new Size(157, 36);
-            btnEliminar.TabIndex = 9;
-            btnEliminar.Text = "Eliminar";
-            btnEliminar.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            btnEliminar.UseAccentColor = false;
-            btnEliminar.UseVisualStyleBackColor = true;
+            btnRemoveRole.AutoSize = false;
+            btnRemoveRole.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnRemoveRole.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnRemoveRole.Depth = 0;
+            btnRemoveRole.Enabled = false;
+            btnRemoveRole.HighEmphasis = true;
+            btnRemoveRole.Icon = null;
+            btnRemoveRole.Location = new Point(331, 511);
+            btnRemoveRole.Margin = new Padding(4, 6, 4, 6);
+            btnRemoveRole.MouseState = MaterialSkin.MouseState.HOVER;
+            btnRemoveRole.Name = "btnRemoveRole";
+            btnRemoveRole.NoAccentTextColor = Color.Empty;
+            btnRemoveRole.Size = new Size(157, 36);
+            btnRemoveRole.TabIndex = 9;
+            btnRemoveRole.Text = "Eliminar";
+            btnRemoveRole.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnRemoveRole.UseAccentColor = false;
+            btnRemoveRole.UseVisualStyleBackColor = true;
             // 
             // txtRol
             // 
@@ -184,47 +185,47 @@
             txtRol.Text = "";
             txtRol.TrailingIcon = null;
             // 
-            // materialButton1
+            // btnRemovePermiso
             // 
-            materialButton1.AutoSize = false;
-            materialButton1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            materialButton1.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            materialButton1.Depth = 0;
-            materialButton1.Enabled = false;
-            materialButton1.HighEmphasis = true;
-            materialButton1.Icon = null;
-            materialButton1.Location = new Point(848, 511);
-            materialButton1.Margin = new Padding(4, 6, 4, 6);
-            materialButton1.MouseState = MaterialSkin.MouseState.HOVER;
-            materialButton1.Name = "materialButton1";
-            materialButton1.NoAccentTextColor = Color.Empty;
-            materialButton1.Size = new Size(157, 36);
-            materialButton1.TabIndex = 18;
-            materialButton1.Text = "Eliminar";
-            materialButton1.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            materialButton1.UseAccentColor = false;
-            materialButton1.UseVisualStyleBackColor = true;
+            btnRemovePermiso.AutoSize = false;
+            btnRemovePermiso.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnRemovePermiso.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnRemovePermiso.Depth = 0;
+            btnRemovePermiso.Enabled = false;
+            btnRemovePermiso.HighEmphasis = true;
+            btnRemovePermiso.Icon = null;
+            btnRemovePermiso.Location = new Point(848, 511);
+            btnRemovePermiso.Margin = new Padding(4, 6, 4, 6);
+            btnRemovePermiso.MouseState = MaterialSkin.MouseState.HOVER;
+            btnRemovePermiso.Name = "btnRemovePermiso";
+            btnRemovePermiso.NoAccentTextColor = Color.Empty;
+            btnRemovePermiso.Size = new Size(157, 36);
+            btnRemovePermiso.TabIndex = 18;
+            btnRemovePermiso.Text = "Eliminar";
+            btnRemovePermiso.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnRemovePermiso.UseAccentColor = false;
+            btnRemovePermiso.UseVisualStyleBackColor = true;
             // 
-            // materialButton2
+            // btnAddPermiso
             // 
-            materialButton2.AutoSize = false;
-            materialButton2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            materialButton2.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
-            materialButton2.Depth = 0;
-            materialButton2.Enabled = false;
-            materialButton2.HighEmphasis = true;
-            materialButton2.Icon = null;
-            materialButton2.Location = new Point(683, 511);
-            materialButton2.Margin = new Padding(4, 6, 4, 6);
-            materialButton2.MouseState = MaterialSkin.MouseState.HOVER;
-            materialButton2.Name = "materialButton2";
-            materialButton2.NoAccentTextColor = Color.Empty;
-            materialButton2.Size = new Size(157, 36);
-            materialButton2.TabIndex = 17;
-            materialButton2.Text = "Agregar";
-            materialButton2.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
-            materialButton2.UseAccentColor = false;
-            materialButton2.UseVisualStyleBackColor = true;
+            btnAddPermiso.AutoSize = false;
+            btnAddPermiso.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnAddPermiso.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnAddPermiso.Depth = 0;
+            btnAddPermiso.Enabled = false;
+            btnAddPermiso.HighEmphasis = true;
+            btnAddPermiso.Icon = null;
+            btnAddPermiso.Location = new Point(683, 511);
+            btnAddPermiso.Margin = new Padding(4, 6, 4, 6);
+            btnAddPermiso.MouseState = MaterialSkin.MouseState.HOVER;
+            btnAddPermiso.Name = "btnAddPermiso";
+            btnAddPermiso.NoAccentTextColor = Color.Empty;
+            btnAddPermiso.Size = new Size(157, 36);
+            btnAddPermiso.TabIndex = 17;
+            btnAddPermiso.Text = "Agregar";
+            btnAddPermiso.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnAddPermiso.UseAccentColor = false;
+            btnAddPermiso.UseVisualStyleBackColor = true;
             // 
             // materialLabel1
             // 
@@ -255,7 +256,8 @@
             txtDescripcion.AnimateReadOnly = false;
             txtDescripcion.BorderStyle = BorderStyle.None;
             txtDescripcion.Depth = 0;
-            txtDescripcion.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            txtDescripcion.Enabled = false;
+            txtDescripcion.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             txtDescripcion.LeadingIcon = null;
             txtDescripcion.Location = new Point(12, 106);
             txtDescripcion.MaxLength = 50;
@@ -279,19 +281,39 @@
             lblDescripcion.TabIndex = 20;
             lblDescripcion.Text = "Descripcion";
             // 
+            // btnDelete
+            // 
+            btnDelete.AutoSize = false;
+            btnDelete.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            btnDelete.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
+            btnDelete.Depth = 0;
+            btnDelete.HighEmphasis = true;
+            btnDelete.Icon = (Image)resources.GetObject("btnDelete.Icon");
+            btnDelete.Location = new Point(524, 31);
+            btnDelete.Margin = new Padding(4, 6, 4, 6);
+            btnDelete.MouseState = MaterialSkin.MouseState.HOVER;
+            btnDelete.Name = "btnDelete";
+            btnDelete.NoAccentTextColor = Color.Empty;
+            btnDelete.Size = new Size(50, 50);
+            btnDelete.TabIndex = 22;
+            btnDelete.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
+            btnDelete.UseAccentColor = false;
+            btnDelete.UseVisualStyleBackColor = true;
+            // 
             // GestionRolesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1018, 600);
+            Controls.Add(btnDelete);
             Controls.Add(txtDescripcion);
             Controls.Add(lblDescripcion);
             Controls.Add(dgvPermiso);
-            Controls.Add(materialButton1);
-            Controls.Add(materialButton2);
+            Controls.Add(btnRemovePermiso);
+            Controls.Add(btnAddPermiso);
             Controls.Add(materialLabel1);
-            Controls.Add(btnEliminar);
-            Controls.Add(btnAgregar);
+            Controls.Add(btnRemoveRole);
+            Controls.Add(btnAddRole);
             Controls.Add(txtRol);
             Controls.Add(lblDestalle);
             Controls.Add(btnSave);
@@ -314,14 +336,15 @@
         private MaterialSkin.Controls.MaterialButton btnSave;
         private MaterialSkin.Controls.MaterialButton btnSearch;
         private MaterialSkin.Controls.MaterialLabel lblDestalle;
-        private MaterialSkin.Controls.MaterialButton btnAgregar;
-        private MaterialSkin.Controls.MaterialButton btnEliminar;
+        private MaterialSkin.Controls.MaterialButton btnAddRole;
+        private MaterialSkin.Controls.MaterialButton btnRemoveRole;
         private MaterialSkin.Controls.MaterialTextBox txtRol;
-        private MaterialSkin.Controls.MaterialButton materialButton1;
-        private MaterialSkin.Controls.MaterialButton materialButton2;
+        private MaterialSkin.Controls.MaterialButton btnRemovePermiso;
+        private MaterialSkin.Controls.MaterialButton btnAddPermiso;
         private MaterialSkin.Controls.MaterialLabel materialLabel1;
         private DataGridView dgvPermiso;
         private MaterialSkin.Controls.MaterialTextBox txtDescripcion;
         private MaterialSkin.Controls.MaterialLabel lblDescripcion;
+        private MaterialSkin.Controls.MaterialButton btnDelete;
     }
 }

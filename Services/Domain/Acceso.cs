@@ -14,9 +14,11 @@ namespace Services.Domain
 /// </summary>
     public abstract class Acceso
     {
-        public Guid Id { get; set; }
-        [Required
-            (ErrorMessage ="Se debe especificar un nombre.")]
+        [Key, Column(Order = 0)] // Primera columna en la clave primaria compuesta
+        public Guid? Id { get; set; }
+
+        [Required(ErrorMessage = "Se debe especificar un nombre.")]
+        [Key, Column(Order = 1)] // Segunda columna en la clave primaria compuesta)]
         public string Nombre { get; set; }
         [NotMapped]
         public abstract bool HasChildren { get; }

@@ -1,11 +1,17 @@
-﻿using Services.Dao.Factory;
+﻿using Dao;
+using Services.Dao.Factory;
+using Services.Dao.Implementations.SQLServer;
 using Services.Dao.Interfaces;
 using Services.Domain;
+using Services.Helpers;
 using Services.Logic.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Net;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +22,7 @@ namespace Services.Logic
     /// Servicio para gestionar usuarios en el sistema.
     /// Proporciona funcionalidad para registrar, actualizar, validar y obtener usuarios.
     /// </summary>
-    public class UserService
+    public class UserService : Logic<User>, IObservable<User>
     {
         #region Singleton
         /// <summary>
@@ -41,6 +47,8 @@ namespace Services.Logic
         private UserService() { }
         #endregion
 
+        List<IObserver<User>> observers = new List<IObserver<User>>();
+
         /// <summary>
         /// Registra un usuario en la base de datos.
         /// </summary>
@@ -51,6 +59,8 @@ namespace Services.Logic
         {
             List<ValidationResult> results = new List<ValidationResult>();
 
+            Guid userId = Guid.NewGuid();
+
             if (!isValid(user, results))
                 throw new InvalidUserException(results.FirstOrDefault()?.ErrorMessage);
 
@@ -58,8 +68,16 @@ namespace Services.Logic
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
 
+                User validatingUser = new User()
+                {
+                    UserName = user.UserName,
+                    Password = user.Password,
+                };
+
+                List<FilterProperty> filters = BuildFilters(validatingUser);
+
                 // Verifica si existe un usuario con ese UserName
-                if (userRepo.Exists(new User { UserName = user.UserName }))
+                if (userRepo.Exists(filters))
                     throw new UserAlreadyRegisteredException();
             }
 
@@ -67,31 +85,28 @@ namespace Services.Logic
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
 
-                userRepo.Create(user);
+                user.Id = userId;
 
-                foreach (Acceso access in user.Accesos)
-                {
-                    AccesoService.Instance.CreateRelation(context, user, access);
-                }
+                userRepo.Create(user);
 
                 context.SaveChanges();
             }
+
+            observers.ForEach(o => o.OnNext(user));
+
+            AccesoService.Instance.CreateRelations(user);
         }
         public void Login(User user) 
         {
-            using (var context = FactoryDao.UnitOfWork.Create())
+            try
             {
-                IUserDao userRepo = context.Repositories.UserRepository;
-
-                // Valida la existencia de un usuario con esa contraseña
-                if (!userRepo.Exists(user))
-                    throw new NoUsersFoundException();
-
-                user = userRepo.GetOne(user);
-
-                HidrateUser(user);
+                user = GetOne(user);
 
                 SessionManager.SetUser(user);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -103,61 +118,68 @@ namespace Services.Logic
         /// <exception cref="NoUsersFoundException">Si no se encuentran usuarios que coincidan con los criterios.</exception>
         public List<User> Get(User user)
         {
-            List<User> returning = new List<User>();
+            List<User> returningUsers = new List<User>();
 
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
-                returning = userRepo.Get(user);
+
+                List<FilterProperty> filters = BuildFilters(user);
+
+                returningUsers = userRepo.Get(filters);
             }
 
-            if (returning.Count == 0)
+            if (returningUsers.Count == 0)
                 throw new NoUsersFoundException();
 
-            foreach (User returningUser in returning)
+            foreach (User returningUser in returningUsers)
             {
-                HidrateUser(returningUser);
+                try
+                {
+                    AccesoService.Instance.GetAccesos(returningUser);
+                }
+                catch (NoRolesFoundException)
+                {
+                }
+                catch (NoPermissionsFoundException)
+                {
+                }
             }
 
-            return returning;
+            //Acá deberia llenar especialidades, pero no me deja llamar a EspecialidadService por referencia circular.
+
+            return returningUsers;
+        }
+        public void Delete(User user)
+        {
+            user.IsAnulated = true;
+
+            try
+            {
+                UpdateUser(user);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
         public User GetOne(User user)
         {
-            User returning = null;
-
-            using (var context = FactoryDao.UnitOfWork.Create())
+            try
             {
-                IUserDao userRepo = context.Repositories.UserRepository;
-                returning = userRepo.GetOne(user);
+                User returning = Get(user).FirstOrDefault();
+                return returning;
             }
-
-            if (returning is null)
-                throw new NoUsersFoundException();
-
-            HidrateUser(returning);
-
-            return returning;
-        }
-
-        private void HidrateUser(User usr)
-        {
-            AccesoService.Instance.GetAccesos(usr);
-        }
-
-        /// <summary>
-        /// Valida si un usuario ya está registrado en el sistema.
-        /// </summary>
-        /// <param name="user">El objeto usuario a validar.</param>
-        /// <returns>True si el usuario ya está registrado, de lo contrario, false.</returns>
-        public bool IsRegistered(User user)
-        {
-            using (var context = FactoryDao.UnitOfWork.Create())
+            catch (NoUsersFoundException)
             {
-                IUserDao userRepo = context.Repositories.UserRepository;
-                return userRepo.Exists(user);
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
-
         /// <summary>
         /// Actualiza los datos de un usuario en la base de datos.
         /// </summary>
@@ -165,16 +187,30 @@ namespace Services.Logic
         /// <exception cref="UserDoesNotExistException">Si el usuario no existe en la base de datos.</exception>
         public void UpdateUser(User user)
         {
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            if (!isValid(user, results))
+                throw new InvalidUserException(results.FirstOrDefault()?.ErrorMessage);
+
             using (var context = FactoryDao.UnitOfWork.Create())
             {
                 IUserDao userRepo = context.Repositories.UserRepository;
 
-                if (!userRepo.Exists(user))
+                List<FilterProperty> filters = BuildFilters(user);
+
+                if (!userRepo.Exists(filters))
                     throw new UserDoesNotExistException();
 
-                userRepo.Update(user);
+                userRepo.Update(filters);
+
                 context.SaveChanges();
             }
+
+            AccesoService.Instance.ClearRelations(user);
+
+            AccesoService.Instance.CreateRelations(user);
+
+            observers.ForEach(o => o.OnNext(user));
         }
 
         /// <summary>
@@ -255,6 +291,13 @@ namespace Services.Logic
         {
             var valContext = new ValidationContext(usr, serviceProvider: null, items: null);
             return Validator.TryValidateObject(usr, valContext, results, true);
+        }
+
+        public IDisposable Subscribe(IObserver<User> observer)
+        {
+            observers.Add(observer);
+
+            return new Unsubscriber(observers, observer);
         }
     }
 }

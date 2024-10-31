@@ -24,11 +24,10 @@ namespace Dao
         public System.Guid Profesional { get; set; }
         public System.DateTime FechaHora { get; set; }
         public System.Guid Paciente { get; set; }
-        public System.Guid Estado { get; set; }
+        public int Estado { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AtencionCabecera> AtencionCabecera { get; set; }
-        public virtual EstadoTurno EstadoTurno { get; set; }
         public virtual Paciente Paciente1 { get; set; }
     }
 }

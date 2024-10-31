@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Services.Logic.Exceptions
 {
-    internal class EmptyRoleException : Exception
+    public class EmptyRoleException : Exception
     {
         public EmptyRoleException() : base("El rol no puede estar vacío.")
         { 

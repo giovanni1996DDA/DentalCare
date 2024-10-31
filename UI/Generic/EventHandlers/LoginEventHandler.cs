@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UI.Exceptions;
+using UI.Generic;
 using UI.Helpers;
 using UI.NonProfessional;
 using UI.Perofessional;
@@ -46,14 +47,23 @@ namespace UI.Login.EventHandler
 
                 UserFacade.Login(user);
 
-                Especialidad especialidad = EspecialidadService.Instance.GetOne(user);
+                user = SessionManagerFacade.GetLoggedUser();
 
-                nextForm = new ProfessionalLayoutForm();
+                //Revisar porque cuelga el programa
+                if (user.PasswordResetted)
+                {
+                    Form resetPasswordForm = new ResetPasswordForm();
+                    DialogResult result = resetPasswordForm.ShowDialog();
+                }
 
-            }
-            catch (NoEspecialidadFoundException)
-            {
-                nextForm = new NonProfessionalLayoutForm();
+                Especialidad especialidad = EspecialidadService.Instance.GetOneByUser(user);
+
+                nextForm = (especialidad == null) ? new NonProfessionalLayoutForm() : new ProfessionalLayoutForm();
+
+                nextForm.Show();
+
+                _form.Hide();
+
             }
             catch (NoUsersFoundException)
             {
@@ -67,13 +77,9 @@ namespace UI.Login.EventHandler
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Ocurrió un error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            _form.Hide();
-
-            nextForm.ShowDialog();
         }
 
         public void HandleShowPassword(object sender, EventArgs e)

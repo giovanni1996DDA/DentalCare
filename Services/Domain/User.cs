@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dao;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,9 +11,11 @@ namespace Services.Domain
 {
     public class User
     {
-        public Guid Id { get; set; }
+        [Key]
+        public Guid? Id { get; set; }
         [Required
             (ErrorMessage = "El usuario es obligatorio.")]
+        [Key]
         public string UserName { get; set; }
         [Required
             (ErrorMessage = "La contraseña es obligatoria.")]
@@ -29,6 +32,13 @@ namespace Services.Domain
         [Required
             (ErrorMessage = "Se debe especificar un email.")]
         public string Email { get; set; }
+        [NotMapped] // Hay que sacarlo.
+        public bool IsAnulated { get; set; }
+        [NotMapped] // Hay que sacarlo.
+        public bool PasswordResetted { get; set; }
+        [NotMapped]
+        public List<Especialidad> Especialidades { get; set; } = new List<Especialidad>();
+
         [NotMapped]
         public List<Acceso> Accesos { get; set; } = new List<Acceso>();
         public User()
