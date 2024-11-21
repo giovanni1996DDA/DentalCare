@@ -144,6 +144,7 @@
           </Key>
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Profesional" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Especialidad" Type="uniqueidentifier" Nullable="false" />
           <Property Name="FechaHora" Type="datetime" Nullable="false" />
           <Property Name="Paciente" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Estado" Type="int" Nullable="false" />
@@ -647,6 +648,7 @@
           </Key>
           <Property Name="Id" Type="Guid" Nullable="false" />
           <Property Name="Profesional" Type="Guid" Nullable="false" />
+          <Property Name="Especialidad" Type="Guid" Nullable="false" />
           <Property Name="FechaHora" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Paciente" Type="Guid" Nullable="false" />
           <Property Name="Estado" Type="Int32" Nullable="false" />
@@ -1135,6 +1137,7 @@
               <MappingFragment StoreEntitySet="Turno">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Profesional" ColumnName="Profesional" />
+                <ScalarProperty Name="Especialidad" ColumnName="Especialidad" />
                 <ScalarProperty Name="FechaHora" ColumnName="FechaHora" />
                 <ScalarProperty Name="Paciente" ColumnName="Paciente" />
                 <ScalarProperty Name="Estado" ColumnName="Estado" />

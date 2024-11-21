@@ -14,6 +14,7 @@ using MaterialSkin.Controls;
 using UI.Generic.FormUsuarios.PopUps;
 using Services.Facade;
 using Services.Logic.Exceptions;
+using Services.Facade.Extensions;
 
 namespace UI.Generic.EventHandlers
 {
@@ -72,7 +73,7 @@ namespace UI.Generic.EventHandlers
                 if (e.Value != null && e.Value is int moduloValue)
                 {
                     // Convertir el valor de Modulo a su nombre en el enum
-                    e.Value = Enum.GetName(typeof(SystemModulesEnum), moduloValue) ?? "Desconocido";
+                    e.Value = Enum.GetName(typeof(SystemModulesEnum), moduloValue) ?? "Desconocido".Translate();
                     e.FormattingApplied = true;
                 }
             }
@@ -81,7 +82,7 @@ namespace UI.Generic.EventHandlers
                 if (e.Value != null && e.Value is int tipoPermisoValue)
                 {
                     // Convertir el valor de TipoPermiso a su nombre en el enum
-                    e.Value = Enum.GetName(typeof(TiposPermisoEnum), tipoPermisoValue) ?? "Desconocido";
+                    e.Value = Enum.GetName(typeof(TiposPermisoEnum), tipoPermisoValue) ?? "Desconocido".Translate();
                     e.FormattingApplied = true;
                 }
             }
@@ -100,8 +101,8 @@ namespace UI.Generic.EventHandlers
 
                 if (permisoExists)
                 {
-                    MessageBox.Show($"El rol ya se agregó anteriormente.",
-                                    "Rol existente",
+                    MessageBox.Show($"El rol ya se agregó anteriormente.".Translate(),
+                                    "Rol existente".Translate(),
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
                     return;
@@ -112,7 +113,7 @@ namespace UI.Generic.EventHandlers
             catch (Exception ex)
             {
                 MessageBox.Show($"{ex.Message}. Revisar logs.",
-                                        "Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        "Error inesperado".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         public void HandleOnRemovePermiso(object sender, EventArgs e)
@@ -120,8 +121,8 @@ namespace UI.Generic.EventHandlers
 
             if (dgvPermisos.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Debe seleccionar el permiso a eliminar.",
-                                "Error en la eliminación de rol", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Debe seleccionar el permiso a eliminar.".Translate(),
+                                "Error en la eliminación de rol".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -146,8 +147,8 @@ namespace UI.Generic.EventHandlers
 
                 if (roleExists)
                 {
-                    MessageBox.Show($"El rol ya se agregó anteriormente.",
-                                    "Rol existente",
+                    MessageBox.Show($"El rol ya se agregó anteriormente.".Translate(),
+                                    "Rol existente".Translate(),
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
                     return;
@@ -157,8 +158,8 @@ namespace UI.Generic.EventHandlers
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}. Revisar logs.",
-                                        "Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"{ex.Message}. Revisar logs.".Translate(),
+                                        "Error inesperado".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         public void HandleOnRemoveRol(object sender, EventArgs e)
@@ -166,8 +167,8 @@ namespace UI.Generic.EventHandlers
 
             if (dgvRoles.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Debe seleccionar el rol a eliminar.",
-                                "Error en la eliminación de rol", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Debe seleccionar el rol a eliminar.".Translate(),
+                                "Error en la eliminación de rol".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -191,8 +192,8 @@ namespace UI.Generic.EventHandlers
 
                 if (especialidadExists)
                 {
-                    MessageBox.Show($"La especialidad ya se agregó anteriormente.",
-                                    "Especialidad existente",
+                    MessageBox.Show($"La especialidad ya se agregó anteriormente.".Translate(),
+                                    "Especialidad existente".Translate(),
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
                     return;
@@ -211,8 +212,8 @@ namespace UI.Generic.EventHandlers
 
             if (dgvEspecialidades.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Debe seleccionar la especialidad a eliminar.",
-                                "Error en la eliminación de especialidad", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Debe seleccionar la especialidad a eliminar.".Translate(),
+                                "Error en la eliminación de especialidad".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -256,7 +257,7 @@ namespace UI.Generic.EventHandlers
             dgvPermisos.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Nombre",
-                HeaderText = "Nombre",
+                HeaderText = "Nombre".Translate(),
                 Name = "Nombre"
             });
 
@@ -264,7 +265,7 @@ namespace UI.Generic.EventHandlers
             dgvPermisos.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Modulo",
-                HeaderText = "Modulo",
+                HeaderText = "Modulo".Translate(),
                 Name = "ModuloText"
             });
 
@@ -272,7 +273,7 @@ namespace UI.Generic.EventHandlers
             dgvPermisos.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "TipoPermiso",
-                HeaderText = "Tipo de Permiso",
+                HeaderText = "Tipo de Permiso".Translate(),
                 Name = "TipoPermisoText"
             });
 
@@ -294,7 +295,7 @@ namespace UI.Generic.EventHandlers
             dgvRoles.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Nombre",
-                HeaderText = "Nombre",
+                HeaderText = "Nombre".Translate(),
                 Name = "Nombre"
             });
 
@@ -302,7 +303,7 @@ namespace UI.Generic.EventHandlers
             dgvRoles.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Descripcion",
-                HeaderText = "Descripcion",
+                HeaderText = "Descripcion".Translate(),
                 Name = "Descripcion"
             });
 
@@ -324,7 +325,7 @@ namespace UI.Generic.EventHandlers
             dgvEspecialidades.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Nombre",
-                HeaderText = "Nombre",
+                HeaderText = "Nombre".Translate(),
                 Name = "Nombre"
             });
             // Vincular el BindingList como DataSource
@@ -333,6 +334,7 @@ namespace UI.Generic.EventHandlers
         }
         public override void HandleOnLoad(object sender, EventArgs e)
         {
+            FormHelpers.TranslateControls(_form);
             ConfigureDgvPermisos();
             ConfigureDgvRoles();
             ConfigureDgvEspecialidad();

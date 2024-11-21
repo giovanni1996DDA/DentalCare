@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Generic.EventHandlers;
-using UI.NonProfessional.EventHandlers.Parametrizaciones.Roles;
 
 namespace UI.Generic.FormUsuarios.PopUps
 {

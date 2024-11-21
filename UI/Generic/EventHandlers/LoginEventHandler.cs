@@ -16,6 +16,7 @@ using UI.Helpers;
 using UI.NonProfessional;
 using UI.Perofessional;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Services.Facade.Extensions;
 
 namespace UI.Login.EventHandler
 {
@@ -49,13 +50,6 @@ namespace UI.Login.EventHandler
 
                 user = SessionManagerFacade.GetLoggedUser();
 
-                //Revisar porque cuelga el programa
-                if (user.PasswordResetted)
-                {
-                    Form resetPasswordForm = new ResetPasswordForm();
-                    DialogResult result = resetPasswordForm.ShowDialog();
-                }
-
                 Especialidad especialidad = EspecialidadService.Instance.GetOneByUser(user);
 
                 nextForm = (especialidad == null) ? new NonProfessionalLayoutForm() : new ProfessionalLayoutForm();
@@ -67,12 +61,12 @@ namespace UI.Login.EventHandler
             }
             catch (NoUsersFoundException)
             {
-                MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Usuario o contraseña incorrectos.".Translate(), "Error de autenticación".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             catch(EmptyFieldException)
             {
-                MessageBox.Show("Complete el usuario y la contraseña.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Complete el usuario y la contraseña.".Translate(), "Error de autenticación".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             catch (Exception ex)
@@ -109,7 +103,7 @@ namespace UI.Login.EventHandler
 
             if (txtUname.Text == "")
             {
-                throw new EmptyFieldException("Usuario");
+                throw new EmptyFieldException("Usuario".Translate());
             }
         }
 
@@ -121,8 +115,13 @@ namespace UI.Login.EventHandler
 
             if (txtPassword.Text == "")
             {
-                throw new EmptyFieldException("Contraseña");
+                throw new EmptyFieldException("Contraseña".Translate());
             }
+        }
+
+        internal void HanldeOnLoad(object? sender, EventArgs e)
+        {
+            FormHelpers.TranslateControls(_form);
         }
     }
 }

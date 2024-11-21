@@ -11,8 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Enums;
-using UI.NonProfessional.EventHandlers.Pacientes;
-using UI.NonProfessional.EventHandlers.Parametrizaciones;
+using UI.EventHandlers.Pacientes;
+using UI.EventHandlers.Parametrizaciones;
 
 namespace UI.NonProfessional
 {

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UI.Generic.FormUsuarios.PopUps;
 using UI.Helpers;
+using Services.Facade.Extensions;
 
 namespace UI.Generic.EventHandlers
 {
@@ -30,8 +31,8 @@ namespace UI.Generic.EventHandlers
         {
             if (dgvRoles.SelectedRows.Count == 0)
             {
-                MessageBox.Show($"Debe seleccionar el rol a agregar.",
-                                $"Error en la adición de rol",
+                MessageBox.Show($"Debe seleccionar el rol a agregar.".Translate(),
+                                $"Error en la adición de rol".Translate(),
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 return;

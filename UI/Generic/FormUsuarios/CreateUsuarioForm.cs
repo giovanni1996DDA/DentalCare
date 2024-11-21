@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Generic.EventHandlers;
-using UI.NonProfessional.EventHandlers.Pacientes;
 
 namespace UI.Generic.FormUsuarios
 {

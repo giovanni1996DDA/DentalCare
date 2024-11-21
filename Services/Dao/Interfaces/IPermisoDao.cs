@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Services.Dao.Interfaces
 {
-    public interface IPermisoDao :IGenericDao<Permiso>
+    public interface IPermisoDao : IGenericDao<Permiso>
     {
     }
 }

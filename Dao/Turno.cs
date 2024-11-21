@@ -22,6 +22,7 @@ namespace Dao
     
         public System.Guid Id { get; set; }
         public System.Guid Profesional { get; set; }
+        public System.Guid Especialidad { get; set; }
         public System.DateTime FechaHora { get; set; }
         public System.Guid Paciente { get; set; }
         public int Estado { get; set; }

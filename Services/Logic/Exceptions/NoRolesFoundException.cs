@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.Facade.Extensions;
+using System;
 using System.Runtime.Serialization;
 
 namespace Services.Logic.Exceptions
@@ -10,11 +11,11 @@ namespace Services.Logic.Exceptions
         {
         }
 
-        public NoRolesFoundException(string message) : base(message)
+        public NoRolesFoundException(string message) : base(message.Translate())
         {
         }
 
-        public NoRolesFoundException(string message, Exception innerException) : base(message, innerException)
+        public NoRolesFoundException(string message, Exception innerException) : base(message.Translate(), innerException)
         {
         }
 

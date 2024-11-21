@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using UI.NonProfessional.EventHandlers.Parametrizaciones.Roles;
+using UI.EventHandlers.Parametrizaciones.Roles;
 
 namespace UI.NonProfessional.FormsParametrizaciones.FormsRoles
 {

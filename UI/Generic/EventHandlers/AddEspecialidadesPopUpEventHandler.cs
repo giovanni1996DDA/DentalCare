@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UI.Generic.FormUsuarios.PopUps;
 using UI.Helpers;
+using Services.Facade.Extensions;
 
 namespace UI.Generic.EventHandlers
 {
@@ -57,7 +58,7 @@ namespace UI.Generic.EventHandlers
             dgvEspecialidades.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Nombre",
-                HeaderText = "Nombre",
+                HeaderText = "Nombre".Translate(),
                 Name = "Nombre"
             });
         }
@@ -65,8 +66,8 @@ namespace UI.Generic.EventHandlers
         {
             if (dgvEspecialidades.SelectedRows.Count == 0)
             {
-                MessageBox.Show($"Debe seleccionar la especialidad a agregar.",
-                                $"Error en la adición de especialidad",
+                MessageBox.Show($"Debe seleccionar la especialidad a agregar.".Translate(),
+                                $"Error en la adición de especialidad".Translate(),
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 return;

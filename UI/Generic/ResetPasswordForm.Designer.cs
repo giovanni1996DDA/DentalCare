@@ -83,6 +83,7 @@
             btnReset.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             btnReset.Density = MaterialSkin.Controls.MaterialButton.MaterialButtonDensity.Default;
             btnReset.Depth = 0;
+            btnReset.DialogResult = DialogResult.OK;
             btnReset.HighEmphasis = true;
             btnReset.Icon = null;
             btnReset.Location = new Point(12, 155);
@@ -96,6 +97,7 @@
             btnReset.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             btnReset.UseAccentColor = false;
             btnReset.UseVisualStyleBackColor = true;
+            btnReset.Click += btnReset_Click;
             // 
             // txtPassword
             // 
@@ -103,7 +105,7 @@
             txtPassword.AnimateReadOnly = false;
             txtPassword.BorderStyle = BorderStyle.None;
             txtPassword.Depth = 0;
-            txtPassword.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            txtPassword.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             txtPassword.LeadingIcon = null;
             txtPassword.Location = new Point(11, 31);
             txtPassword.MaxLength = 50;
@@ -116,7 +118,7 @@
             txtPassword.Text = "";
             txtPassword.TrailingIcon = null;
             // 
-            // RessetPasswordForm
+            // ResetPasswordForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -127,7 +129,7 @@
             Controls.Add(btnReset);
             Controls.Add(txtPassword);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "RessetPasswordForm";
+            Name = "ResetPasswordForm";
             Text = "RessetPasswordForm";
             ResumeLayout(false);
             PerformLayout();

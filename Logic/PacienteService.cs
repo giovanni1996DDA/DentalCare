@@ -84,5 +84,22 @@ namespace Logic
                 context.SaveChanges();
             }
         }
+
+        public Paciente GetById(Paciente paciente)
+        {
+            using (DentalCareDBEntities context = new DentalCareDBEntities())
+            {
+                // Buscar el paciente existente por su Número de Documento y Tipo de Documento
+                Paciente pacienteExistente = context.Paciente
+                                                    .FirstOrDefault(p => p.Id == paciente.Id);
+
+                if (pacienteExistente == null)
+                    throw new PacienteDoesNotExistsException();
+                
+                LogicHelpers.SetGuidEmptyToNull(pacienteExistente);
+
+                return pacienteExistente;
+            }
+        }
     }
 }

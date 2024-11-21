@@ -159,6 +159,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dao\Factory\FactoryDao.cs" />
+    <Compile Include="Dao\Implementations\Generics\LanguageDao.cs" />
+    <Compile Include="Dao\Implementations\SQLServer\DataBaseDao.cs" />
+    <Compile Include="Domain\BackupFile.cs" />
+    <Compile Include="Domain\LanguageItem.cs" />
+    <Compile Include="Facade\DataBaseFacade.cs" />
+    <Compile Include="Logic\DataBaseService.cs" />
+    <Compile Include="Logic\Exceptions\WordNotFoundException.cs" />
     <Compile Include="Dao\Implementations\SQLServer\FilterProperty.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Helpers\SqlTransactRepository.cs" />
     <Compile Include="Dao\Implementations\SQLServer\Mappers\PermisoMapper.cs" />
@@ -205,6 +212,8 @@
     <Compile Include="Domain\UserPermisoRelation.cs" />
     <Compile Include="Domain\UserRolRelation.cs" />
     <Compile Include="Facade\AccesoFacade.cs" />
+    <Compile Include="Facade\Extensions\StringExtention.cs" />
+    <Compile Include="Facade\LanguageFacade.cs" />
     <Compile Include="Facade\LoggerFacade.cs" />
     <Compile Include="Facade\ScreenFacade.cs" />
     <Compile Include="Facade\SecurityManagerFacade.cs" />
@@ -223,6 +232,7 @@
     <Compile Include="Logic\Exceptions\NoUsersFoundException.cs" />
     <Compile Include="Logic\Exceptions\UserAlreadyRegisteredException.cs" />
     <Compile Include="Logic\Exceptions\UserDoesNotExistException.cs" />
+    <Compile Include="Logic\LanguageLogic.cs" />
     <Compile Include="Logic\LoggerService.cs" />
     <Compile Include="Logic\Exceptions\NoRolesFoundException.cs" />
     <Compile Include="Logic\Exceptions\RecursiveRoleAdditionException.cs" />
@@ -270,6 +280,9 @@
       <Project>{BF7F6AEE-C076-4583-AD0A-137726DF28BA}</Project>
       <Name>Dao</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dao\Implementations\Generics\Exceptions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

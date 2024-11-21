@@ -6,6 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using Services.Facade.Extensions;
+using Services.Dao.Implementations.Generics;
 
 namespace UI.Helpers
 {
@@ -122,12 +126,12 @@ namespace UI.Helpers
                 }
                 else
                 {
-                    MessageBox.Show($"Formulario {formName} no encontrado.");
+                    MessageBox.Show($"{"Formulario".Translate()} {formName} {"no encontrado.".Translate()}");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar el formulario: {ex.Message}");
+                MessageBox.Show($"{"Error al cargar el formulario:".Translate()} {ex.Message}");
             }
         }
 
@@ -161,6 +165,84 @@ namespace UI.Helpers
 
             // Si no encuentra el formulario, devolver null
             return null;
+        }
+        public static void TranslateControls(Form form)
+        {
+            // Llama al método recursivo con el control principal (formulario)
+            foreach (Control control in form.Controls)
+            {
+                TranslateRecursive(control);
+            }
+        }
+        private static void TranslateRecursive(Control control)
+        {
+            if (control == null || control.Text == null || !(control.Text is string)) return;
+
+            if (control is DateTimePicker || 
+                control is NumericUpDown  ||
+                control is MaterialTextBox ||
+                control is MaterialComboBox) return;
+
+                // Si el control tiene un texto, lo traduce
+                if (!string.IsNullOrEmpty(control.Text))
+            {
+
+                control.Text = control.Text.Translate();
+            }
+
+            // Manejo especial para MenuStrip
+            if (control is MenuStrip menuStrip)
+            {
+                foreach (ToolStripItem item in menuStrip.Items)
+                {
+                    TranslateMenuItem(item);
+                }
+            }
+            // Manejo especial para TabControl
+            if (control is TabControl tabControl)
+            {
+                TranslateTabCtrl(tabControl);
+            }
+            // Si el control tiene hijos, los procesa recursivamente
+            foreach (Control child in control.Controls)
+            {
+                TranslateRecursive(child);
+            }
+        }
+        private static void TranslateMenuItem(ToolStripItem menuItem)
+        {
+            if (!string.IsNullOrEmpty(menuItem.Text))
+            {
+                menuItem.Text = menuItem.Text.Translate();
+            }
+
+            // Si el menú tiene sub-items (como un menú desplegable), procesarlos recursivamente
+            if (menuItem is ToolStripMenuItem menu)
+            {
+                foreach (ToolStripItem subItem in menu.DropDownItems)
+                {
+                    TranslateMenuItem(subItem);
+                }
+            }
+        }
+        private static void TranslateTabCtrl(TabControl tabctrl)
+        {
+            // Manejo especial para TabControl
+            foreach (TabPage tabPage in tabctrl.TabPages)
+            {
+                // Traducir el texto de la pestaña
+                if (!string.IsNullOrEmpty(tabPage.Text))
+                {
+
+                    tabPage.Text = tabPage.Text.Translate();
+                }
+
+                // Traducir los controles dentro de la pestaña
+                foreach (Control tabChild in tabPage.Controls)
+                {
+                    TranslateRecursive(tabChild);
+                }
+            }
         }
     }
 }

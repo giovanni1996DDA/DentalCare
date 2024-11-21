@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UI.Generic.FormUsuarios.PopUps;
 using UI.Helpers;
+using Services.Facade.Extensions;
 
 namespace UI.Generic.EventHandlers
 {
@@ -29,8 +30,8 @@ namespace UI.Generic.EventHandlers
         {
             if (dgvPermisos.SelectedRows.Count == 0)
             {
-                MessageBox.Show($"Debe seleccionar el permiso a agregar.",
-                                $"Error en la adición de permiso",
+                MessageBox.Show($"Debe seleccionar el permiso a agregar.".Translate(),
+                                $"Error en la adición de permiso".Translate(),
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 return;

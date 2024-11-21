@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UI.EventHandlers.Pacientes;
 using UI.NonProfessional.EventHandlers;
-using UI.NonProfessional.EventHandlers.Pacientes;
 using static MaterialSkin.MaterialItemCollection;
 
 namespace UI.NonProfessional.FormsPacientes

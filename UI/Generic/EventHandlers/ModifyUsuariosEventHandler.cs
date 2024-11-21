@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using UI.Enums;
 using UI.Helpers;
 using UI.NonProfessional.FormsParametrizaciones.FormsRoles;
+using Services.Facade.Extensions;
 
 namespace UI.Generic.EventHandlers
 {
@@ -30,7 +31,7 @@ namespace UI.Generic.EventHandlers
 
             txtPassword.Enabled = true;
 
-            if (MessageBox.Show($"Esta seguro de que desea eliminar el usuario {modifyingUser.UserName}?",
+            if (MessageBox.Show($"{"Esta seguro de que desea eliminar el usuario".Translate()} {modifyingUser.UserName}?",
                                 "Eliminar usuario",
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Question) == DialogResult.No)
@@ -40,7 +41,7 @@ namespace UI.Generic.EventHandlers
             {
                 UserFacade.Delete(modifyingUser);
 
-                MessageBox.Show($"El usuario {previewingUser.UserName} se eliminó correctamente.",
+                MessageBox.Show($"{"El usuario".Translate()} {previewingUser.UserName} {"se eliminó correctamente".Translate()}.",
                                 "Operación exitosa.",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Information);
@@ -51,8 +52,8 @@ namespace UI.Generic.EventHandlers
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}. Revisar logs.",
-                                $"Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"{ex.Message}. {"Revisar logs".Translate()}.",
+                                $"Error inesperado".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         public override void HandleOnExit(object sender, EventArgs e)
@@ -123,7 +124,7 @@ namespace UI.Generic.EventHandlers
 
                 UserFacade.Update(protoUser);
 
-                MessageBox.Show($"El usuario {protoUser.UserName} Se actualizó correctamente.",
+                MessageBox.Show($"{"El usuario".Translate()} {protoUser.UserName} {"Se actualizó correctamente".Translate()}.",
                                 "Operación exitosa.", 
                                 MessageBoxButtons.OK, 
                                 MessageBoxIcon.Information);
@@ -131,7 +132,7 @@ namespace UI.Generic.EventHandlers
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"{ex.Message}. Revisar logs.", "Error inesperado.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"{ex.Message}. {"Revisar logs".Translate()}.", "Error inesperado.".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

@@ -35,6 +35,8 @@ namespace UI.Generic.EventHandlers
 
         public override void HandleOnLoad(object sender, EventArgs e)
         {
+            FormHelpers.TranslateControls(_form);
+
             TabControl tbcUsuarios = (TabControl)FormHelpers.FindControl(_form, "tbcUsuarios");
 
             tbcUsuarios.SelectedIndex = 0;

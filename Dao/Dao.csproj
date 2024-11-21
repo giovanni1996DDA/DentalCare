@@ -188,6 +188,7 @@
     <Compile Include="Especialidad.cs">
       <DependentUpon>DentalCareDBModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ExtendedModels\Turno.cs" />
     <Compile Include="Factura.cs">
       <DependentUpon>DentalCareDBModel.tt</DependentUpon>
     </Compile>
@@ -227,11 +228,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <EntityDeploy Include="DentalCareDBModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>DentalCareDBModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <None Include="App.Config" />
     <None Include="DentalCareDBModel.edmx.diagram">
       <DependentUpon>DentalCareDBModel.edmx</DependentUpon>
     </None>
@@ -239,9 +240,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ExtendedModels\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DentalCareDBModel.Context.tt">
@@ -255,6 +253,7 @@
       <LastGenOutput>DentalCareDBModel.cs</LastGenOutput>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

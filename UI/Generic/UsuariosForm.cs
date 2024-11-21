@@ -10,8 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Enums;
+using UI.EventHandlers.Pacientes;
 using UI.Generic.EventHandlers;
-using UI.NonProfessional.EventHandlers.Pacientes;
 
 namespace UI.Generic
 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.Facade.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace Services.Logic.Exceptions
 {
     internal class NoRolesFoundForUserException : Exception
     {
-        public NoRolesFoundForUserException() : base($"No se encontraron roles con el criterio de búsqueda seleccionado.") 
+        public NoRolesFoundForUserException() : base($"No se encontraron roles con el criterio de búsqueda seleccionado.".Translate()) 
         { 
         }
     }

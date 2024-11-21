@@ -10,19 +10,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Enums;
+using UI.EventHandlers.Pacientes;
+using UI.EventHandlers.Turnos;
 using UI.Generic.EventHandlers;
-using UI.NonProfessional.EventHandlers.Turnos;
 
 namespace UI.NonProfessional
 {
     public partial class TurnosForm : Form
     {
         GestionTurnosEventHandler _turnosFormEventHandler;
+        private TabCtrlEventHandler _tabEventHandler;
+
         public TurnosForm()
         {
             InitializeComponent();
 
             _turnosFormEventHandler = new GestionTurnosEventHandler(this);
+            _tabEventHandler = new TabCtrlEventHandler(tbcTurnos);
 
             PopulateTabControl();
 
@@ -32,6 +36,7 @@ namespace UI.NonProfessional
         public void InitializeHanlders()
         {
             this.Load += _turnosFormEventHandler.HandleOnLoad;
+            tbcTurnos.SelectedIndexChanged += _tabEventHandler.HandleOnTabChanged;
         }
         public void PopulateTabControl()
         {

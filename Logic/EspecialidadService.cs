@@ -58,21 +58,19 @@ namespace Logic
             }
             return especialidades;
         }
-        public List<Especialidad> GetById(Especialidad protoEspecialidad)
+        public Especialidad GetById(Especialidad protoEspecialidad)
         {
             using (DentalCareDBEntities context = new DentalCareDBEntities())
             {
-                // Obtener todas las especialidades de la tabla Especialidad
-                List<Especialidad> especialidades = context.Especialidad
-                                                           .Where(e => e.Id == protoEspecialidad.Id)                                       
-                                                           .ToList();
+                Especialidad especialidad = context.Especialidad
+                                                    .Where(e => e.Id == protoEspecialidad.Id)                                       
+                                                    .FirstOrDefault();
 
-                // Si la lista de especialidades está vacía, lanzar una excepción
-                if (especialidades == null || !especialidades.Any())
+                if (especialidad == null)
                 {
                     throw new NoEspecialidadFoundException();
                 }
-                return especialidades;
+                return especialidad;
             }
         }
         public async Task<List<Especialidad>> GetAsync()

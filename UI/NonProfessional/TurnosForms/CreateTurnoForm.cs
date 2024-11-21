@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using UI.NonProfessional.EventHandlers.Turnos;
+using UI.EventHandlers.Turnos;
 
 namespace UI.NonProfessional.EventHandlers.TurnosForms
 {

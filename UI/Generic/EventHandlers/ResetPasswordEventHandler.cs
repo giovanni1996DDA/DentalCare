@@ -49,31 +49,7 @@ namespace UI.Generic.EventHandlers
 
         public override void HandleOnSaveChanges(object sender, EventArgs e)
         {
-            User loggedUser = SessionManagerFacade.GetLoggedUser();
-
-            loggedUser.Password = txtPassword.Text;
-
-            try
-            {
-                loggedUser.PasswordResetted = false;
-
-                UserFacade.Update(loggedUser);
-                _form.DialogResult = DialogResult.OK;
-
-                MessageBox.Show($"La contraseña se cambió correctamente", "Operación exitosa",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-
-                _form.Hide();
-            }
-            catch (InvalidUserException ex)
-            {
-                MessageBox.Show($"{ex.Message}", "Usuario inválido", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"{ex.Message}. Revisar logs.", "Ocurrió un error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            
         }
         public override void HandleOnShowPassword(object sender, EventArgs e)
         {

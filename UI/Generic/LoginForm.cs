@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Login.EventHandler;
 using UI.NonProfessional;
-using UI.NonProfessional.EventHandlers.Pacientes;
 using UI.Perofessional;
 using static MaterialSkin.MaterialItemCollection;
 using Screen = Services.Domain.Screen;
@@ -39,9 +38,15 @@ namespace UI
 
         private void InitializeHandlers()
         {
+            this.Load += _eventHandler.HanldeOnLoad;
             btnLogin.Click += _eventHandler.HandleOnLogin;
             chkShowPassword.CheckedChanged += _eventHandler.HandleShowPassword;
             btnExit.Click += _eventHandler.HandleExit;
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -96,6 +96,7 @@
             btnLogin.Type = MaterialSkin.Controls.MaterialButton.MaterialButtonType.Contained;
             btnLogin.UseAccentColor = false;
             btnLogin.UseVisualStyleBackColor = true;
+            btnLogin.Click += btnLogin_Click;
             // 
             // btnExit
             // 

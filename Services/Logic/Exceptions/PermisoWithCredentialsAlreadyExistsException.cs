@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.Facade.Extensions;
+using System;
 using System.Runtime.Serialization;
 
 namespace Services.Logic.Exceptions
@@ -6,11 +7,7 @@ namespace Services.Logic.Exceptions
     [Serializable]
     public class PermisoWithCredentialsAlreadyExistsException : Exception
     {
-        public PermisoWithCredentialsAlreadyExistsException() : base("Ya existe un permiso con ese tipo y ese modulo creado.")
-        {
-        }
-
-        public PermisoWithCredentialsAlreadyExistsException(string message) : base(message)
+        public PermisoWithCredentialsAlreadyExistsException(string message = "Ya existe un permiso con ese tipo y ese modulo creado.") : base(message.Translate())
         {
         }
 

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using UI.Enums;
 using UI.Generic.FormUsuarios.PopUps;
 using UI.Helpers;
+using Services.Facade.Extensions;
 
 
 namespace UI.Generic.EventHandlers
@@ -31,17 +32,20 @@ namespace UI.Generic.EventHandlers
 
                 UserFacade.Register(protoUser);
 
-                MessageBox.Show($"El usuario {protoUser.UserName} se creó correctamente.", "Operación realizada con éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{"El usuario".Translate()} {protoUser.UserName} {"se creó correctamente".Translate()}.",
+                                "Operación realizada con éxito".Translate(), 
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Information);
 
                 ClearScreen();
             }
             catch (InvalidUserException ex)
             {
-                MessageBox.Show($"{ex.Message}", "Usuario inválido", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"{ex.Message}", "Usuario inválido".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (UserAlreadyRegisteredException ex)
             {
-                MessageBox.Show($"{ex.Message}", "El usuario ya existe.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"{ex.Message}", "El usuario ya existe.".Translate(), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception)
             {

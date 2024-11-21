@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UI.Enums;
-using UI.NonProfessional.EventHandlers.Pacientes;
+using UI.EventHandlers.Pacientes;
 
 namespace UI.NonProfessional
 {

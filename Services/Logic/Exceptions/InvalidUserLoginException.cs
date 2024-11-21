@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Services.Facade.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Services.Logic.Exceptions
 {
     internal class InvalidUserLoginException : Exception
     {
-        public InvalidUserLoginException() : base("Username o Password incorrecto")
+        public InvalidUserLoginException() : base("Username o Password incorrecto".Translate())
         { 
         }
     }
